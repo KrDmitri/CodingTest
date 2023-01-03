@@ -61,3 +61,46 @@ def knight():
             cnt += 1
     print(cnt)
 ```
+
+### 게임 개발 문제
+```
+# d는 방향 가리킴
+# 0: 북, 1: 동, 2: 남, 3: 서
+def game():
+    n, m = map(int, input().split())
+    a, b, d = map(int, input().split())
+    gameMap = []
+    steps = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    visited = []
+    visited.append((a, b))
+
+    for i in range(n):
+        gameMap.append(list(map(int, input().split())))
+
+    while True:
+        # 방향 전환
+        d = d + 4 - 1
+        d = d % 4
+
+        # 일단 가봄
+        aNext = a + steps[d][0]
+        bNext = b + steps[d][1]
+
+        # 만약 육지라면 방문 체크 한 후, 현 위치 저장
+        if gameMap[aNext][bNext] == 0 and (aNext, bNext) not in visited:
+            visited.append((aNext, bNext))
+            a = aNext
+            b = bNext
+        else:
+            dNext = d + 2
+            dNext = dNext % 4
+            aNext = a + steps[dNext][0]
+            bNext = b + steps[dNext][1]
+            if gameMap[aNext][bNext] == 0 and (aNext, bNext) not in visited:
+                visited.append((aNext, bNext))
+                a = aNext
+                b = bNext
+            else:
+                break
+    print(len(visited))
+```
