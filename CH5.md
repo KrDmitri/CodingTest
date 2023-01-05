@@ -120,3 +120,36 @@ def escapeMaze():
                 if flag == True:
                     cnt += 1
 ```
+
+### 미로 탈출 해설 답안
+```
+def escapeMaze2():
+    n, m = map(int, input().split())
+    graph = []
+    for i in range(n):
+        graph.append(list(map(int, input().split())))
+
+    dx = [-1, 1, 0, 0]
+    dy = [0, 0, -1, 1]
+
+    def bfs(x, y):
+        queue = deque()
+        queue.append((x, y))
+        while queue:
+            x, y = queue.popleft()
+            for i in range(4):
+                nx = x + dx[i]
+                ny = y + dy[i]
+                if nx < 0 or ny < 0 or nx >= n or ny >= m:
+                    continue
+                if graph[nx][ny] == 0:
+                    continue
+                if graph[nx][ny] == 1:
+                    graph[nx][ny] = graph[x][y] + 1
+                    queue.append((nx, ny))
+        return graph[n-1][m-1]
+
+    print(bfs(0, 0))
+```
+-> 내가 작성한 코드는 미로가 2갈래 길로 나뉘고 깊이가 깊어지면 정확한 최단 경로를 구하지 못함 해설 처럼 큐에 들어갈때마다 노드에 값을 올려주는 식으로 바꿔야함
+
