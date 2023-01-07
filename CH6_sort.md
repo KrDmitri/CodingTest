@@ -47,5 +47,26 @@ def printStudents2():
         print(student[0], end=' ')
 ```
 
+### 두 배열의 원소 교체 문제
+```
+def changeElements():
+    sum = 0
+    n, k = map(int, input().split())
 
+    aList = list(map(int, input().split()))
+    bList = list(map(int, input().split()))
 
+    aList.sort()
+    bList.sort(reverse=True)
+
+    for i in range(k):
+        if aList[i] < bList[i]:
+            aList[i], bList[i] = bList[i], aList[i]
+        else:
+            break
+
+    for i in aList:
+        sum += i
+
+    print(sum)
+```
