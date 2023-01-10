@@ -96,3 +96,62 @@ def findItem4():
             print('no', end=' ')
 ```
 
+### 떡볶이 떡 만들기 문제
+```
+def cutTteok():
+    n, m = map(int, input().split())
+    tteok = list(map(int, input().split()))
+    tteok.sort()
+
+    afterCut = [0] * n
+
+    start = 0
+    end = tteok[-1]
+
+    while True:
+        mid = (start + end) // 2
+
+        for i in range(n):
+            temp = tteok[i] - mid
+            if temp < 0:
+                afterCut[i] = 0
+            else:
+                afterCut[i] = temp
+
+        if sum(afterCut) > m:
+            start = mid + 1
+        elif sum(afterCut) < m:
+            end = mid - 1
+        elif sum(afterCut) == m:
+            print(mid)
+            break
+```
+-> 이 문제는 처음 봤을 때 자른 후 떡의 길이를 조합해서 원하는 길이를 만들어야 하는 줄 알았는데, 문제를 다시보니 원하는 길이를 넘기만 하면 됐음. 그래서 떡의 길이를 가장 큰 길이부터 잘라가면서 원하는 길이를 넘는지 체크하는 형태로 풀 수 있는데 문제에서 높이가 10억보다 작거나 같은 양의 정수로 범위가 아주 크기 때문에 이진 탐색 기법을 활용하여 원하는 길이를 더 빠르게 구할 수 있다.
+### 이진 탐색 활용 포인트
+1. 입력 조건의 범위가 매우 방대 하다
+2. 범위를 좁혀갈 수 있다
+
+그런데 위의 내 코드는 딱 원하는 길이만큼 떨어져 나올때만 정상적으로 작동을 해서 아래의 해설 코드처럼 조건을 만족하는 값을 저장해나가면서 풀어야함
+### 떡볶이 떡 만들기 해설 답안
+```
+def cutTteok2():
+    n, m = list(map(int, input().split()))
+    array = list(map(int, input().split()))
+    
+    start = 0
+    end = max(array)
+    
+    result = 0
+    while(start <= end):
+        total = 0
+        mid = (start + end) // 2
+        for x in array:
+            if x > mid:
+                total += x - mid
+        if total < m:
+            end = mid - 1
+        else:
+            result = mid
+            start = mid + 1
+```
+
