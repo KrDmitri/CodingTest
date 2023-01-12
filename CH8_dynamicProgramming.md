@@ -35,3 +35,72 @@ def makeOne():
 
         d[i] = min(div2, div3, div5, min1)
 ```
+
+### 1로 만들기 문제 해설 답안
+```
+def makeOne2():
+    x = int(input())
+
+    d = [0] * 30001
+
+    for i in range(2, x + 1):
+        d[i] = d[i - 1] + 1
+        if i % 2 == 0:
+            d[i] = min(d[i], d[i//2] + 1)
+        if i % 3 == 0:
+            d[i] = min(d[i], d[i//3] + 1)
+        if i % 5 == 0:
+            d[i] = min(d[i], d[i//5] + 1)
+
+    print(d[x])
+```
+
+### 개미 전사(오답)
+```
+# 1. 가장 큰 수 찾는다
+# 2. 가장 큰 수 양 옆 값 0으로 함
+# 3. 남은 것들중에서 큰 수로 반복
+def antWarrior():
+    n = int(input())  # 예제에서 4임
+    foodStorage = list(map(int, input().split()))  # 1, 3, 1, 5
+    result = 0
+
+    while sum(foodStorage) != 0:
+        maxNum = max(foodStorage)
+        maxIndex = findIndex(maxNum, foodStorage)
+        result += maxNum
+
+        foodStorage[maxIndex] = 0
+        if maxIndex - 1 >= 0:
+            foodStorage[maxIndex - 1] = 0
+        if maxIndex + 1 < n:
+            foodStorage[maxIndex + 1] = 0
+
+    print(result)
+
+
+
+def findIndex(elem, list):
+    for i in range(len(list)):
+        if list[i] == elem:
+            return  i
+```
+-> 가장 큰 수를 찾아서 더해가는 방식이 아닌 왼쪽부터 털면서 i번째 창고를 터는게 더 큰지 아닌지만 확인 하면됨
+
+### 개미 전사(수정 코드)
+```
+def antWarrior():
+    n = int(input())  # 예제에서 4임
+    foodStorage = list(map(int, input().split()))  # 1, 3, 1, 5
+
+    d = [0] * 1000
+
+    d[0] = foodStorage[0]
+    d[1] = max(foodStorage[0], foodStorage[1])
+
+    for i in range(2, n):
+        d[i] = max(d[i - 1], foodStorage[i] + d[i -2])
+
+    print(d[n - 1])
+```
+
