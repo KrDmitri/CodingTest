@@ -119,3 +119,70 @@ for a in range(1, n + 1):
             print(graph[a][b], end=' ')
     print()
 ```
+
+### 미래 도시
+```
+import collections
+# 다익스트라에 필요한 것들
+# 1. 방문 확인 리스트
+# 2. 거리 저장 리스트
+# 3. 가장 가까운 거리 찾아야 함(근데 이 문제에서는 모든 거리가 1이라서 필요 없음)
+INF = int(1e9)
+
+# 1에서 k까지 거리 + k에서 x까지 거리 구해야 함
+def findRoute():
+    ## 입력 받는 곳
+    # n은 회사의 수, m은 연결 경로 수
+    n, m = map(int, input().split())
+    # 경로 입력
+    paths = []
+    for i in range(m):
+        paths.append(list(map(int, input().split())))
+    # k 거쳐서 x 가는 거임
+    x, k = map(int, input().split())
+
+    ## 본격적 다익스트라 코드
+    def measureRoute(start, end):
+        visited = [False] * (n + 1)
+        distance = [INF] * (n + 1)
+        queue = collections.deque([])
+
+        visited[start] = True
+        distance[start] = 0
+
+        for path in paths:
+            dp = path[0]  # 경로에서 출발 지점
+            dt = path[1]  # 경로에서 도착 지점
+            if dp == start:
+                distance[dt] = 1
+                visited[dt] = True
+                queue.append(dt)
+            if dt == start:
+                distance[dp] = 1
+                visited[dp] = True
+                queue.append(dp)
+
+        while queue:
+            now = queue.popleft()
+            for path in paths:
+                dp = path[0]
+                dt = path[1]
+                if dp == now and visited[dt] == False:
+                    distance[dt] = distance[now] + 1
+                    visited[dt] = True
+                    queue.append(dt)
+                if dt == now and visited[dp] == False:
+                    distance[dp] = distance[now] + 1
+                    visited[dp] = True
+                    queue.append(dp)
+
+        return distance[end]
+
+    distOneToK = measureRoute(1, k)
+    distKToX = measureRoute(k, x)
+
+    if distOneToK + distKToX < INF:
+        print(distOneToK + distKToX)
+    else:
+        print(-1)
+```
