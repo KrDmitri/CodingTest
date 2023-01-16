@@ -186,3 +186,35 @@ def findRoute():
     else:
         print(-1)
 ```
+-> 내 코드는 1에서 k를 거쳐 x로 가는 경로의 길이를 구하는 것을 다익스트라 알고리즘 코드를 2번 사용해서 구했음, 그런데 여기서는 플로이드 워셜 알고리즘으로 모든 경로를 다 구한 다음에 더하면 더 간편
+
+### 미래 도시 문제 해설 답안
+```
+def findRoute2():
+    n, m = map(int, input().split())
+    graph = [[INF] * (n + 1) for _ in range(n + 1)]
+
+    for a in range(1, n + 1):
+        for b in range(1, n + 1):
+            if a == b:
+                graph[a][b] = 0
+
+    for _ in range(m):
+        a, b = map(int, input().split())
+        graph[a][b] = 1
+        graph[b][a] = 1
+    
+    x, k = map(int, input().split())
+    
+    for k in range(1, n + 1):
+        for a in range(1, n + 1):
+            for b in range(1, n + 1):
+                graph[a][b] = min(graph[a][b], graph[a][k] + graph[k][b])
+    
+    distance = graph[1][k] + [k][x]
+    
+    if distance >= INF:
+        print("-1")
+    else:
+        print(distance)
+```
