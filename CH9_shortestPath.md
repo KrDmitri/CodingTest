@@ -218,3 +218,105 @@ def findRoute2():
     else:
         print(distance)
 ```
+
+### 전보
+```
+INF = int(1e9)
+def sendTelegram():
+    n, m, c = map(int, input().split())    # n: 도시 수, m: 통로 수, c: 메시지를 보내는 도시(start)
+    graph = [[INF] * (n + 1) for _ in range(n + 1)]
+    visited = [False] * (n + 1)
+    visited[c] = True
+    distance = [INF] * (n + 1)
+    distance[c] = 0
+
+    # 가장 가까운 노드 인덱스 반환 함수, INF 반환하면 프로그램 종료하면 됨
+    def getNearestNode():
+        minLength = INF
+        minIndex = 0
+        for i in range(n + 1):
+            if distance[i] < minLength and visited[i] is False:
+                minLength = distance[i]
+                minIndex = i
+        if minIndex == 0:
+            return INF
+        else:
+            return minIndex
+
+    # 그래프 생성 후 아래 반복문으로 경로 입력 받음
+    for a in range(1, n + 1):
+        for b in range(1, n + 1):
+            if a == b:
+                graph[a][b] = 0
+    for _ in range(m):
+        x, y, z = map(int, input().split())
+        graph[x][y] = z
+
+    # 시작 노드부터 처리
+    for i in range(n + 1):
+        if graph[c][i] < INF and visited[i] is not True:
+            distance[i] = graph[c][i]
+
+    while True:
+        now = getNearestNode()
+        if now == INF:
+            break
+        visited[now] = True
+        for i in range(n + 1):
+            if graph[now][i] < INF and visited[i] is not True:
+                distance[i] = min(distance[i], distance[now] + graph[now][i])
+
+    # 총 도시 수 계산
+    cnt = 0
+    for i in range(n + 1):
+        if visited[i] == True:
+            cnt += 1
+    cnt -= 1
+
+    # 걸리는 시간 계산(INF는 무시한 최댓값)
+    maxTime = 0
+    for i in range(n + 1):
+        if distance[i] < INF and distance[i] > maxTime:
+            maxTime = distance[i]
+
+    print(cnt, maxTime)
+```
+-> 여기서는 우선순위 큐를 사용하지 않고 내가 최단 거리 노드를 구하는 함수를 만들어 호출해서 구현했기에 우선순위 큐를 이용하는 것보다 시간 소요가 많이 됨, 따라서 아래 해설 답안 코드 처럼 heapq 라이브러리를 활용해줘야 함
+
+### 전보 문제 해설 답안
+```
+import heapq
+def sendTelegram2():
+    n, m, start = map(int, input().split())
+    graph = [[] for i in range(n + 1)]
+    distance = [INF] * (n + 1)
+    
+    for _ in range(m):
+        x, y, z = map(int, input().split())
+        graph[x].append((y, z))
+    
+    def dijkstra(start):
+        q = []
+        heapq.heappush(1, (0, start))
+        distance[start] = 0
+        while q:
+            dist, now = heapq.heappop(q)
+            if distance[now] < dist:
+                continue
+            for i in graph[now]:
+                cost = dist + i[1]
+                if cost < distance[i[0]]:
+                    distance[i[0]] = cost
+                    heapq.heappush(q, (cost, i[0]))
+    
+    dijkstra(start)
+    
+    count = 0
+    max_distance = 0
+    for d in distance:
+        if d != INF:
+            count += 1
+            max_distance = max(max_distance, d)
+    
+    print(count - 1, max_distance)
+```
