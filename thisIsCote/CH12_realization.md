@@ -107,3 +107,61 @@ def compressString2():
 ```
 https://school.programmers.co.kr/learn/courses/30/lessons/60057
 정답 판정
+
+### 자물쇠와 열쇠(문제해결 실패)⚠️
+```
+import math
+def unlock():
+    ##### 리스트 입력 #####
+    keyString = input()
+    lockString = input()
+
+    keyInt = []
+    lockInt = []
+
+    for i in keyString:
+        if i.isdigit():
+            keyInt.append(int(i))
+
+    for i in lockString:
+        if i.isdigit():
+            lockInt.append(int(i))
+
+    keyDimension = int(math.sqrt(len(keyInt)))
+    lockDimension = int(math.sqrt(len(lockInt)))
+
+    key = [[0] * keyDimension for _ in range(keyDimension)]
+    lock = [[0] * lockDimension for _ in range(lockDimension)]
+
+    for i in range(len(keyInt)):
+        xPos = i // keyDimension
+        yPos = i % keyDimension
+        key[xPos][yPos] = keyInt[i]
+
+    for i in range(len(lockInt)):
+        xPos = i // lockDimension
+        yPos = i % lockDimension
+        lock[xPos][yPos] = lockInt[i]
+    ##### 여기까지 입력받은 문자열 리스트화 완료 #####
+
+    keyTooth = keyInt.count(1)
+    lockHole = lockInt.count(0)
+
+    # 가장 기본 조건 확인(키의 이빨 개수가 충분한지)
+    if lockHole > keyTooth:
+        print('false')
+    else:
+        lockLength = int(math.sqrt(lockHole))
+
+        for length in range(lockLength, len(lock)):
+            tempList = [[0] * length for _ in range(length)]
+            xPos = 0
+            for x in range(0, len(lock) - length):
+                yPos = 0
+                for y in range(0, len(lock) - length):
+                    tempList[xPos][yPos] = lock[x][y]
+                    yPos += 1
+                xPos += 1
+```
+-> 문제 
+ㅎㅐ결 
