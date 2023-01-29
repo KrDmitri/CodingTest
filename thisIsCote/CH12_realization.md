@@ -212,3 +212,112 @@ def solution(key, lock):
                         new_lock[x + i][y + j] -= key[i][j]
     return False
 ```
+
+### 뱀
+```
+import copy
+def snakeGame():
+    # 뱀 이동 처리
+    def moveSnake():
+        tempHead = copy.deepcopy(head)
+        tempBody = copy.deepcopy(body)
+        # 우선 머리 옮기기
+        if direction == 'L':
+            head[1] -= 1
+        elif direction == 'R':
+            head[1] += 1
+        elif direction == 'U':
+            head[0] -= 1
+        elif direction == 'D':
+            head[0] += 1
+
+        if head in body or head[0] > n or head[0] < 1 or head[1] > n or head[1] < 1:
+            return True
+
+        # 몸통 위치 바꿔주기
+        if len(body) > 0:
+            for i in range(len(body) - 1, 0, -1):
+                body[i] = body[i - 1]
+            body[0] = tempHead
+
+        # 사과를 먹었을 때
+        if gampeMap[head[0]][head[1]] == 1:
+            # 원래 몸 길이가 머리 하나면 이전 머리 위치를 body 에 추가
+            if len(tempBody) == 0:
+                body.append(tempHead)
+            # 원래 몸 길이가 2 이상이면 이전 몸의 끝을 body 에 추가
+            else:
+                body.append(tempBody[-1])
+            gampeMap[head[0]][head[1]] = 0
+
+
+    n = int(input())  # 보드의 크기 n * n
+    # 맵 생성 (1, 1) 부터 출발이라서 n 보다 1 큰 크기로 2차원 배열 생성
+    gampeMap = [[0] * (n + 1) for _ in range(n + 1)]
+
+    k = int(input())  # 사과의 개수
+    for _ in range(k):
+        xPos, yPos = map(int, input().split())
+        gampeMap[xPos][yPos] = 1
+
+    l = int(input())  # 뱀 방향 전환 횟수
+    moves = []
+    for _ in range(l):
+        moves.append(list(input().split()))
+
+    direction = 'R'
+    time = 0    # 이동 시간
+    head = [1, 1]
+    body = []
+    conflictFlag = False  # 충돌 발생 탐지
+    timeStack = 0
+
+    # 방향 전환 데이터 기반으로 뱀 이동 처리
+    for i in range(l):
+        move = moves[i]
+        moveTime = int(move[0]) - timeStack
+        timeStack = int(move[0])
+        for j in range(moveTime):  # 여기서 move[0]은 이동 시간을 가리킴
+            time += 1
+
+            # 충돌 처리
+            conflictFlag = moveSnake()
+            if conflictFlag:
+                break
+
+        if conflictFlag:
+            break
+
+        changeDir = move[1]
+        if direction == 'L':
+            if changeDir == 'D':
+                direction = 'U'
+            else:
+                direction = 'D'
+        elif direction == 'R':
+            if changeDir == 'D':
+                direction = 'D'
+            else:
+                direction = 'U'
+        elif direction == 'U':
+            if changeDir == 'D':
+                direction = 'R'
+            else:
+                direction = 'L'
+        elif direction == 'D':
+            if changeDir == 'D':
+                direction = 'L'
+            else:
+                direction = 'R'
+
+    if conflictFlag == None:
+        while True:
+            time += 1
+            # 충돌 처리
+            conflictFlag = moveSnake()
+            if conflictFlag:
+                break
+
+    print(time)
+```
+
