@@ -379,3 +379,104 @@ def snakeGame2():
     
     print(simulate())
 ```
+
+### 기둥과 보 설치
+```
+def buildBeamColumn():
+    # 기둥 설치 가능한지 확인 함수
+    def canColumn(x, y):
+        if y == 0 or columnPrint[x][y-1] == 1 or beamPrint[x-1][y] == 1 or beamPrint[x][y] == 1:
+            return True
+        else:
+            return False
+
+    # 보 설치 가능한지 확인 함수
+    def canBeam(x, y):
+        if columnPrint[x][y-1] == 1 or columnPrint[x+1][y-1] == 1 or (beamPrint[x-1][y] == 1 and beamPrint[x+1][y] == 1):
+            return True
+        else:
+            return False
+
+    n = int(input())       # 벽면의 크기
+    columnPrint = [[0] * (n + 1) for _ in range(n + 1)]
+    beamPrint = [[0] * (n + 1) for _ in range(n + 1)]
+    numOfOperations = int(input())
+    build_frame = []
+    for _ in range(numOfOperations):
+        temp = list(map(int, input().split()))
+        build_frame.append(temp)
+
+    result = []
+    for i in build_frame:
+        # 설치 시
+        if i[3] == 1:
+            # 기둥 설치
+            if i[2] == 0:
+                if canColumn(i[0], i[1]):
+                    columnPrint[i[0]][i[1]] = 1
+                    result.append([i[0], i[1], 0])
+            # 보 설치
+            else:
+                if canBeam(i[0], i[1]):
+                    beamPrint[i[0]][i[1]] = 1
+                    result.append([i[0], i[1], 1])
+        # 삭제 시
+        else:
+            # 기둥 삭제
+            if i[2] == 0:
+                x, y = i[0], i[1]
+                # 우선 삭제
+                columnPrint[x][y] = 0
+                if columnPrint[x][y+1] == 1:
+                    if canColumn(x, y+1):
+                        pass
+                    else:
+                        columnPrint[x][y] = 1
+                        continue
+                if beamPrint[x][y+1] == 1:
+                    if canBeam(x, y+1):
+                        pass
+                    else:
+                        columnPrint[x][y] = 1
+                        continue
+                if beamPrint[x-1][y+1] == 1:
+                    if canBeam(x-1, y+1):
+                        pass
+                    else:
+                        columnPrint[x][y] = 1
+                        continue
+                result.remove([x, y, 0])
+            # 보 삭제
+            else:
+                x, y = i[0], i[1]
+                # 우선 삭제
+                beamPrint[x][y] = 0
+                if columnPrint[x][y] == 1:
+                    if canColumn(x, y):
+                        pass
+                    else:
+                        beamPrint[x][y] = 1
+                        continue
+                if columnPrint[x+1][y] == 1:
+                    if canColumn(x+1, y):
+                        pass
+                    else:
+                        beamPrint[x][y] = 1
+                        continue
+                if beamPrint[x-1][y] == 1:
+                    if canBeam(x-1, y):
+                        pass
+                    else:
+                        beamPrint[x][y] = 1
+                        continue
+                if beamPrint[x+1][y] == 1:
+                    if canBeam(x+1, y):
+                        pass
+                    else:
+                        beamPrint[x][y] = 1
+                        continue
+                result.remove([x, y, 1])
+
+    result.sort(key=lambda x:(x[0], x[1], x[2]))
+    print(result)
+```
