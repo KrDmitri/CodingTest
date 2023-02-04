@@ -480,3 +480,34 @@ def buildBeamColumn():
     result.sort(key=lambda x:(x[0], x[1], x[2]))
     print(result)
 ```
+
+### 기둥과 보 설치 해설 답안 코드
+```
+def possible(answer):
+    for x, y, stuff in answer:
+        if stuff == 0:
+            if y == 0 or [x - 1, y, 1] in answer or [x, y, 1] in answer or [x, y - 1, 0] in answer:
+                continue
+            return False
+        elif stuff == 1:
+            if [x, y - 1, 0] in answer or [x + 1, y - 1, 0] in answer or ([x-1, y, 1] in answer and [x + 1, y, 1] in answer):
+                continue
+            return False
+    return True
+
+def solution(n, build_frame):
+    answer = []
+    for frame in build_frame:
+        x, y, stuff, operate = frame
+        if operate == 0:
+            answer.remove([x, y, stuff])
+            if not possible(answer):
+                answer.append([x, y, stuff])
+        if operate == 1:
+            answer.append([x, y, stuff])
+            if not possible(answer):
+                answer.remove([x, y, stuff])
+    return sorted(answer)
+```
+-> 내 코드는 기둥 보 삭제 시 연관된 기둥과 보만을 확인하여 실행하는 코드인 반면 해설 코드는 현재까지의 모든 건축물들을 다 확인하여 구현한 코드, 코드 자체는 해설 코드가 간결하지만 성능은 내 코드가 더 좋지않을까 생각됨
+
