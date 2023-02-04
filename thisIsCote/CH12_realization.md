@@ -511,3 +511,80 @@ def solution(n, build_frame):
 ```
 -> 내 코드는 기둥 보 삭제 시 연관된 기둥과 보만을 확인하여 실행하는 코드인 반면 해설 코드는 현재까지의 모든 건축물들을 다 확인하여 구현한 코드, 코드 자체는 해설 코드가 간결하지만 성능은 내 코드가 더 좋지않을까 생각됨
 
+### 치킨 배달
+```
+def deliverChicken():
+    n, m = map(int, input().split())    # n은 지도 크기, m은 최대 치킨집 갯수
+    cityMap = []
+    for i in range(n):
+        cityMap.append(list(map(int, input().split())))
+
+    chickenRestaurants = []
+    # 치킨집 위치 찾기
+    for i in range(n):
+        for j in range(n):
+            if cityMap[i][j] == 2:
+                chickenRestaurants.append([i, j])
+
+    restToHome = []
+    for rest in chickenRestaurants:
+        x, y = rest[0], rest[1]
+        dist = 0
+        for i in range(n):
+            for j in range(n):
+                if cityMap[i][j] == 1:
+                    dist += abs(x - i) + abs(y - j)
+        rest.append(dist)
+
+    chickenRestaurants.sort(key=lambda x:x[2])
+
+    finalRest = []
+    for i in range(m):
+        rest = chickenRestaurants[i]
+        finalRest.append([rest[0], rest[1]])
+
+    wholeDist = 0
+    for i in range(n):
+        for j in range(n):
+            if cityMap[i][j] == 1:
+                tempDist = 1000
+                for rest in finalRest:
+                    tempDist = min(tempDist, abs(i - rest[0]) + abs(j - rest[1]))
+                wholeDist += tempDist
+
+    print(wholeDist)
+```
+-> 먼저 치킨집에서의 거리를 구해서 가장 가까운 몇 개의 치킨집을 골라서 집과의 거리를 계산한 코드, test case는 모두 정답이지만 https://www.acmicpc.net/problem/15686 여기서 정답 판정을 받지 못했는데 아마 이 방법으로는 치킨집이 2개 이상일 때 정확한 최소거리를 못구해서 그러는거 같음 그래서 해설 코드처럼 combinations 함수를 활용하여 모든 조합들을 다 비교해가며 최소거리를 구해야 함
+
+### 치킨 배달 해설 답안 코드
+```
+from itertools import combinations
+
+n, m = map(int, input().split())
+chicken, house = [], []
+
+for r in range(n):
+    data = list(map(int, input().split()))
+    for c in range(n):
+        if data[c] == 1:
+            house.append((r, c))
+        elif data[c] == 2:
+            chicken.append((r, c))
+
+candidates = list(combinations(chicken, m))
+
+def get_sum(candidate):
+    result = 0
+    for hx, hy in house:
+        temp = 1e9
+        for cx, cy in candidate:
+            temp = min(temp, abs(hx - cx) + abs(hy - cy))
+        result += temp
+    return result
+
+result = 1e9
+for candidate in candidates:
+    result = min(result, get_sum(candidate))
+
+print(result)
+```
