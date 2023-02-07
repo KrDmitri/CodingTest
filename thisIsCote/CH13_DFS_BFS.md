@@ -34,3 +34,74 @@ def findCity():
         print(-1)
 ```
 -> 값은 맞는데 백준에 코드 제출시 시간 초과로 뜸, 아마 도로의 개수 M이 1,000,000개라서 이것들을 하나하나 다 저장해서 초과 나는듯, 1 -> (2, 3) 이런 느낌으로 코드 수정해봄
+
+```
+def findCity2():
+    n, m, k, x = map(int, input().split())
+    roads = [[] for _ in range(n + 1)]
+    visited = [False] * (n + 1)
+    distance = [INF] * (n + 1)
+
+    for _ in range(m):
+        a, b = map(int, input().split())
+        roads[a].append(b)
+
+    q = deque([])
+    q.append(x)
+    visited[x] = True
+    distance[x] = 0
+    while q:
+        curCity = q.popleft()
+        road = roads[curCity]
+        for i in road:
+            if not visited[i]:
+                q.append(i)
+                visited[i] = True
+                distance[i] = distance[curCity] + 1
+
+    for i in range(len(distance)):
+        if distance[i] == k:
+            print(i)
+
+    if k not in distance:
+        print(-1)
+```
+-> 그래도 시간 초과남..ㅎㅎ
+
+```
+import sys
+from collections import deque
+input = sys.stdin.readline
+INF = int(1e7)
+
+
+n, m, k, x = map(int, input().split())
+cities = [[] for _ in range(n+1)]
+d = [INF for _ in range(n+1)]
+d[x] = 0
+for _ in range(m):
+    i, c = map(int, input().split())
+    cities[i].append(c)
+q = deque([x])
+
+while q:
+    i = q.popleft()
+    if d[i] >= k:
+        break
+    for city in cities[i]:
+        if d[city] == INF:
+            d[city] = d[i]+1
+            q.append(city)
+
+no = True
+for i in range(1, n+1):
+    if d[i] == k:
+        no = False
+        print(i)
+
+if no:
+    print(-1)
+```
+-> 답지도 
+```2ㅂ
+``
