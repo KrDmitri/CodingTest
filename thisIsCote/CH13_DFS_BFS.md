@@ -103,3 +103,73 @@ if no:
     print(-1)
 ```
 -> 답안 코드도 내 코드랑 비슷한데, 위 코드처럼 현재 탐색중인 노드가 k 이상일 때는 그 다음 노드까지의 거리가 항상 k보다 크기 때문에 탐색할 필요가 없기 때문에, 이같은 방식으로 시간을 절약할 수 있음
+
+### 연구소
+```
+from itertools import combinations
+import copy
+
+def laboratory():
+    def spreadVirus(tempGraph, tempVisited, vx, vy):
+        if tempGraph[vx][vy] != 1:
+            tempGraph[vx][vy] = 2
+            tempVisited[vx][vy] = True
+            if vx - 1 >= 0 and tempVisited[vx-1][vy] == False and tempGraph[vx-1][vy] != 1:
+                spreadVirus(tempGraph, tempVisited, vx - 1, vy)
+            if vx + 1 < n and tempVisited[vx + 1][vy] == False and tempGraph[vx+1][vy] != 1:
+                spreadVirus(tempGraph, tempVisited, vx + 1, vy)
+            if vy - 1 >= 0 and tempVisited[vx][vy-1] == False and tempGraph[vx][vy-1] != 1:
+                spreadVirus(tempGraph, tempVisited, vx, vy - 1)
+            if vy + 1 < m and tempVisited[vx][vy+1] == False and tempGraph[vx][vy+1] != 1:
+                spreadVirus(tempGraph, tempVisited, vx, vy + 1)
+        return
+
+
+    n, m = map(int, input().split())
+    graph = []
+    virus = []
+    blank = []
+    visited = [[False] * m for _ in range(n)]
+
+    for i in range(n):
+        row = list(map(int, input().split()))
+        graph.append(row)
+        for j in range(len(row)):
+            if row[j] == 2:
+                virus.append((i, j))
+            elif row[j] == 0:
+                blank.append((i, j))
+            elif row[j] == 1:
+                visited[i][j] = True
+
+    protectWalls = combinations(blank, 3)
+
+    safeArea = 0
+    for protectWall in protectWalls:
+        tempGraph = copy.deepcopy(graph)
+        tempVisited = copy.deepcopy(visited)
+        for wall in protectWall:
+            tempGraph[wall[0]][wall[1]] = 1
+
+        for eachVirus in virus:
+            flag = False
+            for i in range(n):
+                for j in range(m):
+                    if tempGraph[i][j] == 0:
+                        flag = True
+
+            if flag:
+                spreadVirus(tempGraph, tempVisited, eachVirus[0], eachVirus[1])
+
+        tempSafe = 0
+        for i in range(n):
+            for j in range(m):
+                if tempGraph[i][j] == 0:
+                    tempSafe += 1
+
+        safeArea = max(safeArea, tempSafe)
+
+    print(safeArea)
+```
+-> 맞긴 
+            d[city] = d[i]+1
