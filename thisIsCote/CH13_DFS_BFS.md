@@ -178,5 +178,42 @@ def laboratory():
 
 ```
 
-### 경쟁적 
-ㅈㅓㄴㅇ
+### 경쟁적 전염
+```
+def competitiveInfection():
+    def oneMove(virusType, i, j):
+        if i > 0 and testTube[i - 1][j] == 0:
+            testTube[i - 1][j] = virusType
+        if i < n - 1 and testTube[i + 1][j] == 0:
+            testTube[i + 1][j] = virusType
+        if j > 0 and testTube[i][j - 1] == 0:
+            testTube[i][j - 1] = virusType
+        if j < n - 1 and testTube[i][j + 1] == 0:
+            testTube[i][j + 1] = virusType
+
+    def moveVirus():
+        for virusType in range(1, k + 1):
+            tempVirusList = []
+            for i in range(n):
+                for j in range(n):
+                    if testTube[i][j] == virusType:
+                        tempVirusList.append((i, j))
+            for tempVirus in tempVirusList:
+                i = tempVirus[0]
+                j = tempVirus[1]
+                oneMove(virusType, i, j)
+
+    n, k = map(int, input().split())   # n은 시험관 크기(n * n), k는 바이러스 종류(1 ~ k)
+    testTube = []    # 시험관 내부 정보
+
+    for _ in range(n):
+        testTube.append(list(map(int, input().split())))
+
+    s, x, y = map(int, input().split())  # s초 후에 (x, y)의 바이러스 종류 출력
+
+    for _ in range(s):
+        moveVirus()
+
+    print(testTube[x - 1][y - 1])
+```
+-> 테스트 예시들은 다 맞았는데 백준 사이트에서 시간이 초과남, 위에 사용된 반복문들을 더 효율적이게 수정 요망
