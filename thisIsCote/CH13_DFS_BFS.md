@@ -373,3 +373,52 @@ result = changeKuohao(w)
 for char in result:
     print(char, end='')
 ```
+
+### 연산자 끼워 넣기
+```
+import itertools
+INF = 1e9
+
+def insertOperand():
+    def operate(char, a, b):
+        if char == '+':
+            return a + b
+        elif char == '-':
+            return a - b
+        elif char == '*':
+            return a * b
+        elif char == '/':
+            if a <= 0:
+                a *= -1
+                result = a // b
+                return result * (-1)
+            else:
+                return a // b
+
+    n = int(input())
+    numList = list(map(int, input().split()))
+    operandInfo = list(map(int, input().split()))
+    operandStr = []
+    for _ in range(operandInfo[0]):
+        operandStr.append('+')
+    for _ in range(operandInfo[1]):
+        operandStr.append('-')
+    for _ in range(operandInfo[2]):
+        operandStr.append('*')
+    for _ in range(operandInfo[3]):
+        operandStr.append('/')
+
+    possibleList = itertools.permutations(operandStr)
+    minNum = INF
+    maxNum = INF * (-1)
+
+    for operands in possibleList:
+        result = numList[0]
+        for i in range(len(operands)):
+            result = operate(operands[i], result, numList[i + 1])
+        minNum = min(minNum, result)
+        maxNum = max(maxNum, result)
+
+    print(maxNum)
+    print(minNum)
+```
