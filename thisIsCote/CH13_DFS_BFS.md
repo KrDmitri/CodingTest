@@ -422,3 +422,4 @@ def insertOperand():
     print(maxNum)
     print(minNum)
 ```
+-> 중간의 possibleList에는 중복이 되는 값들이 많이 포함되어 있어서 해당 리스트 자료형을 집함 자료형으로 바꿔준 뒤 다시 리스트 형태로 바꿔줌으로써 백준 사이트에서 시간 
