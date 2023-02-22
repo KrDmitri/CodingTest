@@ -308,3 +308,68 @@ def competitiveInfection2():
 
     print(graph[target_x - 1][target_y - 1])
 ```
+
+### 괄호 변환
+```
+def changeKuohao(w):
+    if len(w) == 0:
+        return ''
+    u = []
+    v = []
+
+    def separateString(w):
+        leftNum = 0
+        rightNum = 0
+        for char in w:
+            if leftNum == rightNum and leftNum != 0:
+                v.append(char)
+                continue
+            if char == '(':
+                leftNum += 1
+                u.append(char)
+            else:
+                rightNum += 1
+                u.append(char)
+
+    def checkRightStr(u):
+        stack = []
+        for char in u:
+            if char == '(':
+                stack.append(char)
+            else:
+                if len(stack) > 0:
+                    stack.pop()
+                else:
+                    return False
+        if len(stack) == 0:
+            return True
+
+    separateString(w)
+    if checkRightStr(u):
+        result = changeKuohao(v)   # 결과 붙이는 코드 추가 필요
+        for char in result:
+            u.append(char)
+        return u
+    else:
+        temp = []
+        temp.append('(')
+        result = changeKuohao(v)   # temp에 결과 붙여야 함
+        for char in result:
+            temp.append(char)
+        temp.append(')')
+        u.pop(0)
+        u.pop(-1)
+        for i in range(len(u)):
+            if u[i] == '(':
+                temp.append(')')
+            else:
+                temp.append('(')
+        return temp
+
+### test code ###
+
+w = input()
+result = changeKuohao(w)
+for char in result:
+    print(char, end='')
+```
