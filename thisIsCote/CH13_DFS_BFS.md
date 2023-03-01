@@ -423,3 +423,93 @@ def insertOperand():
     print(minNum)
 ```
 -> 중간의 possibleList에는 중복이 되는 값들이 많이 포함되어 있어서 해당 리스트 자료형을 집함 자료형으로 바꿔준 뒤 다시 리스트 형태로 바꿔줌으로써 백준 사이트에서 시간 초과 문제를 해결할 수 있었음
+
+### 감시 피하기
+```
+import itertools
+import copy
+
+def avoidSurveillance():
+    def checkLeft(x, y, tempMap):
+        if tempMap[x][y] == 'S':
+            return False
+        elif tempMap[x][y] == 'O':
+            return True
+        else:
+            if y - 1 >= 0:
+                return checkLeft(x, y - 1, tempMap)
+            else:
+                return True
+    def checkRight(x, y, tempMap):
+        if tempMap[x][y] == 'S':
+            return False
+        elif tempMap[x][y] == 'O':
+            return True
+        else:
+            if y + 1 <= n - 1:
+                return checkRight(x, y + 1, tempMap)
+            else:
+                return True
+    def checkUp(x, y, tempMap):
+        if tempMap[x][y] == 'S':
+            return False
+        elif tempMap[x][y] == 'O':
+            return True
+        else:
+            if x - 1 >= 0:
+                return checkUp(x - 1, y, tempMap)
+            else:
+                return True
+    def checkDown(x, y, tempMap):
+        if tempMap[x][y] == 'S':
+            return False
+        elif tempMap[x][y] == 'O':
+            return True
+        else:
+            if x + 1 <= n - 1:
+                return checkDown(x + 1, y, tempMap)
+            else:
+                return True
+
+    n = int(input())
+    roadMap = []
+    teachers = []
+    blanks = []
+    for i in range(n):
+        tempList = list(input().split())
+        for j in range(n):
+            if tempList[j] == 'T':
+                teachers.append((i, j))
+            elif tempList[j] == 'X':
+                blanks.append((i, j))
+        roadMap.append(tempList)
+
+    obstacleCandidates = itertools.permutations(blanks, 3)
+
+    for obstacleCandidateList in obstacleCandidates:
+        tempMap = copy.deepcopy(roadMap)
+        possibleFlag = True
+        for obstacleCandidate in obstacleCandidateList:
+            xpos = obstacleCandidate[0]
+            ypos = obstacleCandidate[1]
+            tempMap[xpos][ypos] = 'O'
+        for teacher in teachers:
+            tx = teacher[0]
+            ty = teacher[1]
+            if checkLeft(tx, ty, tempMap) == False:
+                possibleFlag = False
+                break
+            if checkRight(tx, ty, tempMap) == False:
+                possibleFlag = False
+                break
+            if checkUp(tx, ty, tempMap) == False:
+                possibleFlag = False
+                break
+            if checkDown(tx, ty, tempMap) == False:
+                possibleFlag = False
+                break
+        if possibleFlag == True:
+            print('YES')
+            return
+    print('NO')
+```
