@@ -470,6 +470,44 @@ def insertOperand():
 ```
 -> 중간의 possibleList에는 중복이 되는 값들이 많이 포함되어 있어서 해당 리스트 자료형을 집함 자료형으로 바꿔준 뒤 다시 리스트 형태로 바꿔줌으로써 백준 사이트에서 시간 초과 문제를 해결할 수 있었음
 
+### 연산자 끼워 넣기 해설 코드 답안
+```
+n = int(input())
+data = list(map(int, input().split()))
+add, sub, mul, div = map(int, input().split())
+
+min_value = 1e9
+max_value = -1e9
+
+def dfs(i, now):
+    global min_value, max_value, add, sub, mul, div
+    if i == n:
+        min_value = min(min_value, now)
+        max_value = max(max_value, now)
+    else:
+        if add > 0:
+            add -= 1
+            dfs(i + 1, now + data[i])
+            add += 1
+        if sub > 0:
+            sub -= 1
+            dfs(i + 1, now - data[i])
+        if mul > 0:
+            mul -= 1
+            dfs(i + 1, now * data[i])
+            mul += 1
+        if div > 0:
+            div -= 1
+            dfs(i + 1, int(now / data[i]))
+            div += 1
+
+dfs(1, data[0])
+
+print(max_value)
+print(min_value)
+```
+-> 나의 풀이에서는 permutations으로 한 것을 집합화한다음 다시 리스트로 바꾸어서 중복된 원소를 제거했는데, 그냥 itertools 라이브러리의 product 함수를 사용하면 중복 순열을 더욱 쉽게 구해낼 수 있음
+
 ### 감시 피하기
 ```
 import itertools
@@ -559,3 +597,4 @@ def avoidSurveillance():
             return
     print('NO')
 ```
+-> 나는 permutations 함수를 사용했는데, 사실 combinations 함수가 본 문제에 더욱 효율적임
