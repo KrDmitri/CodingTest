@@ -598,3 +598,77 @@ def avoidSurveillance():
     print('NO')
 ```
 -> 나는 permutations 함수를 사용했는데, 사실 combinations 함수가 본 문제에 더욱 효율적임
+
+### 감시 피하기 해설 답안 코드
+```
+from itertools import combinations
+
+n = int(input())
+board = []
+teachers = []
+spaces = []
+
+for i in range(n):
+    board.append(list(input().split()))
+    for j in range(n):
+        if board[i][j] == 'T':
+            teachers.append((i, j))
+        if board[i][j] == 'X':
+            spaces.append((i, j))
+
+def watch(x, y, direction):
+    if direction == 0:   # 왼쪽 방향
+        while y >= 0:
+            if board[x][y] == 'S':
+                return True
+            if board[x][y] == 'O':
+                return False
+            y -= 1
+    if direction == 1:   # 오른쪽 방향
+        while y < n:
+            if board[x][y] == 'S':
+                return True
+            if board[x][y] == 'O':
+                return False
+            y += 1
+    if direction == 2:
+        while x >= 0:
+            if board[x][y] == 'S':
+                return True
+            if board[x][y] == 'O':
+                return False
+            x -= 1
+    if direction == 3:
+        while x < n:
+            if board[x][y] == 'S':
+                return True
+            if board[x][y] == 'O':
+                return False
+            x += 1
+    return False
+
+def process():
+    for x, y in teachers:
+        for i in range(4):
+            if watch(x, y, i):
+                return True
+    return False
+
+find = False
+
+for data in combinations(spaces, 3):
+    for x, y in data:
+        board[x][y] = 'O'
+    if not process():
+        find = True
+        break
+    for x, y in data:
+        board[x][y] = 'X'
+
+if find:
+    print('YES')
+else:
+    print('NO')
+```
+-> 나는 재귀함수를 활용하여 문제 해결을 한 반면에 답지에서는 반복문을 활용하여 문제 해결을 함
+    visited = [False] * (n + 1)
