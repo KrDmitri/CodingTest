@@ -741,3 +741,4 @@ def populationMovement():
 
     print(movement)
 ```
+-> 정답은 맞는데, 백준에 제출시 런타임 에러(RecursionError)가 떴는데, 이는 sys.setrecursionlimit()함수로 해결할 수 있었음
