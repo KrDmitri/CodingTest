@@ -671,3 +671,73 @@ else:
     print('NO')
 ```
 -> 나는 재귀함수를 활용하여 문제 해결을 한 반면에 답지에서는 반복문을 활용하여 문제 해결을 함
+
+### 인구 이동
+```
+def populationMovement():
+    def combine(x, y, groupNum):
+        if x + 1 < n and not visited[x+1][y]:
+            diffWithDown = abs(popMap[x][y] - popMap[x+1][y])
+            if diffWithDown >= l and diffWithDown <= r:
+                visited[x][y] = True
+                visited[x+1][y] = True
+                group[groupNum].append((x + 1, y))
+                combine(x + 1, y, groupNum)
+        if x - 1 >= 0 and not visited[x-1][y]:
+            diffWithTop = abs(popMap[x][y] - popMap[x-1][y])
+            if diffWithTop >= l and diffWithTop <= r:
+                visited[x][y] = True
+                visited[x - 1][y] = True
+                group[groupNum].append((x - 1, y))
+                combine(x - 1, y, groupNum)
+        if y + 1 < n and not visited[x][y+1]:
+            diffWithRight = abs(popMap[x][y] - popMap[x][y+1])
+            if diffWithRight >= l and diffWithRight <= r:
+                visited[x][y] = True
+                visited[x][y+1] = True
+                group[groupNum].append((x, y+1))
+                combine(x, y+1, groupNum)
+        if y - 1 >= 0 and not visited[x][y-1]:
+            diffWithLeft = abs(popMap[x][y] - popMap[x][y-1])
+            if diffWithLeft >= l and diffWithLeft <= r:
+                visited[x][y] = True
+                visited[x][y - 1] = True
+                group[groupNum].append((x, y - 1))
+                combine(x, y - 1, groupNum)
+
+    n, l, r = map(int, input().split())
+    popMap = []
+    for _ in range(n):
+        popMap.append(list(map(int, input().split())))
+    movement = 0
+
+    while True:
+        visited = [[False] * n for _ in range(n)]
+        group = [[] for _ in range((n * n) // 2 + 1)]
+        groupNum = 0
+        for i in range(n):
+            for j in range(n):
+                if not visited[i][j]:
+                    combine(i, j, groupNum)
+                    if visited[i][j]:
+                        group[groupNum].append((i, j))
+                        group[groupNum] = set(group[groupNum])
+                        group[groupNum] = list(group[groupNum])
+                        groupNum += 1
+
+        for i in range(groupNum):
+            positionList = group[i]
+            averagePop = 0
+            for x, y in positionList:
+                averagePop += popMap[x][y]
+            averagePop = averagePop // len(positionList)
+            for x, y in positionList:
+                popMap[x][y] = averagePop
+
+        if groupNum == 0:
+            break
+
+        movement += 1
+
+    print(movement)
+```
