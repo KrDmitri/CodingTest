@@ -798,4 +798,4 @@ while True:
 
 print(total_count)
 ```
--> 
+-> 나는 DFS를 사용하여 해결한 반면에 해설에서는 BFS를 활용하여 
