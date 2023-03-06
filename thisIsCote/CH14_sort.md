@@ -72,3 +72,29 @@ def antenna2():
     print(data[(n - 1) // 2])
 ```
 
+### 실패율
+```
+def solution(N, stages):
+    stages.sort()
+    failPercent = [0] * N
+    for i in range(N):
+        num = 0
+        for stage in stages:
+            if stage == i + 1:
+                num += 1
+        failPercent[i] = (num / len(stages), i + 1)
+        for _ in range(num):
+            stages.pop(0)
+
+    failPercent.sort(reverse=True, key=lambda x:x[0])
+
+
+    answer = []
+    for i in failPercent:
+        answer.append(i[1])
+
+    return answer
+```
+-> 답은 맞는데 몇 개 예시에서 시간 초과남
+
+### 실패율 
