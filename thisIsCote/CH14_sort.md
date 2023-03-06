@@ -97,4 +97,50 @@ def solution(N, stages):
 ```
 -> 답은 맞는데 몇 개 예시에서 시간 초과남
 
-### 실패율 
+### 실패율 수정
+```
+def solution(N, stages):
+    stages.sort()
+    failPercent = [0] * N
+
+    for i in range(N):
+        num = 0
+        for j in range(len(stages)):
+            if stages[j] == i + 1:
+                num += 1
+            else:
+                break
+        failPercent[i] = (num / len(stages), i + 1)
+        for _ in range(num):
+            stages.pop(0)
+
+    failPercent.sort(reverse=True, key=lambda x:x[0])
+
+    answer = []
+    for i in failPercent:
+        answer.append(i[1])
+
+    return answer
+```
+-> break 코드 추가로 시간 절약했다고 생각했는데 여전히 런타임 오류
+
+### 실패율 해설 답안 코드
+```
+def solution(N, stages):
+    answer = []
+    length = len(stages)
+    
+    for i in range(1, N + 1):
+        count = stages.count(i)
+        if length == 0:
+            fail = 0
+        else:
+            fail = count / length
+        answer.append((i, fail))
+        length -= count
+    
+    answer = sorted(answer, key=lambda x:x[1], reverse=True)
+    
+    answer = [i[0] for i in answer]
+    return answer
+```
