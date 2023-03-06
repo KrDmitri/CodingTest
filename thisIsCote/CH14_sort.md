@@ -16,3 +16,24 @@ def GukYoungSoo():
         print(dataTable[i][0])
 ```
 -> lambda함수 사용법, 오름차순은 정부호, 내림차순은 음부호 기억하기
+
+### 안테나
+```
+def antenna():
+    n = int(input())
+    houses = list(map(int, input().split()))
+
+    distance = [0] * n
+
+    for i in range(n):
+        for house in houses:
+            distance[i] += abs(houses[i] - house)
+
+    minNum = min(distance)
+
+    for i in range(n):
+        if minNum == distance[i]:
+            print(houses[i])
+            break
+```
+-> 답은 맞는데 시간 초과남, 첫 반복문 내 시간 절약 필요할듯
