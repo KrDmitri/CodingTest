@@ -144,3 +144,42 @@ def solution(N, stages):
     answer = [i[0] for i in answer]
     return answer
 ```
+
+### 카드 정렬하기
+```
+def sortCard():
+    n = int(input())   # n은 100,000 까지
+    numList = []
+    for _ in range(n):
+        numList.append(int(input()))
+    sum = 0
+    while len(numList) != 1:
+        numList.sort()
+        numList[1] += numList[0]
+        sum += numList[1]
+        numList.pop(0)
+    print(sum)
+```
+-> 백준 사이트에서 PyPy3으로 제출하면 정답, Python3으로 하면 시간초과가 남, 해당 부분은 내가 위처럼 사용한 단순 리스트 대신에 heap 자료구조를 사용하면 됨, 정렬 문제에서는 heap 자료구조 기억하기
+
+### 카드 정렬하기 해설 답안 코드
+```
+import heapq
+def sortCard2():
+    n = int(input())
+    heapList = []
+    for i in range(n):
+        data = int(input())
+        heapq.heappush(heapList, data)
+
+    result = 0
+
+    while len(heapList) != 1:
+        one = heapq.heappop(heapList)
+        two = heapq.heappop(heapList)
+        sumValue = one + two
+        result += sumValue
+        heapq.heappush(heapList, sumValue)
+
+    print(result)
+```
