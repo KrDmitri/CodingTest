@@ -81,3 +81,26 @@ if count == 0:
 else:
     print(count)
 ```
+
+### 고정점 찾기
+```
+def findFixedPoint():
+    n = int(input())
+    numList = list(map(int, input().split()))
+
+    start = 0
+    end = len(numList) - 1
+
+    while True:
+        mid = (start + end) // 2
+        if start > end:
+            print(-1)
+            break
+        if numList[mid] == mid:
+            print(mid)
+            break
+        elif numList[mid] > mid:
+            end = mid - 1
+        elif numList[mid] < mid:
+            start = mid + 1
+```
