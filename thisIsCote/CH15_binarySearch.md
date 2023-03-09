@@ -104,3 +104,35 @@ def findFixedPoint():
         elif numList[mid] < mid:
             start = mid + 1
 ```
+
+### 공유기 설치 해설 답안 코드
+```
+def installRouter():
+    n, c = map(int, input().split())
+
+    arr = []
+    for _ in range(n):
+        arr.append(int(input()))
+    arr.sort()
+
+    start = 1
+    end = arr[-1] - arr[0]
+    result = 0
+
+    while (start <= end):
+        mid = (start + end) // 2
+        value = arr[0]
+        count = 1
+        for i in range(1, n):
+            if arr[i] >= value + mid:
+                value = arr[i]
+                count += 1
+        if count >= c:
+            start = mid + 1
+            result = mid
+        else:
+            end = mid - 1
+
+    print(result)
+```
+-> 조금 어려운 문제긴 한데, 생각하는 것을 조금 달리해서 gap, 즉 답의 범위를 정해 놓고 이진 탐색으로 가능한 답의 최대값을 찾는 방법으로 문제 해결 가능(해당 유형의 문제는 이진 탐색으로 풀 수 있는 문제로, 여러 문제를 풀어보면 실력을 늘릴 수 있을듯)
