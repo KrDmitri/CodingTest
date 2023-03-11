@@ -295,4 +295,4 @@ def solution(words, queries):
     print(answer)
     return answer
 ```
--> 
+-> 답은 맞았는데 시간 초과로 정답률 43% 나옴🥲, 기본 아이디어는 이진 탐색 활용해서 먼저 단어의 길이 체크, 그 다음엔 크기 비교
