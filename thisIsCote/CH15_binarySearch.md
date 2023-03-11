@@ -136,3 +136,163 @@ def installRouter():
     print(result)
 ```
 -> 조금 어려운 문제긴 한데, 생각하는 것을 조금 달리해서 gap, 즉 답의 범위를 정해 놓고 이진 탐색으로 가능한 답의 최대값을 찾는 방법으로 문제 해결 가능(해당 유형의 문제는 이진 탐색으로 풀 수 있는 문제로, 여러 문제를 풀어보면 실력을 늘릴 수 있을듯)
+
+### 가사 검색
+```
+def solution(words, queries):
+    def differentiateHeadTail(word):
+        if word[0] == '?':
+            return 'tail'
+        else:
+            return 'head'
+
+    def findFirstIndex(numList, num, start, end):
+        mid = (start + end) // 2
+        if start > end:
+            return None
+        if numList[mid] == num and mid == 0:
+            return mid
+        elif numList[mid] == num and numList[mid - 1] < num:
+            return mid
+        elif numList[mid] >= num:
+            end = mid - 1
+            return findFirstIndex(numList, num, start, end)
+        elif numList[mid] < num:
+            start = mid + 1
+            return findFirstIndex(numList, num, start, end)
+
+    def findLastIndex(numList, num, start, end):
+        mid = (start + end) // 2
+        if start > end:
+            return None
+        if numList[mid] == num and (mid == len(numList) - 1):
+            return mid
+        elif numList[mid] == num and numList[mid + 1] > num:
+            return mid
+        elif numList[mid] <= num:
+            start = mid + 1
+            return findLastIndex(numList, num, start, end)
+        elif numList[mid] > num:
+            end = mid - 1
+            return findLastIndex(numList, num, start, end)
+
+    def searchFirstIndexForWord(wordsList, word, start, end):
+        mid = (start + end) // 2
+        if start > end or mid >= len(wordsList):
+            return None
+        if wordsList[mid][0] >= word and mid == 0:
+            return mid
+        elif wordsList[mid][0] >= word and wordsList[mid - 1][0] < word:
+            return mid
+        elif wordsList[mid][0] >= word:
+            end = mid - 1
+            return searchFirstIndexForWord(wordsList, word, start, end)
+        elif wordsList[mid][0] < word:
+            start = mid + 1
+            return searchFirstIndexForWord(wordsList, word, start, end)
+
+    def searchLastIndexForWord(wordsList, word, start, end):
+        mid = (start + end) // 2
+        if start > end:
+            return None
+        if wordsList[mid][0] <= word and mid == len(wordsList) - 1:
+            return mid
+        elif wordsList[mid][0] <= word and wordsList[mid + 1][0] > word:
+            return mid
+        elif wordsList[mid][0] <= word:
+            start = mid + 1
+            return searchLastIndexForWord(wordsList, word, start, end)
+        elif wordsList[mid][0] > word:
+            end = mid - 1
+            return searchLastIndexForWord(wordsList, word, start, end)
+
+
+    for i in range(len(words)):
+        words[i] = [words[i], len(words[i])]
+    words.sort(key=lambda x:(x[1], x[0]))
+
+    reverseWords = []
+    for i in range(len(words)):
+        temp = words[i][0]
+        temp = "".join(reversed(temp))
+        reverseWords.append([temp, len(temp)])
+    reverseWords.sort(key=lambda x:(x[1], x[0]))
+
+    wordsLengthList = []
+    for i in range(len(words)):
+        wordsLengthList.append(words[i][1])
+
+    ### 수정 가능
+    for i in range(len(queries)):
+        queries[i] = [queries[i], differentiateHeadTail(queries[i])]
+
+
+    answer = []
+    for i in range(len(queries)):
+        query = queries[i]
+        if query[1] == 'head':
+            firstIndex = findFirstIndex(wordsLengthList, len(query[0]), 0, len(wordsLengthList))
+            lastIndex = findLastIndex(wordsLengthList, len(query[0]), 0, len(wordsLengthList))
+            if firstIndex == None or lastIndex == None:
+                answer.append(0)
+                print(0)
+                continue
+            newWordsList = words[firstIndex:lastIndex + 1]
+
+            biggerWord = list(query[0])
+            for j in range(len(biggerWord)):
+                if biggerWord[j] != '?' and biggerWord[j + 1] == '?':
+                    biggerWord[j] = chr(ord(biggerWord[j]) + 1)
+            biggerWord = "".join(biggerWord)
+
+            smallerWord = list(query[0])
+            for j in range(len(smallerWord)):
+                if smallerWord[j] == '?':
+                    smallerWord[j] = 'a'
+            smallerWord = "".join(smallerWord)
+
+
+            fIndex = searchFirstIndexForWord(newWordsList, smallerWord, 0, len(newWordsList))
+            lIndex = searchLastIndexForWord(newWordsList, biggerWord, 0, len(newWordsList))
+            if fIndex == None or lIndex == None:
+                answer.append(0)
+                continue
+
+            count = lIndex - fIndex + 1
+            answer.append(count)
+
+        else:
+            query[0] = ''.join(reversed(query[0]))
+            firstIndex = findFirstIndex(wordsLengthList, len(query[0]), 0, len(wordsLengthList))
+            lastIndex = findLastIndex(wordsLengthList, len(query[0]), 0, len(wordsLengthList))
+            if firstIndex == None or lastIndex == None:
+                answer.append(0)
+                print(0)
+                continue
+            newWordsList = reverseWords[firstIndex:lastIndex + 1]
+
+            biggerWord = list(query[0])
+            for j in range(len(biggerWord)):
+                if biggerWord[j] != '?' and biggerWord[j + 1] == '?':
+                    biggerWord[j] = chr(ord(biggerWord[j]) + 1)
+            biggerWord = "".join(biggerWord)
+
+            smallerWord = list(query[0])
+            for j in range(len(smallerWord)):
+                if smallerWord[j] == '?':
+                    smallerWord[j] = 'a'
+            smallerWord = "".join(smallerWord)
+
+            fIndex = searchFirstIndexForWord(newWordsList, smallerWord, 0, len(newWordsList))
+            lIndex = searchLastIndexForWord(newWordsList, biggerWord, 0, len(newWordsList))
+            if fIndex == None or lIndex == None:
+                answer.append(0)
+                continue
+
+            count = lIndex - fIndex + 1
+            answer.append(count)
+
+    print(answer)
+    return answer
+```
+-> 
