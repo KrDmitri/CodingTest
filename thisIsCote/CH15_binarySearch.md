@@ -296,3 +296,35 @@ def solution(words, queries):
     return answer
 ```
 -> 답은 맞았는데 시간 초과로 정답률 43% 나옴🥲, 기본 아이디어는 이진 탐색 활용해서 먼저 단어의 길이 체크, 그 다음엔 크기 비교
+
+### 가사 검색 해설 답안 코드
+```
+from bisect import bisect_left, bisect_right
+
+def count_by_range(a, left_value, right_value):
+    right_index = bisect_right(a, right_value)
+    left_index = bisect_left(a, left_value)
+    return right_index - left_index
+
+array = [[] for _ in range(10001)]
+reversed_array = [[] for _ in range(10001)]
+
+def solution(words, queries):
+    answer = []
+    for word in words:
+        array[len(word)].append(word)
+        reversed_array[len(word)].append(word[::-1])
+
+    for i in range(10001):
+        array[i].sort()
+        reversed_array[i].sort()
+    
+    for q in queries:
+        if q[0] != '?':
+            res = count_by_range(array[len(q)], q.replace('?', 'a'), q.replace('?', 'z'))
+        else:
+            res = count_by_range(reversed_array[len(q)], q[::-1].replace('?', 'a'), q[::-1].replace('?', 'z'))
+        answer.append(res)
+    return answer
+```
+-> 아이디어는 비슷, 단 답안 코드에서는 여러 라이브러리로 더욱 편하게 코드 작성 bisect_right(), replace(), [::-1] 등 활용
