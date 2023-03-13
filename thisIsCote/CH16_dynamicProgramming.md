@@ -123,6 +123,29 @@ def quitCompany():
 
     print(updateList[-1])
 ```
--> 맞긴 
-        mine = [[] * m for _ in range(n)]ㅎㅐㅆ느
-        mine = [[] * m for _ in range(n)]
+-> 맞긴 맞았는데, 코드가 여러 분기문으로 나뉘어서 가독성이 좀 떨어짐, 답지 확인
+
+### 퇴사 해설 답안 코드
+```
+n = int(input())
+t = []
+p = []
+dp = [0] * (n + 1)
+max_value = 0
+
+for _ in range(n):
+    x, y = map(int, input().split())
+    t.append(x)
+    p.append(y)
+
+for i in range(n - 1, -1, -1):
+    time = t[i] + i
+    if time <= n:
+        dp[i] = max(p[i] + dp[time], max_value)
+        max_value = dp[i]
+    else:
+        dp[i] = max_value
+
+print(max_value)
+```
+-> 거꾸로 계산하는 방식이라 코드는 더 간편한데 이해하기에는 내 코드가 더 쉬운듯..ㅋㅋ
