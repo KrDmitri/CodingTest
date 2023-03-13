@@ -68,3 +68,26 @@ for tc in range(int(input())):
     print(result)
 ```
 -> 코드의 동작 원리는 같다. 다만, 답안 코드가 함수 사용도 하지않고 인덱싱 기법을 활용하여 속도가 더 빠를 것이다.
+
+### 정수 삼각형
+```
+def integerTriangle():
+    n = int(input())
+    triangle = []
+    for _ in range(n):
+        triangle.append(list(map(int, input().split())))
+
+    for i in range(1, n):
+        for j in range(len(triangle[i])):
+            if j == 0:
+                triangle[i][j] += triangle[i - 1][j]
+            elif j == len(triangle[i]) - 1:
+                triangle[i][j] += triangle[i - 1][j - 1]
+            else:
+                triangle[i][j] += max(triangle[i - 1][j - 1], triangle[i - 1][j])
+    result = 0
+    for i in range(n):
+        result = max(result, triangle[n - 1][i])
+
+    print(result)
+```
