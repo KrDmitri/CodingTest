@@ -91,3 +91,38 @@ def integerTriangle():
 
     print(result)
 ```
+
+### 퇴사
+```
+def quitCompany():
+    n = int(input())
+    wageCalendar = []
+    for _ in range(n):
+        wageCalendar.append(list(map(int, input().split())))
+    updateList = [[0] for _ in range(n)]
+
+    for i in range(n):
+        costDay = wageCalendar[i][0] - 1
+        if i == 0 and costDay != 0:
+            updateList[i] = 0
+        elif i == 0 and costDay == 0:
+            updateList[i] = wageCalendar[i][1]
+        elif len(updateList[i]) == 1:
+            updateList[i] = updateList[i - 1]
+        else:
+            updateList[i] = max(max(updateList[i]), updateList[i - 1])
+
+        if costDay == 0 and i != 0:
+            updateList[i] = max(updateList[i], updateList[i - 1] + wageCalendar[i][1])
+        if costDay == 0 and i == 0:
+            updateList[i] = wageCalendar[i][1]
+        elif costDay != 0 and i == 0 and costDay + i < n:
+            updateList[costDay + i].append(wageCalendar[i][1])
+        elif costDay != 0 and costDay + i < n:
+            updateList[costDay + i].append(updateList[i - 1] + wageCalendar[i][1])
+
+    print(updateList[-1])
+```
+-> 맞긴 
+        mine = [[] * m for _ in range(n)]ㅎㅐㅆ느
+        mine = [[] * m for _ in range(n)]
