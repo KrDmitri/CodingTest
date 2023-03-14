@@ -149,3 +149,45 @@ for i in range(n - 1, -1, -1):
 print(max_value)
 ```
 -> 거꾸로 계산하는 방식이라 코드는 더 간편한데 이해하기에는 내 코드가 더 쉬운듯..ㅋㅋ
+
+```
+import copy
+from itertools import combinations
+from copy import deepcopy
+
+# 랜덤으로 빼는 방식을 다시 다듬어보기
+def arrangeSoldiers():
+    def isRight(arr):
+        for i in range(0, len(arr) - 1):
+            if arr[i] < arr[i + 1]:
+                return False
+        return True
+
+    n = int(input())
+    soldiers = list(map(int, input().split()))
+
+    minOut = 0
+    maxOut = n
+    answers = []
+
+    while minOut <= maxOut:
+        midOut = (minOut + maxOut) // 2
+        rightFlag = False
+        outCandidatesCases = combinations(soldiers, midOut)
+        for outCandidatesCase in outCandidatesCases:
+            tempSoldiers = copy.deepcopy(soldiers)
+            for outSoldier in outCandidatesCase:
+                tempSoldiers.remove(outSoldier)
+            rightFlag = isRight(tempSoldiers)
+            if rightFlag:
+                answers.append(midOut)
+                break
+        if rightFlag:
+            maxOut = midOut - 1
+        else:
+            minOut = midOut + 1
+
+    print(min(answers))
+    print(answers)
+```
+-> 답은 맞는거 같은데 백준에서 시간초과 뜸🥲
