@@ -209,3 +209,50 @@ for i in range(1, n):
 print(n - max(dp))
 ```
 -> 나는 이진 탐색으로 답이 될 수 있는 범위를 좁혀가며 푼 반면에 답안 코드는 다이나믹 프로그래밍의 '가장 긴 증가하는 부분 수열' 아이디어로 문제 해결을 함
+
+### 못생긴 수
+```
+def uglyNumber():
+    n = int(input())
+    numList = [1]
+    startIndex = 0
+    
+    while len(numList) <= 1000:
+        for i in range(startIndex, len(numList)):
+            if numList[i] * 2 not in numList:
+                numList.append(numList[i] * 2)
+            if numList[i] * 3 not in numList:
+                numList.append(numList[i] * 3)
+            if numList[i] * 5 not in numList:
+                numList.append(numList[i] * 5)
+            startIndex += 1
+            
+    numList.sort()
+    print(numList[n - 1])
+```
+
+### 못생긴 수 해설 답안 코드
+```
+n = int(input())
+
+ugly = [0] * n
+ugly[0] = 1
+
+i2 = i3 = i5 = 0
+next2, next3, next5 = 2, 3, 5
+
+for l in range(1, n):
+    ugly[l] = min(next2, next3, next5)
+    if ugly[l] == next2:
+        i2 += 1
+        next2 = ugly[i2] * 2
+    if ugly[l] == next3:
+        i3 += 1
+        next3 = ugly[i3] * 3
+    if ugly[l] == next5:
+        i5 += 1
+        next5 = ugly[i5] * 5
+
+print(ugly[n - 1])
+```
+-> 내 코드는 입력 최대 범위가 1000이라서 1000까지의 모든 답을 구한 후 답을 출력한 반면에 해설 답안의 코드는 작은 수부터 차례대로 계산을 해가서 구한 답을 출력하는 코드로 해설 답안의 코드가 조금 더 빠를 것이다.
