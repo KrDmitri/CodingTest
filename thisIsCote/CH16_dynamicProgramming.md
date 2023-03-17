@@ -256,3 +256,27 @@ for l in range(1, n):
 print(ugly[n - 1])
 ```
 -> 내 코드는 입력 최대 범위가 1000이라서 1000까지의 모든 답을 구한 후 답을 출력한 반면에 해설 답안의 코드는 작은 수부터 차례대로 계산을 해가서 구한 답을 출력하는 코드로 해설 답안의 코드가 조금 더 빠를 것이다.
+
+### 편집 거리 해설 답안 코드
+```
+def edit_dis(str1, str2):
+    n = len(str1)
+    m = len(str2)
+
+    dp = [[0] * (m + 1) for _ in range(n + 1)]
+
+    for i in range(1, n + 1):
+        dp[i][0] = i
+    for j in range(1, m + 1):
+        dp[0][j] = j
+
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            if str1[i - 1] == str2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+            else:
+                dp[i][j] = 1 + min(dp[i][j - 1], dp[i - 1][j], dp[i - 1][j - 1])
+
+    return dp[n][m]
+```
+-> 구현은 쉽지만 이 방법을 어떻게 처음부터 생각해내지?!
