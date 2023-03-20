@@ -111,4 +111,4 @@ def exploreMars():
         goDfs(0, 0, 0, visitedFrame)
         print(min(distances))
 ```
--> 답은 구해지는데 n이 7부터 시간초과가 남, 아마 goDfs()부분 안에 조건을 추가해서 조금 더 빠르게 
+-> 답은 구해지는데 n이 7부터 시간초과가 남, 아마 goDfs()부분 안에 조건을 추가해서 조금 더 빠르게 할 수 있을듯
