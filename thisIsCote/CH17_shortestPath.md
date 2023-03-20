@@ -112,3 +112,52 @@ def exploreMars():
         print(min(distances))
 ```
 -> 답은 구해지는데 n이 7부터 시간초과가 남, 아마 goDfs()부분 안에 조건을 추가해서 조금 더 빠르게 할 수 있을듯
+
+### 화성 탐사
+```
+import copy
+INF = 1e9
+# dfs로 모든 경로의 길이를 다 구한 다음 한 배열에 넣고 가장 작은 값 리턴하는 방법으로 해보기
+def exploreMars():
+    def goDfs(x, y, distance, visited):
+        visited[x][y] = True
+        distance += marsMap[x][y]
+        if distance > min(distances):
+            return
+
+        if x == n - 1 and y == n - 1:
+            distances.append(distance)
+            return
+
+        if x != 0 and not visited[x-1][y]:
+            tempVisited = copy.deepcopy(visited)
+            goDfs(x - 1, y, distance, visited)
+            visited = copy.deepcopy(tempVisited)
+        if x < n - 1 and not visited[x+1][y]:
+            tempVisited = copy.deepcopy(visited)
+            goDfs(x + 1, y, distance, visited)
+            visited = copy.deepcopy(tempVisited)
+        if y != 0 and not visited[x][y-1]:
+            tempVisited = copy.deepcopy(visited)
+            goDfs(x, y - 1, distance, visited)
+            visited = copy.deepcopy(tempVisited)
+        if y < n - 1 and not visited[x][y+1]:
+            tempVisited = copy.deepcopy(visited)
+            goDfs(x, y + 1, distance, visited)
+            visited = copy.deepcopy(tempVisited)
+
+
+    t = int(input())
+    for _ in range(t):
+        n = int(input())
+        marsMap = []
+        visitedFrame = [[False] * n for _ in range(n)]
+
+        for _ in range(n):
+            marsMap.append(list(map(int, input().split())))
+
+        distances = [INF]
+        goDfs(0, 0, 0, visitedFrame)
+        print(min(distances))
+```
+-> 이렇게 고치니깐 
