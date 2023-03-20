@@ -66,3 +66,49 @@ def preciseRank():
     print(count)
 ```
 -> 플로이드를 사용하면 한 방향에 대해 연결이 되어 있는지 알 수 있어서 두 방향으로 플로이드 함수를 사용해서 두 방향 다 연결이 안되어 있는 노드의 수는 제거하는 방식으로 문제 해결함. 플로이드 워셜을 사용해서 시간 초과가 나는거 아닌가 했는데 답지에서도 동일한 방법으로 해결했다. 그런데 나처럼 굳이 reverseDistance처럼 새로운 메모리를 사용하지 않고 distance[a][b] == INF and distance[b][a] == INF 처럼 그냥 인덱스 순서만 바꿔줌
+
+### 화성 탐사
+```
+import copy
+
+# dfs로 모든 경로의 길이를 다 구한 다음 한 배열에 넣고 가장 작은 값 리턴하는 방법으로 해보기
+def exploreMars():
+    def goDfs(x, y, distance, visited):
+        visited[x][y] = True
+        distance += marsMap[x][y]
+        if x == n - 1 and y == n - 1:
+            distances.append(distance)
+            return
+
+        if x != 0 and not visited[x-1][y]:
+            tempVisited = copy.deepcopy(visited)
+            goDfs(x - 1, y, distance, visited)
+            visited = copy.deepcopy(tempVisited)
+        if x < n - 1 and not visited[x+1][y]:
+            tempVisited = copy.deepcopy(visited)
+            goDfs(x + 1, y, distance, visited)
+            visited = copy.deepcopy(tempVisited)
+        if y != 0 and not visited[x][y-1]:
+            tempVisited = copy.deepcopy(visited)
+            goDfs(x, y - 1, distance, visited)
+            visited = copy.deepcopy(tempVisited)
+        if y < n - 1 and not visited[x][y+1]:
+            tempVisited = copy.deepcopy(visited)
+            goDfs(x, y + 1, distance, visited)
+            visited = copy.deepcopy(tempVisited)
+
+
+    t = int(input())
+    for _ in range(t):
+        n = int(input())
+        marsMap = []
+        visitedFrame = [[False] * n for _ in range(n)]
+
+        for _ in range(n):
+            marsMap.append(list(map(int, input().split())))
+
+        distances = []
+        goDfs(0, 0, 0, visitedFrame)
+        print(min(distances))
+```
+-> 답은 구해지는데 n이 7부터 시간초과가 남, 아마 goDfs()부분 안에 조건을 추가해서 조금 더 빠르게 
