@@ -160,4 +160,4 @@ def exploreMars():
         goDfs(0, 0, 0, visitedFrame)
         print(min(distances))
 ```
--> 이렇게 고치니깐 
+-> 이렇게 고치니깐 시간 초과는 해결
