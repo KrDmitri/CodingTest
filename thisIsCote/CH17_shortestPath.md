@@ -200,3 +200,49 @@ for tc in range(int(input())):
     print(distance[n - 1][n - 1])
 ```
 -> n의 범위가 125까지라서 내가 짠 코드는 시간 초과가 날 것임. 따라서 답안 코드와 같이 다익스트라 알고리즘을 활용하면 시간 초과 없이 해결 가능
+
+### 숨바꼭질
+```
+import heapq
+INF = int(1e9)
+
+def hidingGame():
+    n, m = map(int, input().split())
+    routes = [[] for _ in range(n + 1)]
+    distances = [INF for _ in range(n + 1)]
+    visited= [False for _ in range(n + 1)]
+    notVisited = []
+
+    for _ in range(m):
+        a, b = map(int, input().split())
+        routes[a].append(b)
+        routes[b].append(a)
+
+    distances[1] = 0
+    visited[0] = True
+    visited[1] = True
+    heapq.heappush(notVisited, (0, 1))
+
+    while notVisited:
+        now = heapq.heappop(notVisited)
+        iterLength = len(routes[now[1]])
+        for i in range(iterLength):
+            nodeNum = routes[now[1]][i]
+            if not visited[nodeNum]:
+                distances[nodeNum] = distances[now[1]] + 1
+                visited[nodeNum] = True
+                heapq.heappush(notVisited, (distances[nodeNum], nodeNum))
+
+
+    distances[0] = 0
+    maxDistance = max(distances)
+    index = 0
+    for i in range(1, n + 1):
+        if distances[i] == maxDistance:
+            index = i
+            break
+
+    numSame = distances.count(distances[index])
+
+    print(index, distances[index], numSame)
+```
