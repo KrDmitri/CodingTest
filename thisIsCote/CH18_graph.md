@@ -110,3 +110,44 @@ def boardingGate():
 
     print(result)
 ```
+
+### 탑승구2
+```
+def boardingGate2():
+    def findParent(elem):
+        if elem == parent[elem]:
+            return elem
+        else:
+            return findParent(parent[elem])
+
+    def unionParent(a, b):
+        a = findParent(a)
+        b = findParent(b)
+        if a <= b:
+            parent[b] = a
+        else:
+            parent[a] = b
+
+    g = int(input())
+    p = int(input())
+    planeInfo = []
+    for i in range(p):
+        planeInfo.append(int(input()))
+
+    parent = []
+    for i in range(g + 1):
+        parent.append(i)
+
+    result = 0
+
+    for i in range(p):
+        tempGate = findParent(planeInfo[i])
+        if tempGate == 0:
+            break
+        else:
+            unionParent(tempGate, tempGate - 1)
+            result += 1
+
+    print(result)
+```
+-> 서로소 집합 알고리즘을 활용한 문제 해결
