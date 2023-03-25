@@ -81,3 +81,32 @@ else:
     print('NO')
 ```
 -> 노드끼리 연결되어 있는지 확인할 때는 서로소 집합 알고리즘을 활용
+
+### 탑승구
+```
+def boardingGate():
+    def findMaxGateNum(size):
+        for i in range(size, -1, - 1):
+            if gateAvailable[i] == True:
+                return i
+
+    numGates = int(input())
+    numPlanes = int(input())
+    gateInfo = []
+    for _ in range(numPlanes):
+        gateInfo.append(int(input()) - 1)
+    gateAvailable = [True] * numGates
+
+    result = 0
+
+    for i in range(numPlanes):
+        gateSize = gateInfo[i]
+        if True not in gateAvailable[0:gateSize + 1]:
+            break
+        else:
+            tempGate = findMaxGateNum(gateSize)
+            gateAvailable[tempGate] = False
+            result += 1
+
+    print(result)
+```
