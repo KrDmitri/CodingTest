@@ -194,3 +194,4 @@ def darkRoad():
     print(wholeCost - resultCost)
 ```
 -> 최소 신장 트리 알고리즘 역시 서로소 집합 알고리즘을 활용하여 구현
+
