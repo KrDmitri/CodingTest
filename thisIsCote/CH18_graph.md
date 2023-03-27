@@ -151,3 +151,46 @@ def boardingGate2():
     print(result)
 ```
 -> 서로소 집합 알고리즘을 활용한 문제 해결
+
+### 어두운 길
+```
+import heapq
+def darkRoad():
+    def findParent(a):
+        if a == parent[a]:
+            return a
+        else:
+            return findParent(parent[a])
+
+    def unionParent(a, b):
+        a = findParent(a)
+        b = findParent(b)
+        if a <= b:
+            parent[b] = a
+        else:
+            parent[a] = b
+
+    n, m = map(int, input().split())
+    roads = []
+    wholeCost = 0
+    parent = []
+    selectedRoads = []
+    resultCost = 0
+    for _ in range(m):
+        x, y, z = map(int, input().split())
+        heapq.heappush(roads, (z, x, y))
+        wholeCost += z
+
+    for i in range(n):
+        parent.append(i)
+
+    while len(selectedRoads) < n - 1:
+        tempCost, x, y = heapq.heappop(roads)
+        if findParent(x) != findParent(y):
+            unionParent(x, y)
+            resultCost += tempCost
+            selectedRoads.append((x, y, tempCost))
+
+    print(wholeCost - resultCost)
+```
+-> 최소 신장 트리 알고리즘 역시 서로소 집합 알고리즘을 활용하여 구현
