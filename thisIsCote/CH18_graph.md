@@ -195,3 +195,57 @@ def darkRoad():
 ```
 -> 최소 신장 트리 알고리즘 역시 서로소 집합 알고리즘을 활용하여 구현
 
+### 행성 터널
+```
+import heapq
+def planetTunnel():
+    def calculateDistance(aPlanet, bPlanet):
+        ax, ay, az = aPlanet[0], aPlanet[1], aPlanet[2]
+        bx, by, bz = bPlanet[0], bPlanet[1], bPlanet[2]
+        dist = min(abs(ax - bx), abs(ay - by), abs(az - bz))
+
+        return dist
+
+    def findParent(a):
+        if a == parents[a]:
+            return a
+        else:
+            return findParent(parents[a])
+
+    def unionParent(a, b):
+        a = findParent(a)
+        b = findParent(b)
+        if a <= b:
+            parents[b] = a
+        else:
+            parents[a] = b
+
+
+    n = int(input())
+    planets = []
+    paths = []
+    parents = []
+
+    for i in range(n):
+        parents.append(i)
+
+    for _ in range(n):
+        x, y, z = map(int, input().split())
+        planets.append((x, y, z))
+
+    for i in range(len(planets)):
+        for j in range(i, len(planets)):
+            tempDist = calculateDistance(planets[i], planets[j])
+            heapq.heappush(paths, (tempDist, i, j))
+
+    pathCount = 0
+    cost = 0
+    while pathCount < n - 1:
+        tempDist, aPlanet, bPlanet = heapq.heappop(paths)
+        if findParent(aPlanet) != findParent(bPlanet):
+            unionParent(aPlanet, bPlanet)
+            pathCount += 1
+            cost += tempDist
+
+    print(cost)
+```
