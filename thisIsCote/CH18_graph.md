@@ -249,3 +249,58 @@ def planetTunnel():
 
     print(cost)
 ```
+-> 그런데 이렇게 풀면 각 행성들 사이의 길이를 비교하는 데에서 O(N^2)의 시간 복잡도를 가지므로 100,000 개의 input인 해당 문제에서는 시간 초과가 난다. 따라서 아래처럼 먼저 x, y, z 각 좌표를 순서대로 정렬한 후 사이 간격의 길이를 비교함으로 시간 초과 문제를 해결할 수 있다.
+
+### 행성 터널 해설 답안 코드
+```
+def find_parent(parent, x):
+    if parent[x] != x:
+        parent[x] = find_parent(parent, parent[x])
+    return parent[x]
+
+def union_parent(parent, a, b):
+    a = find_parent(parent, a)
+    b = find_parent(parent, b)
+    if a < b:
+        parent[b] = a
+    else:
+        parent[a] = b
+
+n = int(input())
+parent = [0] * (n + 1)
+
+edges = []
+result = 0
+
+for i in range(1, n + 1):
+    parent[i] = i
+
+x = []
+y = []
+z = []
+
+for i in range(1, n + 1):
+    data = list(map(int, input().split()))
+    x.append((data[0], i))
+    y.append((data[1], i))
+    z.append((data[2], i))
+
+x.sort()
+y.sort()
+z.sort()
+
+for i in range(n - 1):
+    edges.append((x[i + 1][0] - x[i][0], x[i][1], x[i + 1][1]))
+    edges.append((y[i + 1][0] - y[i][0], y[i][1], y[i + 1][1]))
+    edges.append((z[i + 1][0] - z[i][0], z[i][1], z[i + 1][1]))
+
+edges.sort()
+
+for edge in edges:
+    cost, a, b = edge
+    if find_parent(parent, a) != find_parent(parent, b):
+        union_parent(parent, a, b)
+        result += cost
+
+print(result)
+```
