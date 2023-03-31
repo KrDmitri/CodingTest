@@ -306,3 +306,61 @@ print(result)
 ```
 
 ### 최종 순위
+```
+def lastRanking():
+    def changeHao(hao):
+        if hao == '>':
+            return '<'
+        else:
+            return '>'
+
+    t = int(input())
+    for _ in range(t):
+        n = int(input())   # 팀의 수
+        ranking = list(map(int, input().split()))
+        m = int(input())   # 바뀐 순서쌍의 수
+        changeInfo = []
+        for _ in range(m):
+            a, b = map(int, input().split())
+            changeInfo.append((a, b))
+
+        graph = [[0] * n for _ in range(n)]
+        fromZero = 0
+
+        # i는 4부터 0까지
+        for i in range(len(ranking) - 1, -1, -1):
+            teamNum = ranking[fromZero] - 1
+            numOfLeftHao = i
+            for yIndex in range(n):
+                if teamNum == yIndex:
+                    graph[teamNum][yIndex] = 0
+                    continue
+                if numOfLeftHao > 0 and ranking.index(teamNum + 1) < ranking.index(yIndex + 1):
+                    graph[teamNum][yIndex] = '>'
+                    numOfLeftHao -= 1
+                else:
+                    graph[teamNum][yIndex] = '<'
+            fromZero += 1
+
+        for x, y in changeInfo:
+            graph[x - 1][y - 1] = changeHao(graph[x - 1][y - 1])
+            graph[y - 1][x - 1] = changeHao(graph[y - 1][x - 1])
+
+        result = [0] * n
+        flag = True
+        for i in range(n):
+            position = graph[i].count('<')
+            if result[position] == 0:
+                result[position] = i + 1
+            else:
+                flag = False
+                break
+
+        if flag == False:
+            print('IMPOSSIBLE')
+        else:
+            for team in result:
+                print(team, end=' ')
+            print()
+```
+-> Pypy3으로 제출하면 성공인데, ㅔㅛ
