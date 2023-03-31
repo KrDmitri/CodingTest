@@ -363,4 +363,4 @@ def lastRanking():
                 print(team, end=' ')
             print()
 ```
--> Pypy3으로 제출하면 성공인데, ㅔㅛ
+-> Pypy3으로 제출하면 성공인데, python3으로 제출하면 시간 초과가 남
