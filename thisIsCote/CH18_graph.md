@@ -363,4 +363,67 @@ def lastRanking():
                 print(team, end=' ')
             print()
 ```
--> Pypy3으로 제출하면 성공인데, python3으로 제출하면 시간 초과가 남
+-> Pypy3으로 제출하면 성공인데, python3으로 제출하면 시간 초과가 남(내가 생각하는 시간 복잡도는 O(N^2)이고 N이 최대 500이라 시간 초과 안날거 같은데 왜?
+
+### 최종 순위 해설 답안 코드
+```
+from collections import deque
+
+for tc in range(int(input())):
+    n = int(input())
+    indegree = [0] * (n + 1)
+    graph = [[False] * (n + 1) for i in range(n + 1)]
+    data = list(map(int, input().split()))
+    for i in range(n):
+        for j in range(i + 1, n):
+            graph[data[i]][data[j]] = True
+            indegree[data[j]] += 1   # 들어오는 노드의 차수 증가
+    
+    m = int(input())
+    for i in range(m):
+        a, b = map(int, input().split())
+        if graph[a][b]:
+            graph[a][b] = False
+            graph[b][a] = True
+            indegree[a] += 1
+            indegree[b] -= 1
+        else:
+            graph[a][b] = True
+            graph[b][a] = False
+            indegree[a] -= 1
+            indegree[b] += 1
+    
+    result = []
+    q = deque()
+    
+    for i in range(1, n + 1):
+        if indegree[i] == 0:
+            q.append(i)
+    
+    certain = True
+    cycle = False
+    
+    for i in range(n):
+        if len(q) == 0:
+            cycle = True
+            break
+        if len(q) >= 2:
+            certain = False
+            break
+        now = q.popleft()
+        result.append(now)
+        for j in range(1, n + 1):
+            if graph[now][j]:
+                indegree[j] -= 1
+                if indegree[j] == 0:
+                    q.append(j)
+    if cycle:
+        print('IMPOSSIBLE')
+    elif not certain:
+        print('?')
+    else:
+        for i in result:
+            print(i, end=' ')
+        print()
+```
+-> 위처럼 위상 정렬 알고리즘을 사용하면 더욱 쉽게 해결이 가능, 위상 정렬은 들어오는 노드의 차수를 저장한 배열을 활용하여 순서를 정렬하는 방법
