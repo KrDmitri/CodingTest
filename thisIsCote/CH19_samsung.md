@@ -253,3 +253,76 @@ def babyShark():
     print(eatingTime)
 ```
 -> 처음 코드는 가장 가까운 먹이를 먹지 못할 때 바로 break를 해서 그 다음 먹이를 먹을 수 있음에도 프로그램이 종료되는 일이 있을 수 있었는데, 이번 코드에서 그 가능성을 제거해주었다. 그런데 백준에서는 시간 초과가 나서 결국 정답 판정을 못받았다.
+
+### 아기 상어 해설 답안 코드
+```
+from collections import deque
+INF = 1e9
+
+n = int(input())
+
+array = []
+for i in range(n):
+    array.append(list(map(int, input().split())))
+
+now_size = 2
+now_x, now_y = 0, 0
+
+for i in range(n):
+    for j in range(n):
+        if array[i][j] == 9:
+            now_x, now_y = i, j
+            array[now_x][now_y] = 0
+
+dx = [-1, 0, 1, 0]
+dy = [0, 1, 0, -1]
+
+def bfs():
+    dist = [[-1] * n for _ in range(n)]
+    q = deque([(now_x, now_y)])
+    dist[now_x][now_y] = 0
+    
+    while q:
+        x, y = q.popleft()
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if 0 <= nx and nx < n and 0 <= ny and ny < n:
+                if dist[nx][ny] == -1 and array[nx][ny] <= now_size:
+                    dist[nx][ny] = dist[x][y] + 1
+                    q.append((nx, ny))
+    return dist
+
+def find(dist):
+    x, y = 0, 0
+    min_dist = INF
+    for i in range(n):
+        for j in range(n):
+            if dist[i][j] != -1 and 1 <= array[i][j] and array[i][j] < now_size:
+                if dist[i][j] < min_dist:
+                    x, y = i, j
+                    min_dist = dist[i][j]
+    
+    if min_dist == INF:
+        return None
+    else:
+        return x, y, min_dist
+
+result = 0
+ate = 0
+
+while True:
+    value = find(bfs())
+    if value == None:
+        print(result)
+        break
+    else:
+        now_x, now_y = value[0], value[1]
+        result += value[2]
+        array[now_x][now_y] = 0
+        ate += 1
+        if ate >= now_size:
+            now_size += 1
+            ate = 0
+```
+-> 기본적인 개념은 내 코드랑 비슷한데, 다만 구현에 있어서 나보다 더 효율적으로 작동하게끔 함. 특히 인상적인 부분은 value = find(bfs())인데, 한 함수를 다른 한 함수의 인자로 주었다는 부분, 그리고 가장 가까운 거리를 구할 때마다 리스트를 새로 갱신하여 넘겨주었다는 부분
