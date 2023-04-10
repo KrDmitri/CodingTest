@@ -326,3 +326,118 @@ while True:
             ate = 0
 ```
 -> 기본적인 개념은 내 코드랑 비슷한데, 다만 구현에 있어서 나보다 더 효율적으로 작동하게끔 함. 특히 인상적인 부분은 value = find(bfs())인데, 한 함수를 다른 한 함수의 인자로 주었다는 부분, 그리고 가장 가까운 거리를 구할 때마다 리스트를 새로 갱신하여 넘겨주었다는 부분
+
+### 청소년 상어
+```
+import copy
+def adolescentShark():
+    def searchMovablePosForShark(seaMap, sharkPos, sharkDir):
+        newPosX = sharkPos[0]
+        newPosY = sharkPos[1]
+        movableList = []
+        for i in range(3):
+            newPosX = newPosX + dx[sharkDir - 1]
+            newPosY = newPosY + dy[sharkDir - 1]
+            if newPosX < 0 or newPosX > 3 or newPosY < 0 or newPosY > 3 or seaMap[newPosX][newPosY] == [None, None]:
+                continue
+            else:
+                movableList.append([newPosX, newPosY])
+        return movableList
+
+    def sharkMove(sharkPos, sharkDir, sharkStomach, seaMap):
+        movableList = searchMovablePosForShark(seaMap, sharkPos, sharkDir)
+        if len(movableList) == 0:
+            stomachCandidate.append(sharkStomach)
+            return
+        else:
+            firstSharkStomach = sharkStomach
+            firstSeaMap = copy.deepcopy(seaMap)
+            for movePos in movableList:
+                if movePos == [0, 2]:
+                    print('', end='')
+                sharkPos = [movePos[0], movePos[1]]
+                sharkStomach += seaMap[movePos[0]][movePos[1]][0]
+                sharkDir = seaMap[movePos[0]][movePos[1]][1]
+                seaMap[movePos[0]][movePos[1]] = [None, None]
+                fishMove(seaMap, sharkPos)
+                sharkMove(sharkPos, sharkDir, sharkStomach, seaMap)
+                # 다시 원상 복구
+                sharkStomach = firstSharkStomach
+                seaMap = copy.deepcopy(firstSeaMap)
+
+    # 물고기 이동하는 위치 탐색 함수
+    # 이 함수는 for i in range(8): newPos = pos + dx[direction + i] 이런식으로 바꿀 수 있을듯
+    def searchMovablePosForFish(pos, direction, sharkPos):
+        firstDir = direction
+        xPos = pos[0]
+        yPos = pos[1]
+        newPosX = xPos + dx[direction - 1]
+        newPosY = yPos + dy[direction - 1]
+        if newPosX >= 0 and newPosX < 4 and newPosY >= 0 and newPosY < 4 and not (newPosX == sharkPos[0] and newPosY == sharkPos[1]):
+            return [newPosX, newPosY], direction
+        else:
+            for i in range(7):
+                direction += 1
+                direction %= 8
+                newPosX = xPos + dx[direction - 1]
+                newPosY = yPos + dy[direction - 1]
+                if newPosX >= 0 and newPosX < 4 and newPosY >= 0 and newPosY < 4 and not (newPosX == sharkPos[0] and newPosY == sharkPos[1]):
+                    return [newPosX, newPosY], direction
+        return pos, firstDir
+
+    # 물고기 위치 이동
+    def fishMove(seaMap, sharkPos):
+        # 1~16번까지의 물고기가 이동
+        for fishNum in range(1, 17):
+            if fishNum == 3:
+                print('', end='')
+            fishPos = [-1, -1]
+            # 각 번호의 물고기 위치 탐색
+            flag = 0
+            for i in range(4):
+                for j in range(4):
+                    if seaMap[i][j][0] == fishNum:
+                        fishPos = [i, j]
+                        flag = 1
+                        break
+                if flag == 1:
+                    break
+            # 물고기가 없으면, 이미 상어가 먹었다는 뜻이므로 다음 물고기 탐색
+            if fishPos == [-1, -1]:
+                continue
+            # 본격적 물고기 위치 이동 및 데이터 업데이트
+            movePos, moveDir = searchMovablePosForFish(fishPos, seaMap[fishPos[0]][fishPos[1]][1], sharkPos)
+            tempVal = seaMap[movePos[0]][movePos[1]]
+            seaMap[movePos[0]][movePos[1]] = [fishNum, moveDir]
+            seaMap[fishPos[0]][fishPos[1]] = tempVal
+
+
+    seaMap = [[] * 4 for _ in range(4)]
+    for i in range(4):
+        tempList = list(map(int, input().split()))
+        seaMap[i].append([tempList[0], tempList[1]])
+        seaMap[i].append([tempList[2], tempList[3]])
+        seaMap[i].append([tempList[4], tempList[5]])
+        seaMap[i].append([tempList[6], tempList[7]])
+
+    # 인덱스 순으로 물고기 및 상어의 이동 방향
+    dx = [-1, -1, 0, 1, 1, 1, 0, -1]
+    dy = [0, -1, -1, -1, 0, 1, 1, 1]
+
+    # 상어 처음 위치 및 먹은 물고기 갱신
+    sharkPos = [0, 0]
+    sharkSize = seaMap[0][0][0]
+    sharkDir = seaMap[0][0][1]
+    seaMap[0][0] = [None, None]
+
+    # 물고기 이동
+    fishMove(seaMap, sharkPos)
+
+    sharkStomach = 0
+    stomachCandidate = []
+    sharkMove(sharkPos, sharkDir, sharkStomach, seaMap)
+
+    sharkSize += max(stomachCandidate)
+    print(sharkSize)
+```
+-> 문제 해결 성공!! 디버깅 하느라 시간이 많이 걸렸는데, 원인은 dfs 재귀형으로 문제를 푸는데, 사용하는 재귀 함수들에 필요한 인자들을 제대로 전해주지 않았기 때문. 앞으로는 dfs 재귀 사용시 인자를 잘 전달해주자...
