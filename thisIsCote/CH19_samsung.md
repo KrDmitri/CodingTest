@@ -514,7 +514,4 @@ def dfs(array, now_x, now_y, total):
 dfs(array, 0, 0, 0)
 print(result)
 ```
--> 전체적인 문제 풀이 방법은 내 
-                direction += 1ㅂ
-                direction += ㅍ
-                direction += 1
+-> 전체적인 문제 풀이 방법은 내 풀이 방법이랑 비슷하다. 하지만 코드 부분을 조금 더 함수로 나누어 보다 더 효율적이고 가독성이 좋은 코드다.
