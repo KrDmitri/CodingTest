@@ -515,3 +515,150 @@ dfs(array, 0, 0, 0)
 print(result)
 ```
 -> 전체적인 문제 풀이 방법은 내 풀이 방법이랑 비슷하다. 하지만 코드 부분을 조금 더 함수로 나누어 보다 더 효율적이고 가독성이 좋은 코드다.
+
+### 어른 상어
+```
+def adultShark():
+    # 각 상어들이 어느 위치로 이동할 것인지를 계산하는 함수
+    def sharkMove():
+        movePosition = []
+        # 상어 1 번 부터 끝 번 까지
+        for i in range(1, m + 1):
+            if sharkAlive[i - 1] == False:
+                movePosition.append(None)
+                continue
+
+            curSharkPos = sharkPos[i - 1]
+            xpos = curSharkPos[0]
+            ypos = curSharkPos[1]
+            curSharkDir = sharkDir[i - 1]
+            curSharkPriority = priorityMap[i - 1][curSharkDir - 1]
+            moveFlag = True
+            for dir in curSharkPriority:
+                dir = dir - 1
+                nxpos = xpos + dx[dir]
+                nypos = ypos + dy[dir]
+                # 이동할 수 있는 조건은 냄새 x, 만약 이동하는 곳에 숫자가 낮은 상어 있으면 삭제 처리
+                if nxpos >= 0 and nxpos < n and nypos >= 0 and nypos < n:
+                    if smellMap[nxpos][nypos][1] == 0:  # 냄새가 없어서 이동 가능한 경우
+                        movePosition.append([nxpos, nypos, dir + 1])
+                        moveFlag = False
+                        break
+
+
+            if moveFlag:  # 만약 네 방향 다 냄새가 있어서 이동을 못했을 경우 자기 냄새 쪽으로 이동
+                for dir in curSharkPriority:
+                    dir = dir - 1
+                    nxpos = xpos + dx[dir]
+                    nypos = ypos + dy[dir]
+                    if nxpos >= 0 and nxpos < n and nypos >= 0 and nypos < n:
+                        if smellMap[nxpos][nypos][0] == i:
+                            movePosition.append([nxpos, nypos, dir + 1])
+                            break
+
+        return movePosition
+
+    # seaMap 데이터 업데이트 코드 필요
+    def updateData(movePosition, numOfShark, sharkPos, sharkDir, smellMap, seaMap):
+        for i in range(len(movePosition)):
+            if sharkAlive[i] == False:
+                continue
+
+            xpos = sharkPos[i][0]
+            ypos = sharkPos[i][1]
+
+            nxpos = movePosition[i][0]
+            nypos = movePosition[i][1]
+            newDir = movePosition[i][2]
+            # 이동 가능 할 때
+            if smellMap[nxpos][nypos][1] != k:
+                seaMap[xpos][ypos] = 0
+                seaMap[nxpos][nypos] = i + 1
+                smellMap[nxpos][nypos] = [i + 1, k]
+                sharkDir[i] = newDir
+                sharkPos[i] = [nxpos, nypos]
+            # 이동한 곳에 다른 우선 순위가 높은 상어가 있을 때
+            elif smellMap[nxpos][nypos][1] == k:
+                seaMap[xpos][ypos] = 0
+                numOfShark -= 1
+                sharkAlive[i] = False
+                sharkPos[i] = None
+                sharkDir[i] = None
+
+        return numOfShark, sharkPos, sharkDir, smellMap, seaMap
+
+
+    def smellDisappear():
+        for i in range(n):
+            for j in range(n):
+                if smellMap[i][j][1] != 0:
+                    smellMap[i][j][1] -= 1
+
+
+    # n은 격자의 크기, m은 상어의 수, k는 상어의 냄새가 얼마나 오래 가는지
+    n, m, k = map(int, input().split())
+    seaMap = []
+    smellMap = [[[0, 0]] * n for _ in range(n)]
+    priorityMap = []
+    sharkPos = []
+    dx = [-1, 1, 0, 0]
+    dy = [0, 0, -1, 1]
+    numOfShark = m
+    timeCount = 0
+    sharkAlive = [True] * m
+
+    # 상어와 바다 지도의 데이터 받음
+    for _ in range(n):
+        seaMap.append(list(map(int, input().split())))
+
+    # 1 번 부터 m 번 까지 상어의 위치를 sharkPos 리스트에 담기 위한 코드(아마 몇 번째 index 에 삽입하는 함수 활용해서 시간 복잡도 줄일 수 있을듯)
+    for sharkNum in range(1, m + 1):
+        for i in range(n):
+            flag = False
+            for j in range(n):
+                if seaMap[i][j] == sharkNum:
+                    sharkPos.append((i, j))
+                    flag = True
+                    break
+            if flag:
+                break
+
+    # 상어 초기 방향 데이터 입력
+    sharkDir = list(map(int, input().split()))
+
+    # 상어 이동 우선순위 기록
+    for _ in range(m):
+        tempMap = []
+        for _ in range(4):
+            tempMap.append(list(map(int, input().split())))
+        priorityMap.append(tempMap)
+
+    ### 위에까지 문제 해결에 필요한 데이터, 자료구조 생성
+    # 여기서부터 본격적 문제 해결
+    # 순서
+    # 1. 우선 순위에 따른 상어 이동 위치 확인
+    # 2. 상어 위치 이동, 상어 방향 데이터 업데이트, 겹치는 상어 있나 확인
+    # 3. 냄새 데이터 업데이트
+
+    for i in range(len(sharkPos)):
+        tempPos = sharkPos[i]
+        xpos = tempPos[0]
+        ypos = tempPos[1]
+        smellMap[xpos][ypos] = [i + 1, k]
+
+    while numOfShark != 1:
+        if timeCount > 1000:
+            break
+        movePosition = sharkMove()
+        smellDisappear()
+        numOfShark, sharkPos, sharkDir, smellMap, seaMap = updateData(movePosition, numOfShark, sharkPos, sharkDir, smellMap, seaMap)
+        timeCount = timeCount + 1
+
+    if timeCount > 1000:
+        print(-1)
+    else:
+        print(timeCount)
+```
+-> 3일에 걸쳐서 푼 문제..!! 그래도 고군분투 한 만큼 보람찬 문제다. 되짚어보자면, 로직은 정확했으나 리스트의 인덱스를 잘못 사용하는 바람에 원하는 쪽으로 프로그램이 동작하지 않았고 디버깅 시 해당 오류를 찾는 것도 오래걸렸다. 또한 처음 문제를 풀 때 바로 코드로 구현하는 것만 신경을 썼는데, 잘 풀리지 않자 플로우 차트로 대강 프로그램의 흐름을 나타내고 나서 어떤 부분이 오작동했는지를 쉽게 알 수 있었다.
+- 교훈 1 : 리스트의 값을 이용할 때에는 그것의 index에 주의하자
+- 교훈 2 : 어떤 프로그램을 짤 때 대강이라도 플로우차트를 그리고 
