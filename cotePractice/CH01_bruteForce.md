@@ -55,3 +55,20 @@ def lotto():
         print()
 ```
 -> 이제껏 itertools 모듈의 함수를 사용해, 수의 조합을 어떻게 만드는건지 잘 몰랐는데, 이번에 재귀함수를 이용해서 문제해결을 해서 정확한 원리를 알게되었다!
+
+### 부분수열의 합
+```
+import itertools
+def sumOfSubnet():
+    n, s = map(int, input().split())
+    numList = list(map(int, input().split()))
+    cnt = 0
+
+    for i in range(1, n + 1):
+        allCases = itertools.combinations(numList, i)
+        for case in allCases:
+            if sum(case) == s:
+                cnt += 1
+
+    print(cnt)
+```
