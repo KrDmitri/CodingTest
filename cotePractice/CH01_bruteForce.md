@@ -72,3 +72,26 @@ def sumOfSubnet():
 
     print(cnt)
 ```
+
+### 부분수열의 합 2
+```
+def sumOfSubnet2():
+    n = int(input())
+    s = list(map(int, input().split()))
+    s.sort()
+
+    answer = 0
+    flag = 0
+
+    for i in range(n):
+        if s[i] - answer > 1:
+            answer += 1
+            flag = 1
+            break
+        answer += s[i]
+
+    if flag == 0:
+        answer += 1
+
+    print(answer)
+```
