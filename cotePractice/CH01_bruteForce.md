@@ -95,3 +95,45 @@ def sumOfSubnet2():
 
     print(answer)
 ```
+
+### 연산자 끼워넣기(2) 1번째 시도
+```
+import itertools
+
+def insertOperands():
+    def operate(a, b, operand):
+        if operand == 0:
+            return a + b
+        elif operand == 1:
+            return a - b
+        elif operand == 2:
+            return a * b
+        else:
+            return a // b
+
+    n = int(input())
+    numList = list(map(int, input().split()))
+    numOperands = list(map(int, input().split()))   # +, -, *, /
+    operandsList = []
+    min = int(1e9)
+    max = 0
+
+    for i in range(4):
+        for j in range(numOperands[i]):
+            operandsList.append(i)
+
+    candidates = itertools.permutations(operandsList, n - 1)
+
+    for eachCase in candidates:
+        tempAnswer = numList[0]
+        for i in range(1, n):
+            tempAnswer = operate(tempAnswer, numList[i], eachCase[i - 1])
+        if min > tempAnswer:
+            min = tempAnswer
+        if max < tempAnswer:
+            max = tempAnswer
+
+    print(max)
+    print(min)
+```
+-> 예제는 모두통과를 
