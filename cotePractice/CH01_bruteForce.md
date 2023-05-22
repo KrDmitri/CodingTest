@@ -138,3 +138,82 @@ def insertOperands():
 ```
 -> 예제는 모두 통과했는데, 백준 사이트 제출하면 시간 초과가 난다. 본 문제의 갈래와 같이 재귀적인 용법으로 문제 해결을 시도해보려 한다.
 
+### 연산자 끼워넣기(2) 2번째 시도 - 성공
+```
+import copy
+
+def calculate(a, b, operand):
+    if operand == 0:
+        return a + b
+    elif operand == 1:
+        return a - b
+    elif operand == 2:
+        return a * b
+    else:
+        if a < 0:
+            a = abs(a)
+            tempNum = a // b
+            return (-1) * tempNum
+        return a // b
+
+def operate(numbers, operand, operands):
+    if len(numbers) == 2:
+        candidates.append(calculate(numbers[0], numbers[1], operand))
+        return
+    else:
+        tempNum = calculate(numbers[0], numbers[1], operand)
+        numbers.pop(0)
+        numbers.pop(0)
+        numbers.insert(0, tempNum)
+        if operands[0] > 0:
+            tempNumbers = copy.deepcopy(numbers)
+            tempOperands = copy.deepcopy(operands)
+            tempOperands[0] -= 1
+            operate(tempNumbers, 0, tempOperands)
+        if operands[1] > 0:
+            tempNumbers = copy.deepcopy(numbers)
+            tempOperands = copy.deepcopy(operands)
+            tempOperands[1] -= 1
+            operate(tempNumbers, 1, tempOperands)
+        if operands[2] > 0:
+            tempNumbers = copy.deepcopy(numbers)
+            tempOperands = copy.deepcopy(operands)
+            tempOperands[2] -= 1
+            operate(tempNumbers, 2, tempOperands)
+        if operands[3] > 0:
+            tempNumbers = copy.deepcopy(numbers)
+            tempOperands = copy.deepcopy(operands)
+            tempOperands[3] -= 1
+            operate(tempNumbers, 3, tempOperands)
+
+n = int(input())
+numList = list(map(int, input().split()))
+operandsList = list(map(int, input().split()))
+
+candidates = []
+
+if operandsList[0] > 0:
+    tempNumList = copy.deepcopy(numList)
+    operandsList[0] -= 1
+    operate(tempNumList, 0, operandsList)
+    operandsList[0] += 1
+if operandsList[1] > 0:
+    tempNumList = copy.deepcopy(numList)
+    operandsList[1] -= 1
+    operate(tempNumList, 1, operandsList)
+    operandsList[1] += 1
+if operandsList[2] > 0:
+    tempNumList = copy.deepcopy(numList)
+    operandsList[2] -= 1
+    operate(tempNumList, 2, operandsList)
+    operandsList[2] += 1
+if operandsList[3] > 0:
+    tempNumList = copy.deepcopy(numList)
+    operandsList[3] -= 1
+    operate(tempNumList, 3, operandsList)
+    operandsList[3] += 1
+
+print(max(candidates))
+print(min(candidates))
+```
+-> 풀이를 
