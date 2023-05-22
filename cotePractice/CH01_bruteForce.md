@@ -216,4 +216,4 @@ if operandsList[3] > 0:
 print(max(candidates))
 print(min(candidates))
 ```
--> 풀이를 
+-> 풀이를 문제 공간을 dfs로 순회한 것과 같이 재귀적인 용법으로 하여서 시간 초과 문제를 해결하였다. 다만 재귀적 용법을 사용할 때에는 항상 그렇듯 deepcopy()함수를 사용하여 특정 리스트의 값이 변하지 않도록 해주어야 한다.
