@@ -272,3 +272,43 @@ for i in range(n):
 print(maxNum)
 ```
 -> 예제 코드는 전부 맞았는데 시간 초과가 났다. 아무래도 최대 경우인 500 * 500 매트릭스에서는 연산량이 많아서 나는거 같다. 방금 난 생각으로는 다익스트라 알고리즘처럼 인접한 곳의 정보를 모두 더 해 인접 노드 중 가장 높은 값만 추가하여 풀이하는 방법으로 해결할 수 있을거 같다.
+
+### 테트로미노(다익스트라 스타일 풀이)
+```
+# 아래 함수에 candidates 리스트를 추가하여 문제 더 빠르게 해결 가능?
+def checkArea(xpos, ypos, histroy, sum, candidates):
+    global maxNum
+    sum += paperMap[xpos][ypos]
+    histroy.append([xpos, ypos])
+    # 여기 현재 추가된 노드 기준 상하좌우에 있는 노드를 candidate로 추가해줘야함
+    for i in range(4):
+        nxpos = xpos + dx[i]
+        nypos = ypos + dy[i]
+        if nxpos >= 0 and nxpos < n and nypos >= 0 and nypos < m and [nxpos, nypos] not in histroy:
+            candidates.append([nxpos, nypos, paperMap[nxpos][nypos]])
+
+    if len(histroy) == 4:
+        maxNum = max(maxNum, sum)
+    else:
+        candidates.sort(key=lambda x:x[2], reverse=True)
+        chosenNode = candidates.pop(0)
+        checkArea(chosenNode[0], chosenNode[1], histroy, sum, candidates)
+
+
+n, m = map(int, input().split())
+paperMap = []
+for _ in range(n):
+    tempList = list(map(int, input().split()))
+    paperMap.append(tempList)
+
+maxNum = 0
+dx = [-1, 0, 1, 0]
+dy = [0, -1, 0, 1]
+
+for i in range(n):
+    for j in range(m):
+        checkArea(i, j, [], 0, [])
+
+print(maxNum)
+```
+-> 기존 알고리즘에 비해 속도도 확실히 빠르지만 85%에서 오답나옴.. 지금 생각해보니 아주 큰 값을 가진 어떤 노드의 인접 노드들이 전부 0이라면 내 코드가 틀릴 수 있을것 같음
