@@ -217,3 +217,58 @@ print(max(candidates))
 print(min(candidates))
 ```
 -> 풀이를 문제 공간을 dfs로 순회한 것과 같이 재귀적인 용법으로 하여서 시간 초과 문제를 해결하였다. 다만 재귀적 용법을 사용할 때에는 항상 그렇듯 deepcopy()함수를 사용하여 특정 리스트의 값이 변하지 않도록 해주어야 한다.
+
+### 테트로미노
+```
+import copy
+import itertools
+def checkArea(xpos, ypos, histroy, sum):
+    global maxNum
+    sum += paperMap[xpos][ypos]
+    histroy.append([xpos, ypos])
+    if len(histroy) == 4:
+        maxNum = max(maxNum, sum)
+    else:
+        for i in range(4):
+            nxpos = xpos + dx[i]
+            nypos = ypos + dy[i]
+            if nxpos >= 0 and nxpos < n and nypos >= 0 and nypos < m and [nxpos, nypos] not in histroy:
+                newHistory = copy.deepcopy(histroy)
+                newSum = copy.deepcopy(sum)
+                checkArea(nxpos, nypos, newHistory, newSum)
+
+
+def checkTuArea(xpos, ypos):
+    global maxNum
+    directionList = [0, 1, 2, 3]
+    directions = itertools.combinations(directionList, 3)
+    for eachCase in directions:
+        sum = paperMap[xpos][ypos]
+        for i in eachCase:
+            nxpos = xpos + dx[i]
+            nypos = ypos + dy[i]
+            if nxpos >= 0 and nxpos < n and nypos >= 0 and nypos < m:
+                sum += paperMap[nxpos][nypos]
+        maxNum = max(maxNum, sum)
+
+
+n, m = map(int, input().split())
+paperMap = []
+for _ in range(n):
+    tempList = list(map(int, input().split()))
+    paperMap.append(tempList)
+maxNum = 0
+dx = [-1, 0, 1, 0]
+dy = [0, -1, 0, 1]
+
+for i in range(n):
+    for j in range(m):
+        checkArea(i, j, [], 0)
+
+for i in range(n):
+    for j in range(m):
+        checkTuArea(i, j)
+
+print(maxNum)
+```
+-> 예제 코드는
