@@ -218,7 +218,7 @@ print(min(candidates))
 ```
 -> 풀이를 문제 공간을 dfs로 순회한 것과 같이 재귀적인 용법으로 하여서 시간 초과 문제를 해결하였다. 다만 재귀적 용법을 사용할 때에는 항상 그렇듯 deepcopy()함수를 사용하여 특정 리스트의 값이 변하지 않도록 해주어야 한다.
 
-### 테트로미노
+### 테트로미노(dfs 풀이)
 ```
 import copy
 import itertools
@@ -312,3 +312,82 @@ for i in range(n):
 print(maxNum)
 ```
 -> 기존 알고리즘에 비해 속도도 확실히 빠르지만 85%에서 오답나옴.. 지금 생각해보니 아주 큰 값을 가진 어떤 노드의 인접 노드들이 전부 0이라면 내 코드가 틀릴 수 있을것 같음
+
+### 테트로미노(Branch-and-Bound 풀이)
+```
+import copy
+import itertools
+def pruning(sum, history):
+    global maxNum
+    if len(history) == 1:
+        sum += valList[0] + valList[1] + valList[2]
+    elif len(history) == 2:
+        sum += valList[0] + valList[1] + valList[2]
+    elif len(history) == 3:
+        sum += valList[0] + valList[1] + valList[2]
+    else:
+        return False
+
+    if sum < maxNum:
+        return True
+
+
+def checkArea(xpos, ypos, history, sum):
+    global maxNum
+    sum += paperMap[xpos][ypos]
+    history.append([xpos, ypos])
+    # 대충 가지치기 코드..?
+    if pruning(sum, history):
+        return
+    if len(history) == 4:
+        maxNum = max(maxNum, sum)
+        return
+    else:
+        for i in range(4):
+            nxpos = xpos + dx[i]
+            nypos = ypos + dy[i]
+            if nxpos >= 0 and nxpos < n and nypos >= 0 and nypos < m and [nxpos, nypos] not in history:
+                newHistory = copy.deepcopy(history)
+                newSum = copy.deepcopy(sum)
+                checkArea(nxpos, nypos, newHistory, newSum)
+
+
+def checkTuArea(xpos, ypos):
+    global maxNum
+    directionList = [0, 1, 2, 3]
+    directions = itertools.combinations(directionList, 3)
+    for eachCase in directions:
+        sum = paperMap[xpos][ypos]
+        for i in eachCase:
+            nxpos = xpos + dx[i]
+            nypos = ypos + dy[i]
+            if nxpos >= 0 and nxpos < n and nypos >= 0 and nypos < m:
+                sum += paperMap[nxpos][nypos]
+        maxNum = max(maxNum, sum)
+
+
+n, m = map(int, input().split())
+paperMap = []
+valList = []
+for _ in range(n):
+    tempList = list(map(int, input().split()))
+    for elem in tempList:
+        valList.append(elem)
+    paperMap.append(tempList)
+
+valList.sort(reverse=True)
+maxNum = 0
+dx = [-1, 0, 1, 0]
+dy = [0, -1, 0, 1]
+
+for i in range(n):
+    for j in range(m):
+        checkArea(i, j, [], 0)
+
+for i in range(n):
+    for j in range(m):
+        checkTuArea(i, j)
+
+print(maxNum)
+```
+-> 위의 dfs 풀이에서 대충 pruning function을 추가해줬더니 시간 초과 없이 정답 판정을 받았다. 얼마나 시간이 절약되겠어 했는데 이게 되네;;;
