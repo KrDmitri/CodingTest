@@ -392,4 +392,81 @@ print(maxNum)
 ```
 -> 위의 dfs 풀이에서 대충 pruning function을 추가해줬더니 시간 초과 없이 정답 판정을 받았다. 얼마나 시간이 절약되겠어 했는데 이게 되네;;;
 
-### 두 
+### 두 동전
+```
+import copy
+def checkCoinNum(coinPos):
+    coinNum = 2
+    for i in range(2):
+        if coinPos[i][0] == -1 and coinPos[i][1] == -1:
+            coinNum -= 1
+    return coinNum
+
+def moveCoins(coinPos, coinMap, dir, tryTime, coinPosHistory):
+    global minTry
+    tryTime += 1
+    if tryTime > minTry:
+        return
+    if tryTime > 10:
+        return
+    flag = 0
+    for i in range(2):
+        xpos = coinPos[i][0]
+        ypos = coinPos[i][1]
+        nxpos = xpos + dx[dir]
+        nypos = ypos + dy[dir]
+        # 코인이 밖으로 나가는지 벽에 부딪히는지 확인하기
+        if nxpos < 0 or nxpos >= n or nypos < 0 or nypos >= m:
+            coinPos[i][0], coinPos[i][1] = -1, -1
+        elif coinMap[nxpos][nypos] == '#':
+            flag += 1
+        else:
+            coinPos[i][0], coinPos[i][1] = nxpos, nypos
+
+    if coinPos in coinPosHistory:
+        return
+    else:
+        coinPosHistory.append(coinPos)
+
+    if flag == 2:
+        return
+    coinNum = checkCoinNum(coinPos)
+    if coinNum == 2:
+        if tryTime == 10:
+            return
+        for i in range(4):
+            newCoinPos = copy.deepcopy(coinPos)
+            newTryTime = tryTime
+            newCoinPosHistory = copy.deepcopy(coinPosHistory)
+            moveCoins(newCoinPos, coinMap, i, newTryTime, newCoinPosHistory)
+    elif coinNum == 1:
+        minTry = min(minTry, tryTime)
+    elif coinNum == 0:
+        return
+
+
+n, m = map(int, input().split())
+coinMap = []
+coinPos = []
+dx = [-1, 0, 1, 0]
+dy = [0, -1, 0, 1]
+for i in range(n):
+    temp = input()
+    for j in range(m):
+        if temp[j] == 'o':
+            coinPos.append([i, j])
+    coinMap.append(temp)
+
+minTry = int(1e9)
+
+for i in range(4):
+    newCoinPos = copy.deepcopy(coinPos)
+    history = copy.deepcopy(coinPos)
+    moveCoins(newCoinPos, coinMap, i, 0, [history])
+
+if minTry == int(1e9):
+    minTry = -1
+
+print(minTry)
+```
+-> 재귀적 용법으로 
