@@ -391,3 +391,5 @@ for i in range(n):
 print(maxNum)
 ```
 -> 위의 dfs 풀이에서 대충 pruning function을 추가해줬더니 시간 초과 없이 정답 판정을 받았다. 얼마나 시간이 절약되겠어 했는데 이게 되네;;;
+
+### 두 
