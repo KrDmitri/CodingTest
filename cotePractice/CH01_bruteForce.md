@@ -501,3 +501,91 @@ for i in range(1, len(w) - 1):
 print(maxEnergy)
 ```
 -> EZ
+
+### N-Queens
+```
+# N-Queen 문제, N개의 칸에서 N개의 퀸이 서로 공격할 수 없는 위치에 놓도록 하는 경우의 수 구하기
+import copy
+def checkRight(oneQueen, chessMap, row):
+    xpos = oneQueen[0]
+    ypos = oneQueen[1]
+    for i in range(2):
+        nxpos = xpos + dx[i]
+        nypos = ypos + dy[i]
+        flag = True
+        while nxpos >= 0 and nxpos <= row and nypos >=0 and nypos < n:
+            if chessMap[nxpos][nypos] == 1:
+                flag = False
+                break
+            nxpos += dx[i]
+            nypos += dy[i]
+        if flag == False:
+            break
+    if flag == False:
+        return False
+    else:
+        return True
+
+
+def appendNewQueen(row, col, chessMap, queenPos, visitedCol):
+    global numCases
+    # pruning 1 : 선택됐던 컬럼 다시 선택하면 return
+    if row != 0:
+        if col in visitedCol or col == visitedCol[-1] -1 or col == visitedCol[-1] + 1:
+            return
+
+    # 우선 바꿔봄
+    chessMap[row][col] = 1
+    visitedCol.append(col)
+    queenPos.append([row, col])
+
+    # 이전 행에 놓였던 여왕들 위치를 보고 계속해도 되는지 확인
+    if row > 1:
+        for i in range(row):
+            oneQueen = queenPos[i]
+            flag = checkRight(oneQueen, chessMap, row)
+            if flag == False:
+                return
+
+    # 계속해도 괜찮으면 아래 코드 실행
+    if len(queenPos) == n:
+        numCases += 1
+        return
+
+    newRow = row + 1
+    for i in range(n):
+        newChessMap = copy.deepcopy(chessMap)
+        newQueenPos = copy.deepcopy(queenPos)
+        newVisitedCol = copy.deepcopy(visitedCol)
+        col = i
+        appendNewQueen(newRow, col, newChessMap, newQueenPos, newVisitedCol)
+
+
+n = int(input())
+chessMap = [[0] * n for _ in range(n)]
+queenPos = []
+numCases = 0
+caseSum = 0
+dx = [1, 1]
+dy = [-1, 1]
+
+for i in range(n // 2):
+    newChessMap = copy.deepcopy(chessMap)
+    newQueenPos = copy.deepcopy(queenPos)
+    row = 0
+    col = i
+    visitedCol = []
+    appendNewQueen(row, col, newChessMap, newQueenPos, visitedCol)
+
+caseSum += numCases * 2
+
+if n % 2 == 1:
+    row = 0
+    col = n // 2
+    numCases = 0
+    appendNewQueen(row, col, chessMap, queenPos, [])
+    caseSum += numCases
+
+print(caseSum)
+```
+-> 아
