@@ -470,3 +470,34 @@ if minTry == int(1e9):
 print(minTry)
 ```
 -> 재귀적 용법으로 푸는 부르트 포스는 시간 초과가 나지 않으려면 pruning을 아주 꼼꼼히 해줘야한다...
+
+### 에너지 모으기
+```
+import copy
+# 이것도 pruning 생각해야하나 남은거 다 곱해도 못넘으면 리턴하는 식으로
+def energeyCollect(beadList, index, energySum):
+    global maxEnergy
+    energySum += beadList[index - 1] * beadList[index + 1]
+    beadList.pop(index)
+    maxEnergy = max(maxEnergy, energySum)
+    if len(beadList) == 2:
+        return
+    else:
+        for i in range(1, len(beadList) -1):
+            newBeadList = copy.deepcopy(beadList)
+            newEnergySum = energySum
+            energeyCollect(newBeadList, i, newEnergySum)
+
+
+n = int(input())
+w = list(map(int, input().split()))
+maxEnergy = 0
+
+for i in range(1, len(w) - 1):
+    beadList = copy.deepcopy(w)
+    energySum = 0
+    energeyCollect(beadList, i, energySum)
+
+print(maxEnergy)
+```
+-> EZ
