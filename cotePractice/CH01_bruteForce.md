@@ -794,3 +794,102 @@ if n % 2 == 1:
 print(caseSum)
 ```
 -> n이 13까지는 계산이 되는데 14는 역시 무리쓰...😤
+
+### N-Queens(4차 시도)
+```
+# N-Queen 문제, N개의 칸에서 N개의 퀸이 서로 공격할 수 없는 위치에 놓도록 하는 경우의 수 구하기
+import copy
+
+def appendNewQueen(row, col, chessMap, queenPos, visitedCol):
+    global numCases
+
+    chessMap[row][col] = 1
+    visitedCol.append(col)
+    queenPos.append([row, col])
+
+    if len(queenPos) == n:
+        numCases += 1
+        return
+
+    candidates = []
+    for i in range(n):
+        candidates.append(i)
+    candidates.remove(col)
+    for elem in visitedCol:
+        if elem in candidates:
+            candidates.remove(elem)
+
+    if row > 0:
+        for i in range(len(queenPos)):
+            posDif = len(queenPos) - i
+            baseCol = queenPos[i][1]
+            if baseCol - posDif in candidates:
+                candidates.remove(baseCol - posDif)
+            if baseCol + posDif in candidates:
+                candidates.remove(baseCol + posDif)
+
+    newRow = row + 1
+    for i in candidates:
+        newChessMap = copy.deepcopy(chessMap)
+        newQueenPos = copy.deepcopy(queenPos)
+        newVisitedCol = copy.deepcopy(visitedCol)
+        col = i
+        appendNewQueen(newRow, col, newChessMap, newQueenPos, newVisitedCol)
+
+n = int(input())
+chessMap = [[0] * n for _ in range(n)]
+queenPos = []
+numCases = 0
+caseSum = 0
+
+for i in range(n // 2):
+    newChessMap = copy.deepcopy(chessMap)
+    newQueenPos = copy.deepcopy(queenPos)
+    row = 0
+    col = i
+    visitedCol = []
+    appendNewQueen(row, col, newChessMap, newQueenPos, visitedCol)
+
+caseSum += numCases * 2
+
+if n % 2 == 1:
+    row = 0
+    col = n // 2
+    numCases = 0
+    appendNewQueen(row, col, chessMap, queenPos, [])
+    caseSum += numCases
+
+print(caseSum)
+```
+### N-Queens 해설 답안 코드
+```
+n = int(input())
+ans = 0
+row = [0] * n
+
+
+def is_promising(x):
+    for i in range(x):
+        if row[x] == row[i] or abs(row[x] - row[i]) == abs(x - i):
+            return False
+
+    return True
+
+
+def n_queens(x):
+    global ans
+    if x == n:
+        ans += 1
+        return
+
+    else:
+        for i in range(n):
+            # [x, i]에 퀸을 놓겠다.
+            row[x] = i
+            if is_promising(x):
+                n_queens(x + 1)
+
+
+n_queens(0)
+print(ans)
+```
