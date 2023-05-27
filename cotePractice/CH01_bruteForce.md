@@ -692,3 +692,105 @@ if n % 2 == 1:
 print(caseSum)
 ```
 -> candidates 리스트를 추가해서 계산 시간을 조금 줄여 n이 12까지는 가능하게 되었지만 14까지는 아직 무리쓰..ㅠ
+
+### N-Queens(3차 시도)
+```
+# N-Queen 문제, N개의 칸에서 N개의 퀸이 서로 공격할 수 없는 위치에 놓도록 하는 경우의 수 구하기
+import copy
+
+# 이전 함수는 이때까지 놓은 여왕 말을 기준으로 후보 좌표에 새로운 말을 놓아도 되는지 확인했다면, 이번에는 후보 좌표를 기준으로 확인
+def checkRight(row, candidates, chessMap):
+    delList = []
+
+    for col in candidates:
+        for i in range(2):
+            nxpos = row + dx[i]
+            nypos = col + dy[i]
+            flag = True
+            while nxpos >= 0 and nxpos < row and nypos >=0 and nypos < n:
+                if chessMap[nxpos][nypos] == 1:
+                    delList.append(col)
+                    flag = False
+                    break
+                nxpos = nxpos + dx[i]
+                nypos = nypos + dy[i]
+            if flag == False:
+                break
+
+    return delList
+
+
+def appendNewQueen(row, col, chessMap, queenPos, visitedCol):
+    global numCases
+
+    chessMap[row][col] = 1
+    visitedCol.append(col)
+    queenPos.append([row, col])
+
+    if chessMap[0][3] == 1 and chessMap[1][1] == 1 and chessMap[2][4] == 1:
+        print('', end='')
+
+    # 계속해도 괜찮으면 아래 코드 실행
+    if len(queenPos) == n:
+        numCases += 1
+        # for line in chessMap:
+        #     print(line)
+        # print()
+        return
+
+    ####
+    candidates = []
+    for i in range(n):
+        candidates.append(i)
+    candidates.remove(col)
+    for elem in visitedCol:
+        if elem in candidates:
+            candidates.remove(elem)
+    if col - 1 in candidates:
+        candidates.remove(col - 1)
+    if col + 1 in candidates:
+        candidates.remove(col + 1)
+
+    if row > 0:
+        delList = checkRight(row + 1, candidates, chessMap)
+        for elem in delList:
+            candidates.remove(elem)
+    ####
+
+    newRow = row + 1
+    for i in candidates:
+        newChessMap = copy.deepcopy(chessMap)
+        newQueenPos = copy.deepcopy(queenPos)
+        newVisitedCol = copy.deepcopy(visitedCol)
+        col = i
+        appendNewQueen(newRow, col, newChessMap, newQueenPos, newVisitedCol)
+
+
+n = int(input())
+chessMap = [[0] * n for _ in range(n)]
+queenPos = []
+numCases = 0
+caseSum = 0
+dx = [-1, -1]
+dy = [-1, 1]
+
+for i in range(n // 2):
+    newChessMap = copy.deepcopy(chessMap)
+    newQueenPos = copy.deepcopy(queenPos)
+    row = 0
+    col = i
+    visitedCol = []
+    appendNewQueen(row, col, newChessMap, newQueenPos, visitedCol)
+
+caseSum += numCases * 2
+
+if n % 2 == 1:
+    row = 0
+    col = n // 2
+    numCases = 0
+    appendNewQueen(row, col, chessMap, queenPos, [])
+    caseSum += numCases
+
+print(caseSum)
+```
+-> n이 13까지는 계산이 되는데 14는 역시 무리쓰...😤
