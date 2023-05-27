@@ -502,7 +502,7 @@ print(maxEnergy)
 ```
 -> EZ
 
-### N-Queens
+### N-Queens (1차 시도)
 ```
 # N-Queen 문제, N개의 칸에서 N개의 퀸이 서로 공격할 수 없는 위치에 놓도록 하는 경우의 수 구하기
 import copy
@@ -589,3 +589,106 @@ if n % 2 == 1:
 print(caseSum)
 ```
 -> 아... 또 시간초과나네...
+
+### N-Queens (2차 시도)
+```
+# N-Queen 문제, N개의 칸에서 N개의 퀸이 서로 공격할 수 없는 위치에 놓도록 하는 경우의 수 구하기
+import copy
+def checkRight(oneQueen, chessMap, fromRow, row, candidates):
+    xpos = oneQueen[0]
+    ypos = oneQueen[1]
+    for i in range(2):
+        nxpos = xpos + dx[i] * (row - fromRow)
+        nypos = ypos + dy[i] * (row - fromRow)
+        flag = True
+        if nypos in candidates:
+            delElem = nypos
+            flag = False
+            break
+    if flag == False:
+        return False, delElem
+    else:
+        return True, None
+
+
+def appendNewQueen(row, col, chessMap, queenPos, visitedCol):
+    global numCases
+
+    chessMap[row][col] = 1
+    visitedCol.append(col)
+    queenPos.append([row, col])
+
+    if chessMap[0][3] == 1 and chessMap[1][1] == 1 and chessMap[2][4] == 1:
+        print('', end='')
+
+    # 계속해도 괜찮으면 아래 코드 실행
+    if len(queenPos) == n:
+        numCases += 1
+        # for line in chessMap:
+        #     print(line)
+        # print()
+        return
+
+    ####
+    candidates = []
+    for i in range(n):
+        candidates.append(i)
+    candidates.remove(col)
+    for elem in visitedCol:
+        if elem in candidates:
+            candidates.remove(elem)
+    if col - 1 in candidates:
+        candidates.remove(col - 1)
+    if col + 1 in candidates:
+        candidates.remove(col + 1)
+
+    if row > 0:
+        for elem in range(row):
+            oneQueen = queenPos[elem]
+            flag, delElem = checkRight(oneQueen, chessMap, elem, row + 1, candidates)
+            if flag == False and delElem in candidates:
+                candidates.remove(delElem)
+        for elem in range(row):
+            oneQueen = queenPos[elem]
+            flag, delElem = checkRight(oneQueen, chessMap, elem, row + 1, candidates)
+            if flag == False and delElem in candidates:
+                candidates.remove(delElem)
+    ####
+
+    newRow = row + 1
+    for i in candidates:
+        newChessMap = copy.deepcopy(chessMap)
+        newQueenPos = copy.deepcopy(queenPos)
+        newVisitedCol = copy.deepcopy(visitedCol)
+        col = i
+        appendNewQueen(newRow, col, newChessMap, newQueenPos, newVisitedCol)
+
+
+n = int(input())
+chessMap = [[0] * n for _ in range(n)]
+queenPos = []
+numCases = 0
+caseSum = 0
+dx = [1, 1]
+dy = [-1, 1]
+
+for i in range(n // 2):
+    newChessMap = copy.deepcopy(chessMap)
+    newQueenPos = copy.deepcopy(queenPos)
+    row = 0
+    col = i
+    visitedCol = []
+    appendNewQueen(row, col, newChessMap, newQueenPos, visitedCol)
+
+caseSum += numCases * 2
+
+if n % 2 == 1:
+    row = 0
+    col = n // 2
+    numCases = 0
+    appendNewQueen(row, col, chessMap, queenPos, [])
+    caseSum += numCases
+
+print(caseSum)
+```
+-> ㅊㅁ
