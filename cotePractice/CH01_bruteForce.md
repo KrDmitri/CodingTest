@@ -893,3 +893,117 @@ def n_queens(x):
 n_queens(0)
 print(ans)
 ```
+
+### 스도쿠
+```
+import copy
+def checkHorizontal(xIndex, tempMap):
+    candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for i in range(9):
+        if tempMap[xIndex][i] in candidates:
+            candidates.remove(tempMap[xIndex][i])
+    return candidates
+
+def checkVertical(yIndex, tempMap):
+    candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for i in range(9):
+        if tempMap[i][yIndex] in candidates:
+            candidates.remove(tempMap[i][yIndex])
+    return candidates
+
+# //2 해서 나오는 값으로 어떤 칸인지 확인 가능?
+def checkSquare(xIndex, yIndex, tempMap):
+    candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    xSquare = xIndex // 3
+    ySquare = yIndex // 3
+    for i in range(xSquare * 3, xSquare * 3 + 3):
+        for j in range(ySquare * 3, ySquare * 3 + 3):
+            if tempMap[i][j] in candidates:
+                candidates.remove(tempMap[i][j])
+    return candidates
+
+def checkAllRight(xIndex, yIndex, tempMap):
+    candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for i in range(9):
+        if tempMap[xIndex][i] in candidates:
+            candidates.remove(tempMap[xIndex][i])
+        elif tempMap[xIndex][i] == 0:
+            continue
+        else:
+            return False
+
+    candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for i in range(9):
+        if tempMap[i][yIndex] in candidates:
+            candidates.remove(tempMap[i][yIndex])
+        elif tempMap[i][yIndex] == 0:
+            continue
+        else:
+            return False
+
+    candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    xSquare = xIndex // 3
+    ySquare = yIndex // 3
+    for i in range(xSquare * 3, xSquare * 3 + 3):
+        for j in range(ySquare * 3, ySquare * 3 + 3):
+            if tempMap[i][j] in candidates:
+                candidates.remove(tempMap[i][j])
+            elif tempMap[i][j] == 0:
+                continue
+            else:
+                return False
+
+    return True
+
+def solveSudoku(bList, cList, pMap):
+    blank = bList.pop(0)
+    candidates = cList.pop(0)
+    xpos = blank[0]
+    ypos = blank[1]
+    for elem in candidates:
+        tempMap = copy.deepcopy(pMap)
+        tempMap[xpos][ypos] = elem
+        if checkAllRight(xpos, ypos, tempMap):
+            if len(bList) == 0:
+                for i in range(9):
+                    for j in range(9):
+                        print(tempMap[i][j], end=' ')
+                    print()
+                return True
+            else:
+                tempBList = copy.deepcopy(bList)
+                tempCList = copy.deepcopy(cList)
+                flag = solveSudoku(tempBList, tempCList, tempMap)
+                if flag == True:
+                    return True
+        else:
+            continue
+
+puzzleMap = []
+blankList = []
+candidatesList = []
+for i in range(9):
+    tempList = list(map(int, input().split()))
+    for j in range(9):
+        if tempList[j] == 0:
+            blankList.append([i, j])
+    puzzleMap.append(tempList)
+
+# 각 칸의 candidates 구하기
+for i in range(len(blankList)):
+    tempBlank = blankList[i]
+    tempHList = checkHorizontal(tempBlank[0], puzzleMap)
+    tempVList = checkVertical(tempBlank[1], puzzleMap)
+    tempSList = checkSquare(tempBlank[0], tempBlank[1], puzzleMap)
+
+    hSet = set(tempHList)
+    vSet = set(tempVList)
+    sSet = set(tempSList)
+
+    tempCandidate = list(hSet & vSet & sSet)
+
+    candidatesList.append(tempCandidate)
+
+solveSudoku(blankList, candidatesList, puzzleMap)
+```
+-> 아오오오 시간초과...ㅜㅜ
