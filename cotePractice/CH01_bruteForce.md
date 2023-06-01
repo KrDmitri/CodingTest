@@ -1007,3 +1007,59 @@ for i in range(len(blankList)):
 solveSudoku(blankList, candidatesList, puzzleMap)
 ```
 -> 아오오오 시간초과...ㅜㅜ
+
+### 스도쿠 해설 답안 코드
+```
+import sys
+graph = []
+blank = []
+
+for i in range(9):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+
+for i in range(9):
+    for j in range(9):
+        if graph[i][j] == 0:
+            blank.append((i, j))
+
+def checkRow(x, a):
+    for i in range(9):
+        if a == graph[x][i]:
+            return False
+    return True
+
+def checkCol(y, a):
+    for i in range(9):
+        if a == graph[i][y]:
+            return False
+    return True
+
+def checkRect(x, y, a):
+    nx = x // 3 * 3
+    ny = y // 3 * 3
+    for i in range(3):
+        for j in range(3):
+            if a == graph[nx+i][ny+j]:
+                return False
+    return True
+
+
+def dfs(idx):
+    if idx == len(blank):
+        for i in range(9):
+            print(*graph[i])
+        exit(0)
+
+    for i in range(1, 10):
+        x = blank[idx][0]
+        y = blank[idx][1]
+
+        if checkRow(x, i) and checkCol(y, i) and checkRect(x, y, i):
+            graph[x][y] = i
+            dfs(idx+1)
+            graph[x][y] = 0
+
+dfs(0)
+```
+-> 전체적인 문제 풀이 접근 방법은 나의 코드와 비슷하다. 다른 점은 먼저 나는 dfs로 방문하는 트리의 각 노드들에서 사용하는 데이터를 deepcopy() 함수를 통해 모두 새로 만들어주었지만, 여기서는 같은 graph 변수를 활용해서 체크한 다음 문제가 있으면 나와서 값을 바꾼 자리에 원래 값을 다시 넣어줘서 메모리를 보다 효율적으로 사용했다. 또, 나는 각 칸에 들어갈 수 있는 데이터를 먼저 구한 다음에 해당 수들을 가지고 트리를 형성한 반면에 예시 답안 코드에서는 후보 수를 따로 구하지 않고, dfs 함수 내에서 들어갈 수 있는 수인지 확인한 후 넣는 방식으로 해서 중복될 수 있는 연산을 없애주었다.
+
