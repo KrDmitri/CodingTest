@@ -1063,3 +1063,62 @@ dfs(0)
 ```
 -> 전체적인 문제 풀이 접근 방법은 나의 코드와 비슷하다. 다른 점은 먼저 나는 dfs로 방문하는 트리의 각 노드들에서 사용하는 데이터를 deepcopy() 함수를 통해 모두 새로 만들어주었지만, 여기서는 같은 graph 변수를 활용해서 체크한 다음 문제가 있으면 나와서 값을 바꾼 자리에 원래 값을 다시 넣어줘서 메모리를 보다 효율적으로 사용했다. 또, 나는 각 칸에 들어갈 수 있는 데이터를 먼저 구한 다음에 해당 수들을 가지고 트리를 형성한 반면에 예시 답안 코드에서는 후보 수를 따로 구하지 않고, dfs 함수 내에서 들어갈 수 있는 수인지 확인한 후 넣는 방식으로 해서 중복될 수 있는 연산을 없애주었다.
 
+# 스도쿠 재풀이
+```
+def searchCandidates(blank, sudokuMap):
+    xpos = blank[0]
+    ypos = blank[1]
+    tempList = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for i in range(9):
+        if sudokuMap[xpos][i] in tempList:
+            tempList.remove(sudokuMap[xpos][i])
+        if sudokuMap[i][ypos] in tempList:
+            tempList.remove(sudokuMap[i][ypos])
+
+    xBlock = xpos // 3
+    yBlock = ypos // 3
+    for i in range(xBlock * 3, xBlock * 3 + 3):
+        for j in range(yBlock * 3, yBlock * 3 + 3):
+            if sudokuMap[i][j] in tempList:
+                tempList.remove(sudokuMap[i][j])
+
+    return tempList
+
+
+def fillBlank(blankList, sudokuMap, bIndex):
+    blank = blankList[bIndex]
+    xpos = blank[0]
+    ypos = blank[1]
+    candidates = searchCandidates(blank, sudokuMap)
+    if len(candidates) == 0:
+        return False
+    else:
+        for i in range(len(candidates)):
+            sudokuMap[xpos][ypos] = candidates[i]
+            if bIndex == len(blankList) - 1:
+                return True
+            flag = fillBlank(blankList, sudokuMap, bIndex + 1)
+            if flag:
+                return True
+            sudokuMap[xpos][ypos] = 0
+
+
+
+
+sudokuMap = []
+blankList = []
+for i in range(9):
+    tempList = list(map(int, input().split()))
+    for j in range(9):
+        if tempList[j] == 0:
+            blankList.append([i, j])
+    sudokuMap.append(tempList)
+
+fillBlank(blankList, sudokuMap, 0)
+
+for i in range(9):
+    for j in range(9):
+        print(sudokuMap[i][j], end=' ')
+    print()
+```
+-> 시험이 끝나고 스도쿠 다음 문제인 스도미도쿠를 풀려고 했는데 어려워서 스도쿠를 다시 풀어보았다. 어렵지 않게 정답 판정을 받았고 지난번에 작성한 코드보다 실행 시간도 줄였다.(약 30% 성능 향상)
