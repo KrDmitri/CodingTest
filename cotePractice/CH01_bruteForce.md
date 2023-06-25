@@ -1122,3 +1122,178 @@ for i in range(9):
     print()
 ```
 -> 시험이 끝나고 스도쿠 다음 문제인 스도미도쿠를 풀려고 했는데 어려워서 스도쿠를 다시 풀어보았다. 어렵지 않게 정답 판정을 받았고 지난번에 작성한 코드보다 실행 시간도 줄였다.(약 30% 성능 향상)
+
+### 스도미노쿠 문제 풀이(실패...😭)
+```
+import itertools
+import copy
+
+# 계산 중 생기는 도미노 짝, 리스트에 저장
+# 새로운 값을 넣었을 때 도미노를 짝 지어줄 것인지 or 짝 없이 계속 노드 방문을 할 것인지
+def isInRange(xpos, ypos):
+    if xpos >= 0 and xpos < 9 and ypos >= 0 and ypos < 9:
+        return True
+    else:
+        return False
+
+def alphabetToPos(alphaPos):
+    row = ord(alphaPos[0]) - 65
+    col = int(alphaPos[1]) - 1
+    return row, col
+
+
+def searchCandidates(blank, sudokuMap, isDomino, dominoList):
+    xpos = blank[0]
+    ypos = blank[1]
+    if xpos == 2 and ypos == 3:
+        print('', end='')
+    tempList = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for i in range(9):
+        if sudokuMap[xpos][i] in tempList:
+            tempList.remove(sudokuMap[xpos][i])
+        if sudokuMap[i][ypos] in tempList:
+            tempList.remove(sudokuMap[i][ypos])
+
+    xBlock = xpos // 3
+    yBlock = ypos // 3
+    for i in range(xBlock * 3, xBlock * 3 + 3):
+        for j in range(yBlock * 3, yBlock * 3 + 3):
+            if sudokuMap[i][j] in tempList:
+                tempList.remove(sudokuMap[i][j])
+
+    # 스도미도쿠 추가 코드
+    candidates = copy.deepcopy(tempList)
+    nxpos = xpos - 1
+    nypos = ypos
+    for i in range(len(candidates)):
+        if nxpos >= 0 and nxpos < 9 and nypos >= 0 and nypos > 0 and not isDomino[nxpos][nypos] and ( (sudokuMap[nxpos][nypos], candidates[i]) not in dominoList and (candidates[i], sudokuMap[nxpos][nypos]) not in dominoList ):
+            tempList.remove(candidates[i])
+
+    return tempList
+
+
+def fillBlank(bIndex, sudokuMap, isDomino, blankList, dominoList):
+    if sudokuMap[1][0] == 9:
+        print('', end='')
+
+    blank = blankList[bIndex]
+    xpos = blank[0]
+    ypos = blank[1]
+    candidates = searchCandidates(blank, sudokuMap, isDomino, dominoList)
+    if len(candidates) == 0:
+        return None
+    else:
+        for i in range(len(candidates)):
+            sudokuMap[xpos][ypos] = candidates[i]
+
+            # 위와 짝일 경우(무조건 위와 짝이어야 한다, 문제 되면 prune)
+            nxpos = xpos - 1
+            nypos = ypos
+            if isInRange(nxpos, nypos) and not isDomino[nxpos][nypos]:
+                if ((sudokuMap[nxpos][nypos], candidates[i]) not in dominoList and (
+                candidates[i], sudokuMap[nxpos][nypos]) not in dominoList):
+                    sudokuMap[xpos][ypos] = 0
+                    return None
+                else:
+                    if (sudokuMap[nxpos][nypos], candidates[i]) in dominoList:
+                        dominoList.remove((sudokuMap[nxpos][nypos], candidates[i]))
+                    else:
+                        dominoList.remove((candidates[i], sudokuMap[nxpos][nypos]))
+                    isDomino[nxpos][nypos] = True
+                    isDomino[xpos][ypos] = True
+                    if bIndex == len(blankList) - 1:
+                        return sudokuMap
+                    tempSudokuMap = fillBlank(bIndex + 1, sudokuMap, isDomino, blankList, dominoList)
+                    if tempSudokuMap is not None:
+                        return tempSudokuMap
+                    else:
+                        isDomino[nxpos][nypos] = False
+                        isDomino[xpos][ypos] = False
+                        dominoList.append((candidates[i], sudokuMap[nxpos][nypos]))
+                        sudokuMap[xpos][ypos] = 0
+                        return None
+
+            # 왼쪽과 짝일 경우
+            nxpos = xpos
+            nypos = ypos - 1
+            if isInRange(nxpos, nypos) and not isDomino[nxpos][nypos] and ( (sudokuMap[nxpos][nypos], candidates[i]) in dominoList or (candidates[i], sudokuMap[nxpos][nypos]) in dominoList):
+                if (sudokuMap[nxpos][nypos], candidates[i]) in dominoList:
+                    dominoList.remove((sudokuMap[nxpos][nypos], candidates[i]))
+                else:
+                    dominoList.remove((candidates[i], sudokuMap[nxpos][nypos]))
+                isDomino[nxpos][nypos] = True
+                isDomino[xpos][ypos] = True
+                if bIndex == len(blankList) - 1:
+                    return sudokuMap
+                tempSudokuMap = fillBlank(bIndex + 1, sudokuMap, isDomino, blankList, dominoList)
+                if tempSudokuMap is not None:
+                    return tempSudokuMap
+                dominoList.append((candidates[i], sudokuMap[nxpos][nypos]))
+                isDomino[nxpos][nypos] = False
+                isDomino[xpos][ypos] = False
+
+
+
+            # 짝 없는 경우
+            tempSudokuMap = fillBlank(bIndex + 1, sudokuMap, isDomino, blankList, dominoList)
+            if tempSudokuMap is not None:
+                return tempSudokuMap
+            sudokuMap[xpos][ypos] = 0
+
+
+
+
+n = int(input())
+dx = [-1, 0]
+dy = [0, -1]
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+# 한 문제 시작 부분
+while n != 0:
+    sudokuMap = [[0] * 9 for _ in range(9)]
+    dominoList = list(itertools.combinations(numbers, 2))
+    isDomino = [[False] * 9 for _ in range(9)]
+
+    for _ in range(n):
+        tempList = list(input().split())
+        firstElem = int(tempList[0])
+        firstElemRow, firstElemCol = alphabetToPos(tempList[1])
+        secondElem = int(tempList[2])
+        secondElemRow, secondElemCol = alphabetToPos(tempList[3])
+
+        sudokuMap[firstElemRow][firstElemCol] = firstElem
+        sudokuMap[secondElemRow][secondElemCol] = secondElem
+        isDomino[firstElemRow][firstElemCol] = True
+        isDomino[secondElemRow][secondElemCol] = True
+        if (firstElem, secondElem) in dominoList:
+            dominoList.remove((firstElem, secondElem))
+        else:
+            dominoList.remove((secondElem, firstElem))
+
+    soloPosList = list(input().split())
+    for i in range(9):
+        curRow, curCol = alphabetToPos(soloPosList[i])
+        sudokuMap[curRow][curCol] = i + 1
+        isDomino[curRow][curCol] = True
+
+    blankList = []
+    for i in range(9):
+        for j in range(9):
+            if sudokuMap[i][j] == 0:
+                blankList.append([i, j])
+
+    sudokuMap = fillBlank(0, sudokuMap, isDomino, blankList, dominoList)
+
+    for miniList in sudokuMap:
+        for elem in miniList:
+            print(elem, end='')
+        print()
+
+    print(dominoList)
+    print(isDomino)
+
+
+    # 한 문제 끝 부분
+    n = int(input())
+```
+-> 오랜 시간동안 이 문제를 풀려고 고군분투를 했지만..... 끝내 무릎을 꿇고 말았다... 내가 생각한 이 문제는 prune 조건이 하나인 다른 문제와 다르게 도미노 개념까지 합쳐져서 조건이 두 개라고 생각이 된다. 그렇게 해서 이렇게 코드를 짰는데 예제 1은 맞았지만 실행 시간이 긴 거 같고, 예제 2 문제는 풀리지도 않았다.
