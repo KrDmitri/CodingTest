@@ -62,3 +62,71 @@ else:
     print(minNum)
 ```
 -> 이제 실버 1 문제는 easy
+
+### 단어 수학
+```
+n = int(input())
+alphaNumList = []
+numList = []
+
+for _ in range(n):
+    alphaNumList.append(input())
+
+alphabetList = []
+for alphaNum in alphaNumList:
+    for elem in alphaNum:
+        if elem not in alphabetList:
+            alphabetList.append(elem)
+
+# 사용할 수 구하는 코드
+alphabetList.sort()
+for i in range(len(alphabetList)):
+    numList.append(9 - i)
+
+# 위치 list 구하기
+posList = [0] * len(alphabetList)
+
+for i in range(len(alphabetList)):
+    for j in range(len(alphaNumList)):
+        idx = 1
+        for k in range(len(alphaNumList[j]) - 1, -1, - 1):
+            if alphabetList[i] == alphaNumList[j][k] and idx > posList[i]:
+                posList[i] = idx
+            idx += 1
+
+# 빈도 list 구하기
+freqList = [[0] * 9 for _ in range(len(alphabetList))]
+for i in range(len(alphabetList)):
+    for j in range(len(alphaNumList)):
+        idx = 1
+        for k in range(len(alphaNumList[j]) - 1, -1, -1):
+            if alphabetList[i] == alphaNumList[j][k]:
+                freqList[i][idx] += 1
+            idx += 1
+
+figureList = [0] * len(alphabetList)
+
+for i in range(max(posList), 0, -1):
+    for j in range(len(alphabetList)):
+        if freqList[j][i] != 0:
+            figureList[j] += freqList[j][i] * (10 ** (i - 1))
+
+figureList.sort(reverse=True)
+
+idx = 0
+result = 0
+while idx < len(figureList):
+    tempFigure = figureList[idx]
+    tempList = []
+    for elem in figureList:
+        if elem == tempFigure:
+            tempList.append(elem)
+    usingNum = []
+    for i in range(len(tempList)):
+        usingNum = numList.pop(0)
+        result += usingNum * tempFigure
+    idx += len(tempList)
+
+print(result)
+```
+-> 처음 문제 해결하려고 할 때 본 문제의 토픽인 브루트포스 방식으로 접근했는데 그 경우 10P10 즉 연산량이 100억일 경우도 생긴다. 그래서 브루트포스가 아닌 각 위치의 계수들을 확인하는 방식으로 문제를 해결했다.
