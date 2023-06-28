@@ -130,3 +130,73 @@ while idx < len(figureList):
 print(result)
 ```
 -> 처음 문제 해결하려고 할 때 본 문제의 토픽인 브루트포스 방식으로 접근했는데 그 경우 10P10 즉 연산량이 100억일 경우도 생긴다. 그래서 브루트포스가 아닌 각 위치의 계수들을 확인하는 방식으로 문제를 해결했다.
+
+### 연산자 끼워넣기
+```
+maxNum = (-1) * int(1e9)
+minNum = int(1e9)
+
+def calculate(a, b, sign):
+    if sign == '+':
+        return a + b
+    elif sign == '-':
+        return a - b
+    elif sign == '*':
+        return a * b
+    else:
+        if a < 0:
+            a = (- 1) * a
+            return (-1) * (a // b)
+        else:
+            return a // b
+
+
+def calculateList(numList, candidate):
+    result = numList[0]
+    for i in range(len(candidate)):
+        result = calculate(result, numList[i + 1], candidate[i])
+    return result
+
+
+def makePermutation(signNumList, tempList):
+    global maxNum, minNum
+    if signNumList[0] > 0:
+        signNumList[0] -= 1
+        tempList.append('+')
+        makePermutation(signNumList, tempList)
+        tempList.pop(-1)
+        signNumList[0] += 1
+    if signNumList[1] > 0:
+        signNumList[1] -= 1
+        tempList.append('-')
+        makePermutation(signNumList, tempList)
+        tempList.pop(-1)
+        signNumList[1] += 1
+    if signNumList[2] > 0:
+        signNumList[2] -= 1
+        tempList.append('*')
+        makePermutation(signNumList, tempList)
+        tempList.pop(-1)
+        signNumList[2] += 1
+    if signNumList[3] > 0:
+        signNumList[3] -= 1
+        tempList.append('/')
+        makePermutation(signNumList, tempList)
+        tempList.pop(-1)
+        signNumList[3] += 1
+    if signNumList[0] == 0 and signNumList[1] == 0 and signNumList[2] == 0 and signNumList[3] == 0:
+        result = calculateList(aList, tempList)
+
+        maxNum = max(result, maxNum)
+        minNum = min(result, minNum)
+
+n = int(input())
+aList = list(map(int, input().split()))
+signNumList = list(map(int, input().split()))
+
+makePermutation(signNumList, [])
+
+print(maxNum)
+print(minNum)
+```
+-> 초기 max 값과 min 값 설정을 잘 해주자
