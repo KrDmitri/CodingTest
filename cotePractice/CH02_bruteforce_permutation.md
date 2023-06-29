@@ -200,3 +200,40 @@ print(maxNum)
 print(minNum)
 ```
 -> 초기 max 값과 min 값 설정을 잘 해주자
+
+### 스타트와 링크
+```
+import itertools
+import copy
+
+def countDiff(start, link):
+    startStat = 0
+    linkStat = 0
+    for elem in start:
+        for partner in start:
+            startStat += s[elem][partner]
+    for elem in link:
+        for partner in link:
+            linkStat += s[elem][partner]
+
+    return abs(startStat - linkStat)
+
+n = int(input())
+s = []
+for _ in range(n):
+    s.append(list(map(int, input().split())))
+atheletes = []
+for i in range(n):
+    atheletes.append(i)
+candidates = list(itertools.combinations(atheletes, n // 2))
+
+minNum = int(1e9)
+
+for candidate in candidates:
+    start = list(copy.deepcopy(candidate))
+    link = list(set(atheletes) - set(candidate))
+    diff = countDiff(start, link)
+    minNum = min(minNum, diff)
+
+print(minNum)
+```
