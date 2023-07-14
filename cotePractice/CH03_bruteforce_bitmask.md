@@ -88,3 +88,401 @@ else:
 
     print(maxNum)
 ```
+
+### 구슬탈출2
+```
+import copy
+
+def moveUp(redPos, bluePos):
+    redIsHole = 0
+    if redPos[1] == bluePos[1]:
+        if redPos[0] < bluePos[0]:
+            while True:
+                redPos[0] -= 1
+                if ballMap[redPos[0]][redPos[1]] == '#':
+                    redPos[0] += 1
+                    break
+                # 이 경우에 블루가 움직여도 레드만 구멍에 빠지는 경우도 고려해야 함
+                elif ballMap[redPos[0]][redPos[1]] == 'O':
+                    redPos = [-1, -1]
+                    redIsHole = 1
+                    break
+
+            while True:
+                bluePos[0] -= 1
+                if redPos[0] == bluePos[0]:
+                    bluePos[0] += 1
+                    break
+                elif ballMap[bluePos[0]][bluePos[1]] == 'O':
+                    return -1, redPos, bluePos
+                elif ballMap[bluePos[0]][bluePos[1]] == '#':
+                    bluePos[0] += 1
+                    if redIsHole:
+                        return 1, redPos, bluePos
+                    else:
+                        break
+
+        else:
+            while True:
+                bluePos[0] -= 1
+                if ballMap[bluePos[0]][bluePos[1]] == 'O':
+                    return -1, redPos, bluePos
+                elif ballMap[bluePos[0]][bluePos[1]] == '#':
+                    bluePos[0] += 1
+                    break
+
+            while True:
+                redPos[0] -= 1
+                if redPos[0] == bluePos[0]:
+                    redPos[0] += 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == '#':
+                    redPos[0] += 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == 'O':
+                    return 1, redPos, bluePos
+    else:
+        while True:
+            redPos[0] -= 1
+            if ballMap[redPos[0]][redPos[1]] == '#':
+                redPos[0] += 1
+                break
+            elif ballMap[redPos[0]][redPos[1]] == 'O':
+                return 1, redPos, bluePos
+
+        while True:
+            bluePos[0] -= 1
+            if ballMap[bluePos[0]][bluePos[1]] == '#':
+                bluePos[0] += 1
+                break
+            elif ballMap[bluePos[0]][bluePos[1]] == 'O':
+                return -1, redPos, bluePos
+    return 0, redPos, bluePos
+
+def moveDown(redPos, bluePos):
+    redIsHole = 0
+    if redPos[1] == bluePos[1]:
+        if redPos[0] > bluePos[0]:
+            while True:
+                redPos[0] += 1
+                if ballMap[redPos[0]][redPos[1]] == '#':
+                    redPos[0] -= 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == 'O':
+                    redIsHole = 1
+                    redPos = [-1, -1]
+                    break
+
+            while True:
+                bluePos[0] += 1
+                if redPos[0] == bluePos[0]:
+                    bluePos[0] -= 1
+                    break
+                elif ballMap[bluePos[0]][bluePos[1]] == 'O':
+                    return -1, redPos, bluePos
+                elif ballMap[bluePos[0]][bluePos[1]] == '#':
+                    bluePos[0] -= 1
+                    if redIsHole:
+                        return 1, redPos, bluePos
+                    else:
+                        break
+
+        else:
+            while True:
+                bluePos[0] += 1
+                if ballMap[bluePos[0]][bluePos[1]] == 'O':
+                    return -1, redPos, bluePos
+                elif ballMap[bluePos[0]][bluePos[1]] == '#':
+                    bluePos[0] -= 1
+                    break
+
+            while True:
+                redPos[0] += 1
+                if redPos[0] == bluePos[0]:
+                    redPos[0] -= 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == '#':
+                    redPos[0] -= 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == 'O':
+                    return 1, redPos, bluePos
+    else:
+        while True:
+            redPos[0] += 1
+            if ballMap[redPos[0]][redPos[1]] == '#':
+                redPos[0] -= 1
+                break
+            elif ballMap[redPos[0]][redPos[1]] == 'O':
+                return 1, redPos, bluePos
+
+        while True:
+            bluePos[0] += 1
+            if ballMap[bluePos[0]][bluePos[1]] == '#':
+                bluePos[0] -= 1
+                break
+            elif ballMap[bluePos[0]][bluePos[1]] == 'O':
+                return -1, redPos, bluePos
+    return 0, redPos, bluePos
+
+def moveLeft(redPos, bluePos):
+    redIsHole = 0
+    if redPos[0] == bluePos[0]:
+        if redPos[1] < bluePos[1]:
+            while True:
+                redPos[1] -= 1
+                if ballMap[redPos[0]][redPos[1]] == '#':
+                    redPos[1] += 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == 'O':
+                    redIsHole = 1
+                    redPos = [-1, -1]
+                    break
+
+            while True:
+                bluePos[1] -= 1
+                if redPos[1] == bluePos[1]:
+                    bluePos[1] += 1
+                    break
+                elif ballMap[bluePos[0]][bluePos[1]] == 'O':
+                    return -1, redPos, bluePos
+                elif ballMap[bluePos[0]][bluePos[1]] == '#':
+                    bluePos[1] += 1
+                    if redIsHole:
+                        return 1, redPos, bluePos
+                    else:
+                        break
+
+        else:
+            while True:
+                bluePos[1] -= 1
+                if ballMap[bluePos[0]][bluePos[1]] == 'O':
+                    return -1, redPos, bluePos
+                elif ballMap[bluePos[0]][bluePos[1]] == '#':
+                    bluePos[1] += 1
+                    break
+
+            while True:
+                redPos[1] -= 1
+                if redPos[1] == bluePos[1]:
+                    redPos[1] += 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == '#':
+                    redPos[1] += 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == 'O':
+                    return 1, redPos, bluePos
+    else:
+        while True:
+            redPos[1] -= 1
+            if ballMap[redPos[0]][redPos[1]] == '#':
+                redPos[1] += 1
+                break
+            elif ballMap[redPos[0]][redPos[1]] == 'O':
+                return 1, redPos, bluePos
+
+        while True:
+            bluePos[1] -= 1
+            if ballMap[bluePos[0]][bluePos[1]] == '#':
+                bluePos[1] += 1
+                break
+            elif ballMap[bluePos[0]][bluePos[1]] == 'O':
+                return -1, redPos, bluePos
+    return 0, redPos, bluePos
+
+def moveRight(redPos, bluePos):
+    redIsHole = 0
+    if redPos[0] == bluePos[0]:
+        if redPos[1] > bluePos[1]:
+            while True:
+                redPos[1] += 1
+                if ballMap[redPos[0]][redPos[1]] == '#':
+                    redPos[1] -= 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == 'O':
+                    redIsHole = 1
+                    redPos = [-1, -1]
+                    break
+
+            while True:
+                bluePos[1] += 1
+                if redPos[1] == bluePos[1]:
+                    bluePos[1] -= 1
+                    break
+                elif ballMap[bluePos[0]][bluePos[1]] == 'O':
+                    return -1, redPos, bluePos
+                elif ballMap[bluePos[0]][bluePos[1]] == '#':
+                    bluePos[1] -= 1
+                    if redIsHole:
+                        return 1, redPos, bluePos
+                    else:
+                        break
+
+        else:
+            while True:
+                bluePos[1] += 1
+                if ballMap[bluePos[0]][bluePos[1]] == 'O':
+                    return -1, redPos, bluePos
+                elif ballMap[bluePos[0]][bluePos[1]] == '#':
+                    bluePos[1] -= 1
+                    break
+
+            while True:
+                redPos[1] += 1
+                if redPos[1] == bluePos[1]:
+                    redPos[1] -= 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == '#':
+                    redPos[1] -= 1
+                    break
+                elif ballMap[redPos[0]][redPos[1]] == 'O':
+                    return 1, redPos, bluePos
+    else:
+        while True:
+            redPos[1] += 1
+            if ballMap[redPos[0]][redPos[1]] == '#':
+                redPos[1] -= 1
+                break
+            elif ballMap[redPos[0]][redPos[1]] == 'O':
+                return 1, redPos, bluePos
+
+        while True:
+            bluePos[1] += 1
+            if ballMap[bluePos[0]][bluePos[1]] == '#':
+                bluePos[1] -= 1
+                break
+            elif ballMap[bluePos[0]][bluePos[1]] == 'O':
+                return -1, redPos, bluePos
+    return 0, redPos, bluePos
+
+
+def moveMap(redPos, bluePos, tryTime, history):
+    global minMove
+    if tryTime > 10:
+        return
+
+    orgRed = copy.deepcopy(redPos)
+    orgBlue = copy.deepcopy(bluePos)
+
+    for i in range(4):
+        if i == 0:
+            flag, redPos, bluePos = moveUp(redPos, bluePos)
+            history.append('up')
+            if redPos == orgRed and bluePos == orgBlue:
+                history.pop()
+                continue
+            if flag == 1:
+                minMove = min(minMove, tryTime)
+                history.pop()
+                return
+            elif flag == 0:
+                moveMap(redPos, bluePos, tryTime + 1, history)
+                redPos = copy.deepcopy(orgRed)
+                bluePos = copy.deepcopy(orgBlue)
+                history.pop()
+                continue
+            else:
+                redPos = copy.deepcopy(orgRed)
+                bluePos = copy.deepcopy(orgBlue)
+                history.pop()
+                continue
+        elif i == 1:
+            flag, redPos, bluePos = moveLeft(redPos, bluePos)
+            history.append('left')
+            if redPos == orgRed and bluePos == orgBlue:
+                history.pop()
+                continue
+            if flag == 1:
+                minMove = min(minMove, tryTime)
+                if minMove == 4:
+                    print('', end='')
+                history.pop()
+                return
+            elif flag == 0:
+                moveMap(redPos, bluePos, tryTime + 1, history)
+                redPos = copy.deepcopy(orgRed)
+                bluePos = copy.deepcopy(orgBlue)
+                history.pop()
+                continue
+            else:
+                redPos = copy.deepcopy(orgRed)
+                bluePos = copy.deepcopy(orgBlue)
+                history.pop()
+                continue
+        elif i == 2:
+            flag, redPos, bluePos = moveDown(redPos, bluePos)
+            history.append('down')
+            if redPos == orgRed and bluePos == orgBlue:
+                history.pop()
+                continue
+            if flag == 1:
+                minMove = min(minMove, tryTime)
+                if minMove == 4:
+                    print('', end='')
+                history.pop()
+                return
+            elif flag == 0:
+                moveMap(redPos, bluePos, tryTime + 1, history)
+                redPos = copy.deepcopy(orgRed)
+                bluePos = copy.deepcopy(orgBlue)
+                history.pop()
+                continue
+            else:
+                redPos = copy.deepcopy(orgRed)
+                bluePos = copy.deepcopy(orgBlue)
+                history.pop()
+                continue
+        else:
+            flag, redPos, bluePos = moveRight(redPos, bluePos)
+            history.append('right')
+            if redPos == orgRed and bluePos == orgBlue:
+                history.pop()
+                continue
+            if flag == 1:
+                minMove = min(minMove, tryTime)
+                if minMove == 4:
+                    print('', end='')
+                history.pop()
+                return
+            elif flag == 0:
+                moveMap(redPos, bluePos, tryTime + 1, history)
+                redPos = copy.deepcopy(orgRed)
+                bluePos = copy.deepcopy(orgBlue)
+                history.pop()
+                continue
+            else:
+                redPos = copy.deepcopy(orgRed)
+                bluePos = copy.deepcopy(orgBlue)
+                history.pop()
+                continue
+
+
+n, m = map(int, input().split())
+holePos = [0, 0]
+redPos = [0, 0]
+bluePos = [0, 0]
+ballMap = []
+minMove = 11
+
+for i in range(n):
+    tempList = list(input())
+    for j in range(m):
+        if tempList[j] == 'O':
+            holePos = [i, j]
+        elif tempList[j] == 'R':
+            redPos = [i, j]
+            tempList[j] = '.'
+        elif tempList[j] == 'B':
+            bluePos = [i, j]
+            tempList[j] = '.'
+    ballMap.append(tempList)
+
+moveMap(redPos, bluePos, 1, [])
+
+
+if minMove > 10:
+    print(-1)
+else:
+    print(minMove)
+```
+-> 정답 판정은 받았지만 분기문을 너무 많이 사용해서 코드가 복잡한것 같다
+
