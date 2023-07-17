@@ -547,3 +547,167 @@ def solve():
 solve()
 ```
 -> 나는 dfs를 활용하여 문제를 해결한 반면 위 풀이는 bfs를 활용하여 문제를 해결하였다. 그리고 나는 분기문을 여러개로 나누어 여러 경우의 수를 표현한 반면 위의 풀이는 4방향과 각 경우를 반목문과 더 적은 수의 분기문을 통해 표현하였다. 여기서 인상 깊은 점은 두 구슬의 x, y 좌표 4개의 데이터를 가지고 visited 리스트를 만든 점이다.
+
+### 2048(easy)
+```
+import copy
+def findMax(board):
+    maxNum = (-1) * int(1e9)
+    for i in range(n):
+        for j in range(n):
+            maxNum = max(maxNum, board[i][j])
+    return maxNum
+
+def oneBlock(x, y, direction, board):
+    if direction == 0:
+        for i in range(x, n - 1):
+            if board[i][y] != 0:
+                continue
+            flag = True
+            for j in range(i + 1, n):
+                if board[j][y] != 0:
+                    board[i][y] = board[j][y]
+                    board[j][y] = 0
+                    flag = False
+                    break
+            if flag:
+                break
+    elif direction == 1:
+        for i in range(y, n - 1):
+            if board[x][i] != 0:
+                continue
+            flag = True
+            for j in range(i + 1, n):
+                if board[x][j] != 0:
+                    board[x][i] = board[x][j]
+                    board[x][j] = 0
+                    flag = False
+                    break
+            if flag:
+                break
+    elif direction == 2:
+        for i in range(x, 0, -1):
+            if board[i][y] != 0:
+                continue
+            flag = True
+            for j in range(i - 1, -1, -1):
+                if board[j][y] != 0:
+                    board[i][y] = board[j][y]
+                    board[j][y] = 0
+                    flag = False
+                    break
+            if flag:
+                break
+    else:
+        for i in range(y, 0, -1):
+            if board[x][i] != 0:
+                continue
+            flag = True
+            for j in range(i - 1, -1, -1):
+                if board[x][j] != 0:
+                    board[x][i] = board[x][j]
+                    board[x][j] = 0
+                    flag = False
+                    break
+            if flag:
+                break
+    return board
+
+def move(board, direction):
+    for i in range(n):
+        for j in range(n):
+            if board[i][j] == 0:
+                board = oneBlock(i, j, direction, board)
+
+    if direction == 0:    # 상
+        for i in range(n):  # i는 열의 인덱스
+            j = 0
+            while j < n - 1:
+                if board[j][i] == 0:
+                    tempBoard = copy.deepcopy(board)
+                    board = oneBlock(j, i, direction, board)
+                    if tempBoard == board:
+                        break
+                elif board[j][i] == board[j + 1][i]:
+                    board[j][i] += board[j + 1][i]
+                    board[j + 1][i] = 0
+                    j += 1
+                elif board[j][i] != board[j + 1][i]:
+                    j += 1
+
+    elif direction == 1:  # 좌
+        for i in range(n):  # i는 행의 인덱스
+            j = 0
+            while j < n - 1:
+                if board[i][j] == 0:
+                    tempBoard = copy.deepcopy(board)
+                    board = oneBlock(i, j, direction, board)
+                    if tempBoard == board:
+                        break
+                elif board[i][j] == board[i][j + 1]:
+                    board[i][j] += board[i][j + 1]
+                    board[i][j + 1] = 0
+                    j += 1
+                elif board[i][j] != board[i][j + 1]:
+                    j += 1
+    elif direction == 2:  # 하
+        for i in range(n):  # i는 열의 인덱스
+            j = n - 1
+            while j > 0:
+                if board[j][i] == 0:
+                    tempBoard = copy.deepcopy(board)
+                    board = oneBlock(j, i, direction, board)
+                    if tempBoard == board:
+                        break
+                elif board[j][i] == board[j - 1][i]:
+                    board[j][i] += board[j - 1][i]
+                    board[j - 1][i] = 0
+                    j -= 1
+                elif board[j][i] != board[j - 1][i]:
+                    j -= 1
+    else:                 # 우
+        for i in range(n):  # i는 행의 인덱스
+            j = n - 1
+            while j > 0:
+                if board[i][j] == 0:
+                    tempBoard = copy.deepcopy(board)
+                    board = oneBlock(i, j, direction, board)
+                    if tempBoard == board:
+                        break
+                elif board[i][j] == board[i][j - 1]:
+                    board[i][j] += board[i][j - 1]
+                    board[i][j - 1] = 0
+                    j -= 1
+                elif board[i][j] != board[i][j - 1]:
+                    j -= 1
+    return board
+
+def solve(board, depth):
+    global maxBlockNum
+    if depth == 5:
+        maxBlock = findMax(board)
+        maxBlockNum = max(maxBlock, maxBlockNum)
+    else:
+        for i in range(4):
+            tempBoard = copy.deepcopy(board)
+            tempBoard = move(tempBoard, i)
+            if tempBoard == board:
+                maxBlock = findMax(board)
+                maxBlockNum = max(maxBlock, maxBlockNum)
+                continue
+            solve(tempBoard, depth + 1)
+
+
+n = int(input())
+board = []
+for _ in range(n):
+    board.append(list(map(int, input().split())))
+
+dx = [-1, 0, 1, 0]
+dy = [0, -1, 0, 1]
+
+maxBlockNum = (-1) * int(1e9)
+
+solve(board, 0)
+print(maxBlockNum)
+```
