@@ -178,10 +178,10 @@ result = 0
 
 if n == 1:
     print(0)
-# elif n == 2:
-#     print(1)
-# elif n == 3:
-#     print(1)
+elif n == 2:
+    print(1)
+elif n == 3:
+    print(1)
 else:
     if isPrime(n):
         result += 1
@@ -212,5 +212,6 @@ else:
             tempSum = primeSum(start, end, primeList)
 
     print(result)
+
 ```
 -> 소수 판별 시간 줄이기, 탐색 범위 반으로 줄이기, 약간의 다이나믹 프로그래밍 기법 등을 이용해서 시간을 줄여 정답 판정을 받았다. 모범 답안 코드를 봐야할 것 같다.
