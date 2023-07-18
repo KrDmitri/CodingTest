@@ -215,3 +215,35 @@ else:
 
 ```
 -> 소수 판별 시간 줄이기, 탐색 범위 반으로 줄이기, 약간의 다이나믹 프로그래밍 기법 등을 이용해서 시간을 줄여 정답 판정을 받았다. 모범 답안 코드를 봐야할 것 같다.
+
+### 소수의 연속합(모범 답안)
+```
+import math
+
+N = int(input())
+
+a = [False, False] + [True] * (N-1)
+prime_num = []
+
+for i in range(2, N+1):
+    if a[i]:
+        prime_num.append(i)
+        for j in range(2*i, N+1, i):
+            a[j] = False
+
+answer = 0
+start = 0
+end = 0
+while end <= len(prime_num):
+    temp_sum = sum(prime_num[start:end])
+    if temp_sum == N:
+        answer += 1
+        end += 1
+    elif temp_sum < N:
+        end += 1
+    else:
+        start += 1
+
+print(answer)
+```
+-> 위의 풀이는 '에라토스테네스의 체'라는 알고리즘을 통해 소수인지에 대한 정보 리스트 a를 구해놓고 풀어서 시간 및 코드 길이를 단축하였다. 투 포인터 알고리즘을 이용하는 풀이는 나의 코드와 비슷하다. 출처: https://donghak-dev.tistory.com/158
