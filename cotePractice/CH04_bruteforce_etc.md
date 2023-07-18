@@ -318,3 +318,53 @@ else:
     print(result)
 ```
 -> 위 문제를 이전에 풀었던 문제들과 비슷하다고 생각하여 투 포인터 알고리즘으로 해결을 시도하였지만 위 문제는 순서가 섞일 수 있고 음수도 포함되어 있어서 투 포인터로 풀기 적합하지 않았다. 고민 후에 이분 탐색으로 푸는 모범 답안 코드를 참고하여 내 방식대로 조금 바꿔서 풀었다. 모범답안에서는 combinations 함수를 쓴 부분을 비트마스킹으로 구해줬는데, 해당 부분의 로직에 대해 추후 공부를 해봐야겠다.
+
+### 두 배열의 합
+```
+t = int(input())
+n = int(input())
+aList = list(map(int, input().split()))
+m = int(input())
+bList = list(map(int, input().split()))
+answer = 0
+
+aCandidates = []
+bCandidates = []
+
+for i in range(n):
+    for j in range(i + 1, n + 1):
+        aCandidates.append(sum(aList[i:j]))
+
+for i in range(m):
+    for j in range(i + 1, m + 1):
+        bCandidates.append(sum(bList[i:j]))
+
+aCandidates.sort()
+bCandidates.sort(reverse=True)
+
+i = 0
+j = 0
+aLen = len(aCandidates)
+bLen = len(bCandidates)
+
+while i < aLen and j < bLen:
+    if aCandidates[i] + bCandidates[j] < t:
+        i += 1
+    elif aCandidates[i] + bCandidates[j] > t:
+        j += 1
+    else:
+        i += 1
+        j += 1
+        at = 1
+        bt = 1
+        while i < aLen and aCandidates[i] == aCandidates[i - 1]:
+            at += 1
+            i += 1
+        while j < bLen and bCandidates[j] == bCandidates[j - 1]:
+            bt += 1
+            j += 1
+        answer += at * bt
+
+print(answer)
+```
+-> 위 문제는 이전에 푼 문제인 '부분수열의 합 2'와 비슷해서 쉽고 빠르게 풀 수 있었다
