@@ -247,3 +247,74 @@ while end <= len(prime_num):
 print(answer)
 ```
 -> 위의 풀이는 '에라토스테네스의 체'라는 알고리즘을 통해 소수인지에 대한 정보 리스트 a를 구해놓고 풀어서 시간 및 코드 길이를 단축하였다. 투 포인터 알고리즘을 이용하는 풀이는 나의 코드와 비슷하다. 출처: https://donghak-dev.tistory.com/158
+
+### 부분수열의 합 2
+```
+import itertools
+
+n, s = map(int, input().split())
+numList = list(map(int, input().split()))
+
+if n == 1:
+    if numList[0] == s:
+        print(1)
+    else:
+        print(0)
+else:
+    leftN = n // 2
+    rightN = n - leftN
+
+    leftSubset = []
+    rightSubset = []
+
+    for i in range(leftN + 1):
+        tempSubset = itertools.combinations(numList[:leftN], i)
+        for elem in tempSubset:
+            leftSubset.append(sum(list(elem)))
+
+    for i in range(rightN + 1):
+        tempSubset = itertools.combinations(numList[leftN:], i)
+        for elem in tempSubset:
+            rightSubset.append(sum(list(elem)))
+
+    leftSubset.sort()
+    rightSubset.sort(reverse=True)
+    # print(leftSubset)
+    # print(rightSubset)
+
+    li = 0
+    ri = 0
+    result = 0
+    leftN = len(leftSubset)
+    rightN = len(rightSubset)
+
+    # for elem in leftSubset:
+    #     if elem == s:
+    #         result += 1
+    # for elem in rightSubset:
+    #     if elem == s:
+    #         result += 1
+
+    while li < leftN and ri < rightN:
+        if leftSubset[li] + rightSubset[ri] < s:
+            li += 1
+        elif leftSubset[li] + rightSubset[ri] > s:
+            ri += 1
+        else:
+            li += 1
+            ri += 1
+            tl = 1
+            tr = 1
+            while li < leftN and leftSubset[li] == leftSubset[li - 1]:
+                li += 1
+                tl += 1
+            while ri < rightN and rightSubset[ri] == rightSubset[ri - 1]:
+                ri += 1
+                tr += 1
+            result += tl * tr
+
+    if s == 0:
+        result -= 1
+    print(result)
+```
+-> 위 문제를 이전에 풀었던 문제들과 비슷하다고 생각하여 투 포인터 알고리즘으로 해결을 시도하였지만 위 문제는 순서가 섞일 수 있고 음수도 포함되어 있어서 투 포인터로 풀기 적합하지 않았다. 고민 후에 이분 탐색으로 푸는 모범 답안 코드를 참고하여 내 방식대로 조금 바꿔서 풀었다. 모범답안에서는 combinations 함수를 쓴 부분을 비트마스킹으로 구해줬는데, 해당 부분의 로직에 대해 추후 공부를 해봐야겠다.
