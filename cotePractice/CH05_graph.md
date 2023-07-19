@@ -104,3 +104,69 @@ else:
     print('No')
 ```
 -> 알고보니 더 쉬운 문제였다
+
+### 서울 지하철 2호선
+```
+import collections
+
+def findSpanningTree(start, now, history):
+    global spanningTree
+    if len(history) == 0:
+        for i in range(n):
+            if graph[start][i] == 1:
+                history.append(i)
+                next = i
+                findSpanningTree(start, next, history)
+                history.remove(i)
+    else:
+        for i in range(n):
+            if len(history) >= 3 and graph[now][start] == 1 and set(history) not in spanningTree:
+                spanningTree.append(set(history))
+            if i not in history and graph[now][i] == 1:
+                history.append(i)
+                next = i
+                findSpanningTree(start, next, history)
+                history.remove(i)
+
+def distToSpanningTree(elem, visited):
+    global spanningTree
+    q = collections.deque([elem])
+    while q:
+        now = q.popleft()
+        nowIndex = now[0]
+        nowDist = now[1]
+        for i in range(n):
+            if graph[nowIndex][i] == 1 and i not in visited:
+                if i in spanningTree:
+                    return nowDist + 1
+                q.append([i, nowDist + 1])
+                visited.append(i)
+
+n = int(input())
+
+graph = [[0] * n for _ in range(n)]
+spanningTree = []
+
+for _ in range(n):
+    x, y = map(int, input().split())
+    graph[x - 1][y - 1] = 1
+    graph[y - 1][x - 1] = 1
+
+for i in range(n):
+    findSpanningTree(i, i, [i])
+    # 순환이 두 개 이상일 경우 아래 코드는 무효할듯?
+    if len(spanningTree) != 0:
+        break
+
+spanningTree = list(spanningTree.pop())
+
+# print(spanningTree)
+
+for i in range(n):
+    if i in spanningTree:
+        print(0, end=' ')
+    else:
+        print(distToSpanningTree([i, 0], [i]), end=' ')
+```
+-> 싸이클 찾는 것은 dfs, 최소 거리 구하는 것은 bfs를 사용하는 방법으로 다른 사람들의 모범답안과 비슷한데 내 코드는 시간 초과가 난다
+
