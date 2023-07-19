@@ -240,3 +240,117 @@ for elem in distance:
 ### 서울 지하철 2호선 (모범 답안)
 https://lastwinter.tistory.com/45
 -> 이게 머선 풀이고??
+
+### 육각보드
+```
+import copy
+import sys
+sys.setrecursionlimit(2000)
+
+def isPossible(board, blankList, colorList):
+    if len(blankList) == 0:
+        return True
+    else:
+        tempBlankList = copy.deepcopy(blankList)
+        colorCandidates = copy.deepcopy(colorList)
+        now = tempBlankList.pop(0)
+        x, y = now[0], now[1]
+        for i in range(6):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx >= 0 and nx < n and ny >= 0 and ny < n:
+                if board[nx][ny] in colorCandidates:
+                    colorCandidates.remove(board[nx][ny])
+        if len(colorCandidates) == 0:
+            return False
+        else:
+            for elem in colorCandidates:
+                board[x][y] = elem
+                flag = isPossible(board, tempBlankList, colorList)
+                if flag:
+                    return True
+                board[x][y] = 'X'
+
+
+
+n = int(input())
+board = []
+blankList = []
+colorList = []
+dx = [-1, 0, 1, 1, 0, -1]
+dy = [0, -1, -1, 0, 1, 1]
+answer = int(1e9)
+
+for i in range(n):
+    temp = input()
+    tempList = []
+    for j in range(n):
+        if temp[j] == 'X':
+            blankList.append([i, j])
+        tempList.append(temp[j])
+    board.append(tempList)
+
+if len(blankList) == 0:
+    print(0)
+else:
+    flag = False
+    for i in range(1, 3):
+        colorList = []
+        for i in range(1, i + 1):
+            colorList.append(i)
+        flag = isPossible(board, blankList, colorList)
+        if flag:
+            break
+    if flag:
+        print(len(colorList))
+    else:
+        print(3)
+```
+-> 처음엔 3개의 색으로 평면에 인접하지 않고 칠할 수 있다는 사실을 잊고 풀다 생각나서 위와 같은 코드를 짰다. 그런데 이것마저 시간 초과가 나는데, 제한 시간 2초인데 이게 시간초과가 나다니 조금 의아했다.
+
+### 육각보드 모범답안
+```
+import sys
+sys.setrecursionlimit(10**9)
+
+n = int(input())
+
+board = []
+
+for _ in range(n):
+    board.append(list(input()))
+
+dx = [-1,-1,0,0,1,1]
+dy = [0,1,-1,1,-1,0]
+
+ans = 0
+
+def dfs(x, y):
+    global ans
+    ans = max(ans, 1)
+
+    # 다음 방향
+    for k in range(6):
+        nx, ny = x+ dx[k], y+ dy[k]
+
+        if 0 <= nx < n and 0 <= ny <n and board[nx][ny] == 'X':
+            if  visited[nx][ny] == 0:
+                visited[nx][ny] = -visited[x][y]
+                dfs(nx, ny)
+                ans = max(ans, 2)
+            else:
+                if visited[nx][ny] == visited[x][y]:
+                    ans = max(ans, 3)
+                    return
+
+visited = [[0]*n for _ in range(n)]
+
+for x in range(n):
+    for y in range(n):
+        if board[x][y] == 'X' and visited[x][y] == 0:
+            visited[x][y] = 1
+            dfs(x, y)
+
+print(ans)
+```
+-> 위 코드는 숫자로 색을 표현한 나의 방식과 다르게 +1, -1 두가지로 해결했다. 또한 재귀 함수 내 코드 수행이 나의 코드보다 짧은 것을 알 수 있다. 앞으로는 copy.deepcopy() 함수를 안쓰는 방향으로 코딩을 해봐야겠다.
