@@ -170,3 +170,69 @@ for i in range(n):
 ```
 -> 싸이클 찾는 것은 dfs, 최소 거리 구하는 것은 bfs를 사용하는 방법으로 다른 사람들의 모범답안과 비슷한데 내 코드는 시간 초과가 난다
 
+### 서울 지하철 2호선 (2번째 시도)
+```
+import collections
+
+def findSpanningTree(start, now, cnt):
+    global isCycle, visited
+    if cnt >= 2 and graph[now][start] == 1:
+        if start == 3:
+            print('', end='')
+        isCycle[start] = True
+        return
+
+    for i in range(n):
+        if graph[now][i] == 1 and not visited[i]:
+            visited[i] = True
+            findSpanningTree(start, i, cnt + 1)
+            visited[i] = False
+
+
+def distToSpanningTree():
+    global spanningTree, distance
+    q = collections.deque()
+    for node in spanningTree:
+        q.append([node, 0])
+
+    while q:
+        now = q.popleft()
+        nowNode = now[0]
+        nowDist = now[1]
+        for i in range(n):
+            if graph[nowNode][i] == 1 and i not in spanningTree and distance[i] == -1:
+                distance[i] = nowDist + 1
+                q.append([i, nowDist + 1])
+
+n = int(input())
+
+graph = [[0] * n for _ in range(n)]
+isCycle = [False] * n
+
+for _ in range(n):
+    x, y = map(int, input().split())
+    graph[x - 1][y - 1] = 1
+    graph[y - 1][x - 1] = 1
+
+for i in range(n):
+    visited = [False] * n
+    visited[i] = True
+    findSpanningTree(i, i, 0)
+
+# 위에서 isCyle 구하고, 기반으로 cycleTree 리스트 만들어주기
+spanningTree = []
+for i in range(len(isCycle)):
+    if isCycle[i]:
+        spanningTree.append(i)
+
+distance = [-1] * n
+
+for elem in spanningTree:
+    distance[elem] = 0
+
+distToSpanningTree()
+
+for elem in distance:
+    print(elem, end=' ')
+```
+-> 다른 모범 답안을 참고하여 푼 코드인데 이 코드도 시간 초과가 난다. 모범 답안 코드도 메모리 초과가 나던데 우선 원리는 이해했으므로 나중에 다시 풀어봐야겠다.
