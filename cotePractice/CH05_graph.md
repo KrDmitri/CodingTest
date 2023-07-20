@@ -354,3 +354,98 @@ for x in range(n):
 print(ans)
 ```
 -> 위 코드는 숫자로 색을 표현한 나의 방식과 다르게 +1, -1 두가지로 해결했다. 또한 재귀 함수 내 코드 수행이 나의 코드보다 짧은 것을 알 수 있다. 앞으로는 copy.deepcopy() 함수를 안쓰는 방향으로 코딩을 해봐야겠다.
+
+### BFS 스페셜 저지
+```
+import collections
+
+def checkRight(q, idx):
+    q = collections.deque(q)
+    while q:
+        now = q.popleft()
+        tempList = []
+        for i in range(n):
+            if ([now, i] in route or [i, now] in route) and not visited[i]:
+                tempList.append(i)
+        if len(tempList) == 0:
+            continue
+        for elem in answers[idx:idx + len(tempList)]:
+            if elem not in tempList:
+                return 0
+        for elem in answers[idx:idx + len(tempList)]:
+            q.append(elem)
+            visited[elem] = True
+        idx += len(tempList)
+        if idx >= n:
+            return 1
+    return 1
+
+n = int(input())
+route = []
+
+for _ in range(n - 1):
+    x, y = map(int, input().split())
+    route.append([x - 1, y - 1])
+
+answers = list(map(int, input().split()))
+for i in range(len(answers)):
+    answers[i] -= 1
+
+visited = [True]
+for _ in range(n - 1):
+    visited.append(False)
+
+idx = 1
+
+flag = checkRight([0], idx)
+
+print(flag)
+```
+-> 이것보다 빠르게 풀 수 있는 방법을 생각하기 어렵다
+
+### BFS 스페셜 저지(모범 답안)
+```
+import sys
+from collections import deque
+N = int(sys.stdin.readline().rstrip())
+graph=[[] for _ in range(N+1)]
+for _ in range(N-1):
+    a,b= map(int,sys.stdin.readline().rstrip().split())
+    graph[a].append(b)
+    graph[b].append(a)
+for i in range(1,N+1):
+    graph[i].sort()
+ans=list(map(int,sys.stdin.readline().split()))
+stk=[]
+flag=False
+visited = [False]*(N+1)
+def bfs(n):
+    global flag
+    q =deque()
+    visited[n]=True
+    q.append(n)
+    start=1
+    tmp=[]
+    while q:
+        stk=[]
+        for i in graph[q.popleft()]:
+            if not visited[i]:
+                visited[i]=True
+                stk.append(i)
+        li=ans[start:start+len(stk)]
+        tmp=list(li)
+        start=start+len(stk)
+        li.sort()
+        if li!=stk:
+            flag=True
+            break
+        else:
+            for i in tmp:
+                q.append(i)
+if ans[0]==1:       
+    bfs(1)
+    print(1) if not flag else print(0)
+else:
+    print(0)
+```
+-> 내 코드랑 전체적인 아이디어는 동일하다, 어디서 시간 차이를 가져왔는지 분석해야겠다.
