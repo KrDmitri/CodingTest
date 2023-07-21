@@ -502,3 +502,165 @@ flag = checkRight([0], idx)
 print(flag)
 ```
 -> 내가 짠 코드가 계속 시간 초과 나서 정답 판정을 받도록 수정을 해보았다. 수정된 부분은 각 노드에서 간선에 대한 정보를 찾는 부분인데, 기존 코드는 한 노드와 다른 모든 노드에 대한 간선 정보를 확인했는데, 이번 코드에서는 연결된 노드의 정보만 확인해서 시간을 줄여 정답 판정을 받을 수 있었다.
+
+### DFS 스페셜 저지
+```
+import collections
+import sys
+
+def isElementIn(elem, tempList):
+    start = 0
+    end = len(tempList) - 1
+    mid = (start + end) // 2
+    while end >= start:
+        if elem > tempList[mid]:
+            start = mid + 1
+            mid = (start + end) // 2
+        elif elem < tempList[mid]:
+            end = mid - 1
+            mid = (start + end) // 2
+        else:
+            return True
+    return False
+
+n = int(sys.stdin.readline())
+graph = [[] for _ in range(n + 1)]
+for _ in range(n - 1):
+    x, y = map(int, sys.stdin.readline().split())
+    graph[x].append(y)
+    graph[y].append(x)
+
+answer = list(map(int, sys.stdin.readline().split()))
+visited = [False] * (n + 1)
+
+visited[1] = True
+
+stack = [1]
+idx = 1
+
+while stack:
+    if idx == n - 1:
+        print(1)
+        break
+    tempList = []
+    for elem in graph[stack[-1]]:
+        if not visited[elem]:
+            tempList.append(elem)
+    if len(tempList) > 0:
+        tempAnswer = answer[idx]
+        if len(tempList) == 1:
+            if tempAnswer != tempList[0]:
+                print(0)
+                break
+            else:
+                stack.append(tempAnswer)
+                visited[tempAnswer] = True
+                idx += 1
+        else:
+            tempList.sort()
+            if not isElementIn(tempAnswer, tempList):
+                print(0)
+                break
+            else:
+                stack.append(tempAnswer)
+                visited[tempAnswer] = True
+                idx += 1
+    else:
+        stack.pop()
+```
+-> 나는 재귀함수를 사용하는 것보다 스택 자료구조를 사용하는 것이 수행 시간을 절약할 수 있을 것이라고 생각했다. 하지만 backtracking 과정에서는 재귀 용법이 더 빠르게 풀린다는 것을 확인할 수 있었다.
+
+### DFS 스페셜 저지(모범 답안)
+```
+import sys
+from collections import deque
+sys.setrecursionlimit(100000)
+
+
+def dfs(graph, visited, cmp):
+    tmp = cmp.popleft()
+    if not cmp:
+        print(1)
+        exit(0)
+    visited[tmp] = True
+    for _ in range(len(graph[tmp])):
+        if cmp[0] in graph[tmp] and not visited[cmp[0]]:
+            dfs(graph, visited, cmp)
+    return False
+
+
+N = int(sys.stdin.readline())
+visited = [False] * (N + 1)
+graph = [[] for _ in range(N + 1)]
+
+for i in range(1, N):
+    x, y = map(int, sys.stdin.readline().split())
+    graph[x].append(y)
+    graph[y].append(x)
+
+cmp = deque(map(int, sys.stdin.readline().split()))
+if cmp[0] != 1:
+    print(0)
+    exit(0)
+if not dfs(graph, visited, cmp):
+    print(0)
+```
+-> 처음엔 "for _ in range(len(graph[tmp])):" 해당 코드가 왜 필요한지 몰랐는데, 이는 이어진 간선의 갯수만큼 현재 노드에서 다음 노드로 갈 수 있는 경우의 수가 주어지기 때문이라는 것을 이해했다.
+
+### 뱀과 사다리 게임
+```
+import sys
+
+INF = int(1e9)
+def findNext(num, type):
+    for elem in type:
+        if elem[0] == num:
+            return elem[1]
+
+n, m = map(int, sys.stdin.readline().split())
+ladder = []
+ladderBlank = []
+snake = []
+snakeBlank = []
+for _ in range(n):
+    x, y = map(int, sys.stdin.readline().split())
+    ladder.append([x, y])
+    ladderBlank.append(x)
+for _ in range(m):
+    x, y = map(int, sys.stdin.readline().split())
+    snake.append([x, y])
+    snakeBlank.append(x)
+history = [INF] * 101
+q = [[1, 0]]
+answer = []
+
+while len(q) > 0:
+    q.sort(key=lambda x:x[1])
+    nowInfo = q.pop(0)
+    nowNum = nowInfo[0]
+    nowTry = nowInfo[1]
+    if nowNum >= 94:
+        answer.append(nowTry + 1)
+        break
+    for i in range(1, 7):
+        next = nowNum + i
+        if next in snakeBlank:
+            nextBlank = findNext(next, snake)
+            if history[nextBlank] > nowTry + 1:
+                history[nextBlank] = nowTry + 1
+                q.append([nextBlank, nowTry + 1])
+        elif next in ladderBlank:
+            nextBlank = findNext(next, ladder)
+            if nextBlank == 100:
+                answer.append(nowTry)
+                break
+            if history[nextBlank] > nowTry + 1:
+                history[nextBlank] = nowTry + 1
+                q.append([nextBlank, nowTry + 1])
+        else:
+            if history[next] > nowTry + 1:
+                history[next] = nowTry + 1
+                q.append([next, nowTry + 1])
+
+print(min(answer))
+```
