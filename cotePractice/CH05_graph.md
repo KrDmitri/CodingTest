@@ -695,3 +695,66 @@ while q:
 
 print(-1)
 ```
+
+### 연구소
+```
+import sys
+import copy
+from itertools import combinations
+from collections import deque
+
+def countBlanks(tempLab):
+    num = 0
+    for i in range(n):
+        for j in range(m):
+            if tempLab[i][j] == 0:
+                num += 1
+    return num
+
+def spreadVirus(tempLab, virusList):
+    q = deque(virusList)
+    visited = [[False] * m for _ in range(n)]
+    visited[q[0][0]][q[0][1]] = True
+    while q:
+        now = q.popleft()
+        x, y = now[0], now[1]
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx >= 0 and nx < n and ny >= 0 and ny < m and not visited[nx][ny] and tempLab[nx][ny] != 1:
+                q.append([nx, ny])
+                tempLab[nx][ny] = 2
+                visited[nx][ny] = True
+    blanks = countBlanks(tempLab)
+    return blanks
+
+
+n, m = map(int, sys.stdin.readline().split())
+lab = []
+virusPos = []
+blanks = []
+dx = [-1, 0, 1, 0]
+dy = [0, -1, 0, 1]
+
+for i in range(n):
+    tempList = list(map(int, sys.stdin.readline().split()))
+    for j in range(m):
+        if tempList[j] == 2:
+            virusPos.append([i, j])
+        if tempList[j] == 0:
+            blanks.append([i, j])
+    lab.append(tempList)
+
+candidates = list(combinations(blanks, 3))
+
+answer = 0
+for candidate in candidates:
+    tempLab = copy.deepcopy(lab)
+    for elem in candidate:
+        tempLab[elem[0]][elem[1]] = 1
+    blanks = spreadVirus(tempLab, virusPos)
+    answer = max(answer, blanks)
+
+print(answer)
+```
+-> 이 문제는 5달 전에도 풀었었는데 코드 길이를 반으로 줄이고 실행 시간도 3배 이상 단축했다.
