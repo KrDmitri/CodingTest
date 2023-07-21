@@ -664,3 +664,34 @@ while len(q) > 0:
 
 print(min(answer))
 ```
+
+### 데스 나이트
+```
+import sys
+from collections import deque
+
+n = int(sys.stdin.readline())
+x1, y1, x2, y2 = map(int, sys.stdin.readline().split())
+dx = [-2, 0, 2, 2, 0, -2]
+dy = [-1, -2, -1, 1, 2, 1]
+visited = [[False] * n for _ in range(n)]
+
+q = deque()
+q.append([x1, y1, 0])
+visited[x1][y1] = True
+
+while q:
+    now = q.popleft()
+    nowx, nowy, nowCnt = now[0], now[1], now[2]
+    for i in range(6):
+        nx = nowx + dx[i]
+        ny = nowy + dy[i]
+        if nx == x2 and ny == y2:
+            print(nowCnt + 1)
+            exit(0)
+        if nx >= 0 and nx < n and ny >= 0 and ny < n and not visited[nx][ny]:
+            q.append([nx, ny, nowCnt + 1])
+            visited[nx][ny] = True
+
+print(-1)
+```
