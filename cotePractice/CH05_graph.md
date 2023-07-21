@@ -449,3 +449,56 @@ else:
     print(0)
 ```
 -> 내 코드랑 전체적인 아이디어는 동일하다, 어디서 시간 차이를 가져왔는지 분석해야겠다.(내 코드는 한 노드와 연결된 다른 노드들을 확인할 때 모든 노드를 확인하지만, 모범 답안 코드에서는 연결된 노드들만 가져와서 방문된 노드인지만 확인하기에 노드의 개수가 100,000 개인 본 문제에서 큰 시간 차이를 만드는 것 같다.)
+
+### BFS 스페셜 저지(코드 수정 버전)
+```
+import collections
+import sys
+
+def checkRight(q, idx):
+    q = collections.deque(q)
+    while q:
+        now = q.popleft()
+        tempList = []
+        for elem in graph[now]:
+            if not visited[elem]:
+                tempList.append(elem)
+        if len(tempList) == 0:
+            continue
+        for elem in answers[idx:idx + len(tempList)]:
+            if elem not in tempList:
+                return 0
+        for elem in answers[idx:idx + len(tempList)]:
+            q.append(elem)
+            visited[elem] = True
+        idx += len(tempList)
+        if idx >= n:
+            return 1
+    return 1
+
+n = int(sys.stdin.readline())
+graph = [[] for _ in range(n)]
+
+for _ in range(n - 1):
+    x, y = map(int, sys.stdin.readline().split())
+    graph[x - 1].append(y - 1)
+    graph[y - 1].append(x - 1)
+
+for i in range(n):
+    graph[i].sort()
+
+answers = list(map(int, sys.stdin.readline().split()))
+for i in range(len(answers)):
+    answers[i] -= 1
+
+visited = [True]
+for _ in range(n - 1):
+    visited.append(False)
+
+idx = 1
+
+flag = checkRight([0], idx)
+
+print(flag)
+```
+-> 내가 짠 코드가 계속 시간 초과 나서 정답 판정을 받도록 수정을 해보았다. 수정된 부분은 각 노드에서 간선에 대한 정보를 찾는 부분인데, 기존 코드는 한 노드와 다른 모든 노드에 대한 간선 정보를 확인했는데, 이번 코드에서는 연결된 노드의 정보만 확인해서 시간을 줄여 정답 판정을 받을 수 있었다.
