@@ -203,3 +203,126 @@ else:
     print(0)
 ```
 -> 처음엔 위와 같이 if not visited[x][y]: 로 조건을 짜지 않고 in 메서드를 활용하여 코드를 짰는데 시간 초과가 났었다. in 메서드를 사용하면서 매번 완전 탐색을 하면서 시간이 오래걸린 것 같다.
+
+### 벽 부수고 이동하기
+```
+import copy
+import sys
+from collections import deque
+INF = int(1e9)
+
+def bfs(graph):
+    visited = [[False] * m for _ in range(n)]
+    visited[0][0] = True
+    q = deque()
+    q.append([0, 0, 1, False, visited])
+    while q:
+        now = q.popleft()
+        x, y, nowCnt, nowWallFlag, nowVisited = now[0], now[1], now[2], now[3], now[4]
+        if x == n - 1 and y == m - 1:
+            return nowCnt
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx == n - 1 and ny == m - 1:
+                return nowCnt + 1
+            if nx >= 0 and nx < n and ny >= 0 and ny < m and not nowVisited[nx][ny]:
+                if graph[nx][ny] == 1:
+                    if not nowWallFlag:
+                        tempVisited = copy.deepcopy(nowVisited)
+                        tempVisited[nx][ny] = True
+                        q.append([nx, ny, nowCnt + 1, True, tempVisited])
+                    else:
+                        continue
+                # 빈 칸으로 이동시
+                else:
+                    if nowWallFlag == False:
+                        shortestPath[nx][ny] = min(shortestPath[nx][ny], nowCnt + 1)
+                        tempVisited = copy.deepcopy(nowVisited)
+                        tempVisited[nx][ny] = True
+                        q.append([nx, ny, nowCnt + 1, nowWallFlag, tempVisited])
+                    # 벽을 한 번 깻을 경우
+                    else:
+                        if shortestPath[nx][ny] < nowCnt + 1:
+                            continue
+                        if shortestPathBreak[nx][ny] > nowCnt + 1:
+                            shortestPathBreak[nx][ny] = nowCnt + 1
+                            tempVisited = copy.deepcopy(nowVisited)
+                            tempVisited[nx][ny] = True
+                            q.append([nx, ny, nowCnt + 1, nowWallFlag, tempVisited])
+                        else:
+                            continue
+
+    return INF
+
+
+n, m = map(int, sys.stdin.readline().split())
+graph = []
+for i in range(n):
+    tempStr = sys.stdin.readline()
+    tempList = []
+    for j in range(m):
+        tempList.append(int(tempStr[j]))
+    graph.append(tempList)
+
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+shortestPath = [[INF] * m for _ in range(n)]
+shortestPathBreak = [[INF] * m for _ in range(n)]
+
+ans = bfs(graph)
+
+if ans == INF:
+    print(-1)
+else:
+    print(ans)
+```
+-> 시간 초과가 난다.
+
+### 벽 부수고 이동하기(모범 답안)
+```
+from collections import deque
+
+n, m = map(int, input().split())
+graph = []
+
+# 3차원 행렬을 통해 벽의 파괴를 파악함. visited[x][y][0]은 벽 파괴 가능. [x][y][1]은 불가능.
+visited = [[[0] * 2 for _ in range(m)] for _ in range(n)]
+visited[0][0][0] = 1
+
+for i in range(n):
+    graph.append(list(map(int, input())))
+
+# 상하좌우
+dx = [0, 0, 1, -1]
+dy = [1, -1, 0, 0]
+
+
+def bfs(x, y, z):
+    queue = deque()
+    queue.append((x, y, z))
+
+    while queue:
+        a, b, c = queue.popleft()
+        # 끝 점에 도달하면 이동 횟수를 출력
+        if a == n - 1 and b == m - 1:
+            return visited[a][b][c]
+        for i in range(4):
+            nx = a + dx[i]
+            ny = b + dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= m:
+                continue
+            # 다음 이동할 곳이 벽이고, 벽파괴기회를 사용하지 않은 경우
+            if graph[nx][ny] == 1 and c == 0 :
+                visited[nx][ny][1] = visited[a][b][0] + 1
+                queue.append((nx, ny, 1))
+            # 다음 이동할 곳이 벽이 아니고, 아직 한 번도 방문하지 않은 곳이면
+            elif graph[nx][ny] == 0 and visited[nx][ny][c] == 0:
+                visited[nx][ny][c] = visited[a][b][c] + 1
+                queue.append((nx, ny, c))
+    return -1
+
+
+print(bfs(0, 0, 0))
+```
+-> 내 코드랑 전체적인 아이디어는 같은데 어느 부분에서 시간 효율을 가르는지 분석해봐야겠다.
