@@ -326,3 +326,73 @@ def bfs(x, y, z):
 print(bfs(0, 0, 0))
 ```
 -> 내 코드랑 전체적인 아이디어는 같은데 어느 부분에서 시간 효율을 가르는지 분석해봐야겠다.
+
+### 벽 부수고 이동하기4
+```
+import sys
+from collections import deque
+
+def bfs(start, groupIndex):
+    global visited, group
+    q = deque()
+    q.append(start)
+    num = 0
+    history = []
+    visited[start[0]][start[1]] = 1
+    while q:
+        now = q.popleft()
+        num += 1
+        history.append(now)
+        x, y = now[0], now[1]
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx >= 0 and nx < n and ny >=0 and ny < m and graph[nx][ny] == 0 and visited[nx][ny] == 0:
+                q.append([nx, ny])
+                visited[nx][ny] = num + 1
+
+    for elem in history:
+        visited[elem[0]][elem[1]] = num
+        group[elem[0]][elem[1]] = groupIndex
+
+
+n, m = map(int, sys.stdin.readline().split())
+
+graph = []
+for i in range(n):
+    tempStr = sys.stdin.readline().rstrip()
+    tempList = []
+    for j in range(len(tempStr)):
+        tempList.append(int(tempStr[j]))
+    graph.append(tempList)
+
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+visited = [[0] * m for _ in range(n)]
+group = [[0] * m for _ in range(n)]
+groupIndex = 1
+
+for i in range(n):
+    for j in range(m):
+        if graph[i][j] == 0 and visited[i][j] == 0:
+            start = [i, j]
+            bfs(start, groupIndex)
+            groupIndex += 1
+
+for i in range(n):
+    for j in range(m):
+        if graph[i][j] == 0:
+            print(0, end='')
+        else:
+            num = 1
+            checked = []
+            for x in range(4):
+                ni = i + dx[x]
+                nj = j + dy[x]
+                if ni >= 0 and ni < n and nj >= 0 and nj < m and group[ni][nj] not in checked:
+                    num += visited[ni][nj]
+                    checked.append(group[ni][nj])
+            print(num % 10, end='')
+    print()
+```
+-> 처음엔 모든 벽에 대한 bfs를 수행해 해결하려 했지만 시간초과가 나서 위와 같이 bfs는 한 번 수행하여 상하좌우에 몇 개의 빈칸이 있는지 계산하는 방식으로 해결하였다.
