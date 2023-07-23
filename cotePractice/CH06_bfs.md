@@ -396,3 +396,105 @@ for i in range(n):
     print()
 ```
 -> 처음엔 모든 벽에 대한 bfs를 수행해 해결하려 했지만 시간초과가 나서 위와 같이 bfs는 한 번 수행하여 상하좌우에 몇 개의 빈칸이 있는지 계산하는 방식으로 해결하였다.
+
+### 벽 부수고 이동하기2
+```
+import sys
+from collections import deque
+INF = int(1e9)
+
+def bfs(visited):
+    q = deque()
+    q.append([[0, 0], 0, 1])
+    visited[0][0][0] = 1
+    while q:
+        now = q.popleft()
+        nowPos, nowBreak, nowCnt = now[0], now[1], now[2]
+        x, y = nowPos[0], nowPos[1]
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx >= 0 and nx < n and ny >= 0 and ny < m:
+                if graph[nx][ny] == 1:
+                    if nowBreak + 1 > k:
+                        continue
+                    else:
+                        if visited[nx][ny][nowBreak + 1] > nowCnt + 1:
+                            visited[nx][ny][nowBreak + 1] = nowCnt + 1
+                            q.append([[nx, ny], nowBreak + 1, nowCnt + 1])
+                else:
+                    if visited[nx][ny][nowBreak] > nowCnt + 1:
+                        visited[nx][ny][nowBreak] = nowCnt + 1
+                        q.append([[nx, ny], nowBreak, nowCnt + 1])
+    return min(visited[n - 1][m - 1])
+
+n, m, k = map(int, sys.stdin.readline().split())
+graph = []
+for _ in range(n):
+    tempStr = sys.stdin.readline().rstrip()
+    tempList = []
+    for j in range(len(tempStr)):
+        tempList.append(int(tempStr[j]))
+    graph.append(tempList)
+visited = [[[INF for _ in range(k + 1)] for _ in range(m)] for _ in range(n)]
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+
+ans = bfs(visited)
+
+if ans == INF:
+    print(-1)
+else:
+    print(ans)
+```
+
+### 벽 부수고 이동하기2(모범답안)
+```
+# 힙큐를 쓰면, 3차원 visited가 필요할까?
+# 방문 여부는 확인해야 하니까 필요는 하겠다
+# 그럼 2차원으로 만들어서 level을 표시하고
+# 해당 레벨보다 낮으면 등록되게?
+# 이게 맞는듯 ㅇㅇ
+
+from sys import stdin;
+
+input = stdin.readline
+
+
+def BFS(N, M, K, field):
+    visited = [[K + 1] * M for _ in range(N)]
+    dr = [(0, 1), (1, 0), (-1, 0), (0, -1)]
+    visited[0][0] = 0
+    que = [(0, 0,)]
+    turn = 1
+    while que:
+        new_que = []
+
+        for x, y in que:
+            if x == N - 1 and y == M - 1:
+                return turn
+
+            for dx, dy in dr:
+                nx, ny = x + dx, y + dy
+
+                if nx >= N or nx < 0 or ny >= M or ny < 0:
+                    continue
+
+                nw = int(field[nx][ny]) + visited[x][y]
+
+                if nw < visited[nx][ny]:
+                    visited[nx][ny] = nw
+                    new_que.append((nx, ny))
+
+        que = new_que
+        turn += 1
+
+    return -1
+
+
+N, M, K = map(int, input().split())
+field = [input().rstrip() for _ in range(N)]
+
+print(BFS(N, M, K, field))
+```
+-> 위 코드는 3차원 리스트를 활용한 나의 코드와 다르게 2차원 리스트로도 해결하였고, 흥미로운 점은 매 턴마다 큐를 새로 업데이트 한 것이다. 이 방법을 사용하면 더욱 빠르게 본 문제를 풀 수 있다.
