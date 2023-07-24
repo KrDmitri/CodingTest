@@ -605,3 +605,74 @@ dy = [0, -1, -1, -1, 0, 1, 1, 1, 0]
 flag = bfs(board)
 print(flag)
 ```
+
+### 아기 상어
+```
+import sys
+from collections import deque
+
+def findFish():
+    global graph, stomach, size, sharkPos
+    q = deque()
+    firstItem = [sharkPos[0], sharkPos[1], 0]
+    q.append(firstItem)
+    visited = [[False] * n for _ in range(n)]
+    visited[sharkPos[0]][sharkPos[1]] = True
+    eatable = []
+    while q:
+        newQ = deque()
+        for now in q:
+            x, y, cnt = now[0], now[1], now[2]
+            for i in range(4):
+                nx = x + dx[i]
+                ny = y + dy[i]
+                if nx < 0 or nx >= n or ny < 0 or ny >= n or graph[nx][ny] > size or visited[nx][ny]:
+                    continue
+                if graph[nx][ny] == 0 or graph[nx][ny] == size:
+                    newQ.append([nx, ny, cnt + 1])
+                    visited[nx][ny] = True
+                elif graph[nx][ny] < size:
+                    eatable.append([nx, ny, cnt + 1])
+                    visited[nx][ny] = True
+        q = newQ
+        if len(eatable) > 0:
+            break
+    if len(eatable) == 0:
+        return None
+    else:
+        eatable.sort(key=lambda x:(x[0], x[1]))
+        return eatable[0]
+
+
+n = int(sys.stdin.readline())
+graph = []
+sharkPos = [-1, -1]
+size = 2
+stomach = 0
+time = 0
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+
+for i in range(n):
+    tempList = list(map(int, sys.stdin.readline().split()))
+    for j in range(n):
+        if tempList[j] == 9:
+            sharkPos = [i, j]
+    graph.append(tempList)
+graph[sharkPos[0]][sharkPos[1]] = 0
+
+nextFish = findFish()
+while nextFish != None:
+    nx, ny, dt = nextFish[0], nextFish[1], nextFish[2]
+    graph[nx][ny] = 0
+    stomach += 1
+    if stomach == size:
+        size += 1
+        stomach = 0
+    time += dt
+    sharkPos = [nx, ny]
+    nextFish = findFish()
+
+print(time)
+```
+-> 3달 전에 3시간 넘게 풀다 결국 못풀어서 답안 코드를 본 문제, 이번에는 40분 만에 쉽게 풀어냈다😎
