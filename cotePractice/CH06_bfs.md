@@ -498,3 +498,110 @@ field = [input().rstrip() for _ in range(N)]
 print(BFS(N, M, K, field))
 ```
 -> 위 코드는 3차원 리스트를 활용한 나의 코드와 다르게 2차원 리스트로도 해결하였고, 흥미로운 점은 매 턴마다 큐를 새로 업데이트 한 것이다. 이 방법을 사용하면 더욱 빠르게 본 문제를 풀 수 있다.
+
+### 벽 부수고 이동하기3
+```
+from collections import deque
+import sys
+input = sys.stdin.readline
+
+def bfs(start):
+    q = deque()
+    q.append(start)
+    ans = 1
+    time = True
+    while q:
+        for _ in range(len(q)):
+            i, j, w = q.popleft()
+            
+            if i == n - 1 and j == m - 1:
+                print(ans)
+                return
+            
+            for dy, dx in dir:
+                ni, nj = i + dy, j + dx
+                if ni < 0 or ni >= n or nj < 0 or nj >= m or visited[ni][nj] <= w:
+                    continue
+                #벽이 아닌 경우 낮이든 밤이든 이동 가능
+                if graph[ni][nj] == '0':
+                        q.append((ni, nj, w))
+                        visited[ni][nj] = w
+                #벽인 경우
+                elif w < k:
+                    if not time: #밤 인 경우
+                        q.append((i, j, w))
+                    else:
+                        visited[ni][nj] = w
+                        q.append((ni, nj, w + 1))
+        ans += 1
+        time = not time
+    print(-1)
+    return
+
+n, m, k = map(int, input().split())
+graph = [input().rstrip() for _ in range(n)]
+visited = [[k + 1 for _ in range(m)] for _ in range(n)]
+visited[0][0] = 0
+
+dir = ((1, 0), (-1, 0), (0, 1), (0, -1))
+
+bfs((0,0,0))
+```
+-> 나중에 다시 풀어보면 좋을거 같다
+
+### 움직이는 미로 탈출
+```
+import sys
+from collections import deque
+
+def moveBoard(board):
+    for i in range(7, 0, -1):
+        for j in range(8):
+            board[i][j] = board[i - 1][j]
+    for i in range(8):
+        board[0][i] = '.'
+    return board
+
+def bfs(board):
+    pos = [7, 0]
+    q = deque()
+    q.append(pos)
+    for k in range(8):
+        if k == 6:
+            print('', end='')
+        newQ = deque()
+        for elem in q:
+            x, y = elem[0], elem[1]
+            for i in range(9):
+                nx = x + dx[i]
+                ny = y + dy[i]
+                if nx < 0 or nx >= 8 or ny < 0 or ny >= 8:
+                    continue
+                if board[nx][ny] == '.' and [nx, ny] not in newQ:
+                    newQ.append([nx, ny])
+
+        board = moveBoard(board)
+        for i in range(8):
+            for j in range(8):
+                if board[i][j] == '#' and [i, j] in newQ:
+                    newQ.remove([i, j])
+        if len(newQ) == 0:
+            return 0
+        q = newQ
+    return 1
+
+
+board = []
+for _ in range(8):
+    tempStr = sys.stdin.readline()
+    tempList = []
+    for i in range(8):
+        tempList.append(tempStr[i])
+    board.append(tempList)
+
+dx = [-1, -1, 0, 1, 1, 1, 0, -1, 0]
+dy = [0, -1, -1, -1, 0, 1, 1, 1, 0]
+
+flag = bfs(board)
+print(flag)
+```
