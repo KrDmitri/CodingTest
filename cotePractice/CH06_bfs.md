@@ -676,3 +676,59 @@ while nextFish != None:
 print(time)
 ```
 -> 3달 전에 3시간 넘게 풀다 결국 못풀어서 답안 코드를 본 문제, 이번에는 40분 만에 쉽게 풀어냈다😎
+
+### 레이저 통신
+```
+import sys
+from collections import deque
+INF = int(1e9)
+
+def bfs():
+    global visited, start
+    q = deque()
+    q.append([start[0], start[1], -1, 0])
+    visited[start[0]][start[1]] = 0
+    while q:
+        now = q.popleft()
+        x, y, direction, cnt = now[0], now[1], now[2], now[3]
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx < 0 or nx >= w or ny < 0 or ny >= h or cnt > visited[nx][ny] or graph[nx][ny] == '*':
+                continue
+            if direction == -1 or direction == i:
+                if [nx, ny, i, cnt] not in q:
+                    q.append([nx, ny, i, cnt])
+                    visited[nx][ny] = cnt
+            else:
+                if cnt + 1 <= visited[nx][ny] and [nx, ny, i, cnt + 1] not in q:
+                    q.append([nx, ny, i, cnt + 1])
+                    visited[nx][ny] = cnt + 1
+
+
+h, w = map(int, sys.stdin.readline().split())
+graph = []
+start = []
+end = []
+flag = True
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+visited = [[INF] * h for _ in range(w)]
+for i in range(w):
+    tempStr = sys.stdin.readline()
+    tempList = []
+    for j in range(h):
+        tempList.append(tempStr[j])
+        if tempStr[j] == 'C':
+            if flag:
+                start = [i, j]
+                flag = False
+            else:
+                end = [i, j]
+    graph.append(tempList)
+
+
+bfs()
+
+print(visited[end[0]][end[1]])
+```
