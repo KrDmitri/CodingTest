@@ -938,3 +938,31 @@ else:
     for i in range(len(resultList)):
         print(resultList[i], end='')
 ```
+
+### 스타트링크
+```
+import sys
+from collections import deque
+
+wholeFloor, start, dest, u, d = map(int, sys.stdin.readline().rstrip().split())
+d = (-1) * d
+df = [u, d]
+visited = [False] * 1000001
+visited[start] = True
+
+q = deque()
+q.append([start, 0])
+while q:
+    now = q.popleft()
+    nowFloor, nowCnt = now[0], now[1]
+    if nowFloor == dest:
+        print(nowCnt)
+        exit(0)
+    for d in df:
+        nextFloor = nowFloor + d
+        if nextFloor < 1 or nextFloor > wholeFloor or visited[nextFloor]:
+            continue
+        q.append([nextFloor, nowCnt + 1])
+        visited[nextFloor] = True
+print("use the stairs")
+```
