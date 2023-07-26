@@ -966,3 +966,81 @@ while q:
         visited[nextFloor] = True
 print("use the stairs")
 ```
+
+### 탈옥
+```
+import sys
+import copy
+from collections import deque
+
+def bfs(person):
+    global graph
+    candidates = []
+    visited = [[False] * m for _ in range(n)]
+    q = deque()
+    q.append([person[0], person[1], []])
+    visited[person[0]][person[1]] = True
+    while q:
+        now = q.popleft()
+        x, y, doors = now[0], now[1], now[2]
+        if [x, y] in exit:
+            candidates.append(doors)
+            continue
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= m or visited[nx][ny] or graph[nx][ny] == '*':
+                continue
+            if graph[nx][ny] == '#':
+                newDoors = copy.deepcopy(doors)
+                newDoors.append([nx, ny])
+                visited[nx][ny] = True
+                q.append([nx, ny, newDoors])
+            else:
+                visited[nx][ny] = True
+                q.append([nx, ny, doors])
+    return candidates
+
+def combine(x, y):
+    temp = copy.deepcopy(x)
+    for elem in y:
+        if elem not in temp:
+            temp.append(elem)
+    return len(temp)
+
+
+t = int(sys.stdin.readline().rstrip())
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+
+for _ in range(t):
+    n, m = map(int, sys.stdin.readline().rstrip().split())
+    graph = []
+    exit = []
+    inmates = []
+    for i in range(n):
+        tempStr = sys.stdin.readline().rstrip()
+        tempList = []
+        for j in range(m):
+            if (i == 0 or i == n - 1 or j == 0 or j == m - 1) and (tempStr[j] =='#' or tempStr[j] == '.'):
+                exit.append([i, j])
+            if tempStr[j] == '$':
+                inmates.append([i, j])
+            tempList.append(tempStr[j])
+        graph.append(tempList)
+
+    flag = True
+    for inmate in inmates:
+        if flag:
+            aCandidates = bfs(inmate)
+            flag = False
+        else:
+            bCandidates = bfs(inmate)
+    minDoors = int(1e9)
+    for a in aCandidates:
+        for b in bCandidates:
+            minDoors = min(minDoors, combine(a, b))
+
+    print(minDoors)
+```
+-> 위 코드는 본 문제를 풀 때 각 수감자가 탈옥할 수 있는 모든 경로들을 구한 다음 두 수감자가 탈옥하면서 여는 문들을 다 합친 후 그의 수가 가장 작은 경우를 출력하도록 했다. 그런데 위 코드는 백준 사이트에서 시간초과가 나왔다. 지금 생각하면 답이 두 경우가 나올 수 있을것 같은데 첫번째 경우는 두 수감자가 각자 다른 출구로 나가는 것이고 두번째 경우는 두 수감자가 만나서 같은 출구로 나가는 것이다. 두 경우 중 여는 문의 수가 더 적은 경우의 답을 출력하면 시간을 절약할 수 있지 않을까 생각든다.
