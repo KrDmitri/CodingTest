@@ -780,3 +780,74 @@ for i in range(t):
     print(result if result != None else "Impossible")
 ```
 -> 숫자형과 문자형을 바꿔줄 일이 있을 때에는 우선 숫자형으로 받아두자
+
+### 적록색약
+```
+import sys
+from collections import deque
+
+def countNormal(x, y, colorNum):
+    q = deque()
+    q.append([x, y])
+    thisColor = graph[x][y]
+    visited[x][y] = colorNum
+    while q:
+        now = q.popleft()
+        x, y = now[0], now[1]
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= n or graph[nx][ny] != thisColor or visited[nx][ny] != -1:
+                continue
+            q.append([nx, ny])
+            visited[nx][ny] = colorNum
+
+def countAbnormal(x, y, abColorNum):
+    q = deque()
+    q.append([x, y])
+    thisColor = graph[x][y]
+    abVisited[x][y] = colorNum
+    while q:
+        now = q.popleft()
+        x, y = now[0], now[1]
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= n or abVisited[nx][ny] != -1:
+                continue
+            if thisColor == 'R' or thisColor == 'G':
+                if graph[nx][ny] == 'R' or graph[nx][ny] == 'G':
+                    q.append([nx, ny])
+                    abVisited[nx][ny] = abColorNum
+            else:
+                if graph[nx][ny] == thisColor:
+                    q.append([nx, ny])
+                    abVisited[nx][ny] = abColorNum
+
+
+n = int(sys.stdin.readline().rstrip())
+graph = []
+for _ in range(n):
+    tempStr = sys.stdin.readline().rstrip()
+    graph.append(tempStr)
+
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+
+visited = [[-1] * n for _ in range(n)]
+colorNum = 0
+abVisited = [[-1] * n for _ in range(n)]
+abColorNum = 0
+
+for i in range(n):
+    for j in range(n):
+        if visited[i][j] == -1:
+            countNormal(i, j, colorNum)
+            colorNum += 1
+        if abVisited[i][j] == -1:
+            countAbnormal(i, j, abColorNum)
+            abColorNum += 1
+
+print(colorNum, end=' ')
+print(abColorNum)
+```
