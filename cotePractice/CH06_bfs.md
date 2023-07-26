@@ -732,3 +732,51 @@ bfs()
 
 print(visited[end[0]][end[1]])
 ```
+
+### 소수경로
+```
+import sys
+from collections import deque
+
+def bfs(x, y):
+    q = deque()
+    q.append([x, 0])
+    visited = [False] * 10000
+    visited[x] = True
+    while q:
+        now = q.popleft()
+        x, cnt = now[0], now[1]
+        if x == y:
+            return cnt
+        nowStr = str(x)
+        for i in range(4):
+            for j in range(10):
+                tempStr = nowStr[:i] + str(j) + nowStr[i + 1:]
+                tempNum = int(tempStr)
+                if not visited[tempNum] and isPrimeNum[tempNum] and tempNum > 1000:
+                    visited[tempNum] = True
+                    q.append([tempNum, cnt + 1])
+    return None
+
+
+t = int(sys.stdin.readline().rstrip())
+cases = []
+for _ in range(t):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    cases.append([x, y])
+
+isPrimeNum = [True] * 100000
+isPrimeNum[0], isPrimeNum[1] = False, False
+
+for i in range(100):
+    if isPrimeNum[i] == True:
+        for j in range(2 * i, 10000, i):
+            isPrimeNum[j] = False
+
+for i in range(t):
+    case = cases[i]
+    x, y = case[0], case[1]
+    result = bfs(x, y)
+    print(result if result != None else "Impossible")
+```
+-> 숫자형과 문자형을 바꿔줄 일이 있을 때에는 우선 숫자형으로 받아두자
