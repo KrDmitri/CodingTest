@@ -889,3 +889,52 @@ diff_colors2 = {"R": set(("B")), "G": set(("B")), "B": set(("R", "G"))}
 print(solution(diff_colors1), solution(diff_colors2))
 ```
 -> 딕셔너리 자료구조를 활용하여 함수를 2개 사용한 나의 코드와 다르게 함수를 1개만 사용하였으며 수행 시간 또한 4배 가까이 절약한 코드다.
+
+### 4연산
+```
+import sys
+import copy
+from collections import deque
+
+def operate(x, operator):
+    if operator == '*':
+        x = x * x
+    elif operator == '+':
+        x = x + x
+    else:
+        x = 1
+    return x
+
+def bfs(num):
+    q = deque()
+    q.append([num, []])
+    visited.append(num)
+    answerList = []
+    while q:
+        now = q.popleft()
+        nowNum, nowHistory = now[0], now[1]
+        if nowNum == t:
+            return nowHistory
+            continue
+        for i in range(3):
+            newNum = operate(nowNum, operatorList[i])
+            if newNum not in visited and newNum <= t:
+                visited.append(newNum)
+                newHistory = copy.deepcopy(nowHistory)
+                newHistory.append(operatorList[i])
+                q.append([newNum, newHistory])
+    return [-1]
+
+
+
+s, t = map(int, sys.stdin.readline().rstrip().split())
+operatorList = ['*', '+', '/']
+visited = []
+
+if s == t:
+    print(0)
+else:
+    resultList = bfs(s)
+    for i in range(len(resultList)):
+        print(resultList[i], end='')
+```
