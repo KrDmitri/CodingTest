@@ -1044,3 +1044,121 @@ for _ in range(t):
     print(minDoors)
 ```
 -> 위 코드는 본 문제를 풀 때 각 수감자가 탈옥할 수 있는 모든 경로들을 구한 다음 두 수감자가 탈옥하면서 여는 문들을 다 합친 후 그의 수가 가장 작은 경우를 출력하도록 했다. 그런데 위 코드는 백준 사이트에서 시간초과가 나왔다. 지금 생각하면 답이 두 경우가 나올 수 있을것 같은데 첫번째 경우는 두 수감자가 각자 다른 출구로 나가는 것이고 두번째 경우는 두 수감자가 만나서 같은 출구로 나가는 것이다. 두 경우 중 여는 문의 수가 더 적은 경우의 답을 출력하면 시간을 절약할 수 있지 않을까 생각든다.
+
+### 탈옥(모범답안)
+```
+from collections import deque
+import sys
+
+input = sys.stdin.readline
+dx = [1, -1, 0, 0]
+dy = [0, 0, 1, -1]
+
+def bfs(x, y):
+    c = [[-1] * (w + 2) for _ in range(h + 2)]
+    q.append([x, y])
+    c[x][y] = 0
+    while q:
+        x, y = q.popleft()
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if 0 <= nx < h+2 and 0 <= ny < w+2:
+                if c[nx][ny] == -1:
+                    if a[nx][ny] == '.':
+                        c[nx][ny] = c[x][y]
+                        q.appendleft([nx, ny])
+                    elif a[nx][ny] == '#':
+                        c[nx][ny] = c[x][y] + 1
+                        q.append([nx, ny])
+
+    return c
+
+def new_map():
+    for i in a:
+        i.insert(0, '.')
+        i.append('.')
+    a.insert(0, ['.' for _ in range(w+2)])
+    a.append(['.' for _ in range(w+2)])
+
+tc = int(input())
+while tc:
+    h, w = map(int, input().split())
+    a = [list(input().strip()) for _ in range(h)]
+    q = deque()
+
+    new_map()
+
+    temp = []
+    for i in range(h + 2):
+        for j in range(w + 2):
+            if a[i][j] == '$':
+                temp.extend([i, j])
+                a[i][j] = '.'
+
+    x1, y1, x2, y2 = temp
+    c1 = bfs(0, 0)
+    c2 = bfs(x1, y1)
+    c3 = bfs(x2, y2)
+
+    ans = sys.maxsize
+    for i in range(h+2):
+        for j in range(w+2):
+            if c1[i][j] != -1 and c2[i][j] != -1 and c3[i][j] != -1:
+                cnt = c1[i][j] + c2[i][j] + c3[i][j]
+                if a[i][j] == '#':
+                    cnt -= 2
+                ans = min(ans, cnt)
+    print(ans)
+    tc -= 1
+```
+-> 문제를 제대로 이해하지 못한것 같다. 감옥 밖에서 상근이가 문을 열어줄 수 있다고 하는데, 이런 조건이 붙었을 때는 감옥 안에서 2명만이 열고 나오는 경우와 무슨 차이가 있는지 아직도 잘 모르겠다. 나중에 다시 복습해봐야겠다.
+
+### 말이 되고픈 원숭이
+```
+import sys
+import copy
+from collections import deque
+
+k = int(sys.stdin.readline().rstrip())
+m, n = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+for _ in range(n):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+hdx = [-2, -1, 1, 2, 2, 1, -1, -2]
+hdy = [-1, -2, -2, -1, 1, 2, 2, 1]
+visited = [[-1] * m for _ in range(n)]
+visited[0][0] = k
+q = deque()
+q.append([0, 0, k, 0])
+answers = []
+while q:
+    now = q.popleft()
+    nowx, nowy, nowk, nowCnt = now[0], now[1], now[2], now[3]
+    if nowx == n - 1 and nowy == m - 1:
+        answers.append(nowCnt)
+        continue
+    for i in range(4):
+        nx = nowx + dx[i]
+        ny = nowy + dy[i]
+        if nx < 0 or nx >= n or ny < 0 or ny >= m or (visited[nx][ny] >= nowk) or (graph[nx][ny] == 1):
+            continue
+        visited[nx][ny] = nowk
+        q.append([nx, ny, nowk, nowCnt + 1])
+    if nowk > 0:
+        for i in range(8):
+            nx = nowx + hdx[i]
+            ny = nowy + hdy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= m or (visited[nx][ny] >= nowk - 1) or (graph[nx][ny] == 1):
+                continue
+            visited[nx][ny] = nowk - 1
+            q.append([nx, ny, nowk - 1, nowCnt + 1])
+
+if len(answers) == 0:
+    print(-1)
+else:
+    print(min(answers))
+```
+-> 이전에 푼 문제들과 비슷해 어렵지 않았다
