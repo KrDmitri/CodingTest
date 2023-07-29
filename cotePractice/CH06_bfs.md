@@ -1162,3 +1162,52 @@ else:
     print(min(answers))
 ```
 -> 이전에 푼 문제들과 비슷해 어렵지 않았다
+
+### 아기상어2
+```
+import sys
+from collections import deque
+INF = int(1e9)
+
+def bfs(shark):
+    global visited
+    shark.append(0)
+    q = deque()
+    q.append(shark)
+    visited[shark[0]][shark[1]] = 0
+    while q:
+        now = q.popleft()
+        x, y, cnt = now[0], now[1], now[2]
+        for i in range(8):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= m or (graph[nx][ny] == 1):
+                continue
+            if visited[nx][ny] > cnt + 1:
+                visited[nx][ny] = cnt + 1
+                q.append([nx, ny, cnt + 1])
+
+
+
+
+n, m = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+sharks = []
+for i in range(n):
+    tempList = list(map(int, sys.stdin.readline().rstrip().split()))
+    for j in range(m):
+        if tempList[j] == 1:
+            sharks.append([i, j])
+    graph.append(tempList)
+dx = [-1, -1, 0, 1, 1, 1, 0, -1]
+dy = [0, -1, -1, -1, 0, 1, 1, 1]
+visited = [[INF] * m for _ in range(n)]
+for i in range(len(sharks)):
+    thisShark = sharks[i]
+    bfs(thisShark)
+
+answer = 0
+for a in visited:
+    answer = max(answer, max(a))
+print(answer)
+```
