@@ -1211,3 +1211,150 @@ for a in visited:
     answer = max(answer, max(a))
 print(answer)
 ```
+
+### 로봇 청소기
+```
+import sys
+from collections import deque
+from itertools import permutations
+INF = int(1e9)
+
+def distToDirty(this):
+    this.append(0)
+    q = deque()
+    q.append(this)
+    visited = [[False] * m for _ in range(n)]
+    dist = [INF] * dirtyNum
+    visited[this[0]][this[1]] = True
+    while q:
+        now = q.popleft()
+        x, y, cnt = now[0], now[1], now[2]
+        if graph[x][y] in dirtyIndex:
+            dist[graph[x][y] - 1] = cnt
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= m or (visited[nx][ny]) or (graph[nx][ny] == 'x'):
+                continue
+            q.append([nx, ny, cnt + 1])
+            visited[nx][ny] = True
+    return dist
+
+
+m, n = map(int, sys.stdin.readline().rstrip().split())
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+while m != 0 and n != 0:
+    dirtyPlaces = []
+    start = [-1, -1]
+    dirtyNum = 0
+    graph = []
+    for i in range(n):
+        tempStr = sys.stdin.readline().rstrip()
+        tempList = []
+        for j in range(m):
+            if tempStr[j] == '*':
+                dirtyPlaces.append([i, j])
+                dirtyNum += 1
+                tempList.append(dirtyNum)
+                continue
+            if tempStr[j] == 'o':
+                start = [i, j]
+            tempList.append(tempStr[j])
+        graph.append(tempList)
+    dirtyIndex = []
+    for i in range(1, dirtyNum + 1):
+        dirtyIndex.append(i)
+    startToDirty = distToDirty(start)
+    if INF in startToDirty:
+        print(-1)
+        m, n = map(int, sys.stdin.readline().rstrip().split())
+        continue
+    distanceGraph = [[INF] * dirtyNum for _ in range(dirtyNum)]
+    for i in range(n):
+        for j in range(m):
+            if graph[i][j] in dirtyIndex:
+                distanceGraph[graph[i][j] - 1] = distToDirty([i, j])
+
+    ans = INF
+    for i in range(dirtyNum):
+        temp = startToDirty[i]
+        dirtyIndex.remove(i + 1)
+        orders = list(permutations(dirtyIndex, len(dirtyIndex)))
+        for order in orders:
+            temp += distanceGraph[i][order[0] - 1]
+            for j in range(len(order) - 1):
+                temp += distanceGraph[order[j] - 1][order[j + 1] - 1]
+            ans = min(ans, temp)
+            temp = startToDirty[i]
+        dirtyIndex.append(i + 1)
+    print(ans)
+
+    m, n = map(int, sys.stdin.readline().rstrip().split())
+    if m == 0 and n == 0:
+        exit(0)
+```
+
+### 성곽
+```
+import abc
+import sys
+from collections import deque
+
+def bfs(x, y, roomNum):
+    q = deque()
+    q.append([x, y])
+    visited[x][y] = roomNum
+    cnt = 1
+    while q:
+        now = q.popleft()
+        nowx, nowy = now[0], now[1]
+        for i in range(4):
+            if graph[nowx][nowy][i] == '1':
+                continue
+            nx = nowx + dx[i]
+            ny = nowy + dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= m or (visited[nx][ny] != 0):
+                continue
+            visited[nx][ny] = roomNum
+            q.append([nx, ny])
+            cnt += 1
+    return cnt
+
+def findAns3():
+    ans = 0
+    for i in range(n):
+        for j in range(m):
+            for k in range(2):
+                ni = i + dx[k]
+                nj = j + dy[k]
+                if ni < 0 or ni >= n or nj < 0 or nj >= m or (visited[i][j] == visited[ni][nj]):
+                    continue
+                ans = max(ans, roomArea[visited[i][j] - 1] + roomArea[visited[ni][nj] - 1])
+
+    print(ans)
+
+m, n = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+for _ in range(n):
+    tempList = list(map(int, sys.stdin.readline().rstrip().split()))
+    for i in range(m):
+        tempList[i] = format(tempList[i], 'b')
+        tempList[i] = (4 - len(tempList[i])) * '0' + tempList[i]
+    graph.append(tempList)
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+visited = [[0] * m for _ in range(n)]
+roomNum = 0
+roomArea = []
+for i in range(n):
+    for j in range(m):
+        if visited[i][j] == 0:
+            roomNum += 1
+            cnt = bfs(i, j, roomNum)
+            roomArea.append(cnt)
+
+print(roomNum)
+print(max(roomArea))
+findAns3()
+```
