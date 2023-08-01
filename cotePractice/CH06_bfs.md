@@ -1437,3 +1437,61 @@ while q:
             q.append((a, b + c[-1], c[:-1], cnt + 1))
 ```
 -> 나의 코드는 집합을 활용한 visited가 아닌 리스트 형태의 history를 활용하여 중복체크를 해주었다. 그리고 나는 문자형태의 입력을 받을 때 새로운 리스트를 만들어서 한 글자씩 떼어서 처리하였는데, 위의 모범답안 코드와 같이 파이썬의 슬라이싱 기능을 활용하여 보다 빠른 처리가 가능하다는 것을 알 수 있었다.
+
+### 연구소 2
+```
+import sys
+from itertools import combinations
+from collections import deque
+INF = int(1e9)
+
+def spreadVirus(candidate):
+    visited = [[INF] * n for _ in range(n)]
+    q = deque()
+    for point in candidate:
+        visited[point[0]][point[1]] = 0
+        q.append([point, 0])
+    for i in range(n):
+        for j in range(n):
+            if graph[i][j] == 1:
+                visited[i][j] = -1
+    while q:
+        thisPoint, cnt = q.popleft()
+        x, y = thisPoint[0], thisPoint[1]
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= n or visited[nx][ny] != INF:
+                continue
+            visited[nx][ny] = cnt + 1
+            q.append([[nx, ny], cnt + 1])
+    for row in visited:
+        if INF in row:
+            return INF
+    return cnt
+
+
+graph = []
+settingPoint = []
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+n, m = map(int, sys.stdin.readline().rstrip().split())
+for i in range(n):
+    tempList = list(map(int, sys.stdin.readline().rstrip().split()))
+    for j in range(n):
+        if tempList[j] == 2:
+            settingPoint.append([i, j])
+    graph.append(tempList)
+
+candidates = list(combinations(settingPoint, m))
+
+answer = INF
+for candidate in candidates:
+    time = spreadVirus(candidate)
+    answer = min(answer, time)
+
+if answer == INF:
+    print(-1)
+else:
+    print(answer)
+```
