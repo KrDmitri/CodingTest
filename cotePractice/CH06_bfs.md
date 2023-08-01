@@ -1495,3 +1495,73 @@ if answer == INF:
 else:
     print(answer)
 ```
+
+### 연구소 3
+```
+import sys
+from itertools import combinations
+from collections import deque
+INF = int(1e9)
+
+def spreadVirus(candidate):
+    visited = [[INF] * n for _ in range(n)]
+    q = deque()
+    for point in candidate:
+        visited[point[0]][point[1]] = 0
+        q.append([point, 0, 0])
+    for i in range(n):
+        for j in range(n):
+            if graph[i][j] == 1:
+                visited[i][j] = -1
+    while q:
+        thisPoint, cnt, extracnt = q.popleft()
+        x, y = thisPoint[0], thisPoint[1]
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx < 0 or nx >= n or ny < 0 or ny >= n or visited[nx][ny] != INF:
+                continue
+            if graph[nx][ny] == 2:
+                visited[nx][ny] = extracnt
+                q.append([[nx, ny], cnt + 1, extracnt])
+            else:
+                visited[nx][ny] = cnt + 1
+                q.append([[nx, ny], cnt + 1, extracnt + 1])
+    for i in range(n):
+        for j in range(n):
+            if graph[i][j] == 2:
+                visited[i][j] = 0
+    for row in visited:
+        if INF in row:
+            return INF
+
+    maxNum = -1
+    for row in visited:
+        maxNum = max(maxNum, max(row))
+    return maxNum
+
+
+graph = []
+settingPoint = []
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+n, m = map(int, sys.stdin.readline().rstrip().split())
+for i in range(n):
+    tempList = list(map(int, sys.stdin.readline().rstrip().split()))
+    for j in range(n):
+        if tempList[j] == 2:
+            settingPoint.append([i, j])
+    graph.append(tempList)
+
+candidates = list(combinations(settingPoint, m))
+
+answer = INF
+for candidate in candidates:
+    time = spreadVirus(candidate)
+    answer = min(answer, time)
+
+if answer == INF:
+    print(-1)
+else:
+    print(answer)
+```
