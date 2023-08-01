@@ -1358,3 +1358,82 @@ print(roomNum)
 print(max(roomArea))
 findAns3()
 ```
+
+### 새로운 하노이 탑
+```
+import sys
+import copy
+from collections import deque
+
+pillar = [[] for _ in range(3)]
+plateNum = [0, 0, 0]
+for i in range(3):
+    temp = list(sys.stdin.readline().rstrip().split())
+    plateNum[i] = int(temp[0])
+    for j in range(plateNum[i]):
+        pillar[i].append(temp[1][j])
+
+history = []
+history.append(pillar)
+
+q = deque()
+q.append([pillar, 0])
+while q:
+    now = q.popleft()
+    thisPillar, thisCnt = now[0], now[1]
+    if ('B' not in thisPillar[0]) and ('C' not in thisPillar[0]) and ('A' not in thisPillar[1]) and ('C' not in thisPillar[1]) and ('A' not in thisPillar[2]) and ('B' not in thisPillar[2]):
+        print(thisCnt)
+        exit(0)
+    # i번째 기둥에서 j번째 기둥으로 옮기기
+    for i in range(3):
+        for j in range(3):
+            if i == j:
+                continue
+            if len(thisPillar[i]) == 0:
+                break
+            tempPillar = copy.deepcopy(thisPillar)
+            tempPlate = tempPillar[i].pop()
+            tempPillar[j].append(tempPlate)
+            if tempPillar not in history:
+                history.append(tempPillar)
+                q.append([tempPillar, thisCnt + 1])
+```
+
+### 새로운 하노이 탑(모범답안)
+```
+from collections import deque
+
+visited = set()
+q = deque()
+
+a = input().split()
+s1 = a[-1] if len(a) > 1 else ''
+a = input().split()
+s2 = a[-1] if len(a) > 1 else ''
+a = input().split()
+s3 = a[-1] if len(a) > 1 else ''
+
+q.append((s1, s2, s3, 0))
+
+while q:
+    a, b, c, cnt = q.popleft()
+    cont_str = a + '/' + b + '/' + c
+
+    if a == 'A' * len(a) and b == 'B' * len(b) and c == 'C' * len(c):
+        print(cnt)
+        break
+
+    if cont_str not in visited:
+        visited.add(cont_str)
+
+        if len(a) > 0:
+            q.append((a[:-1], b + a[-1], c, cnt + 1))
+            q.append((a[:-1], b, c + a[-1], cnt + 1))
+        if len(b) > 0:
+            q.append((a + b[-1], b[:-1], c, cnt + 1))
+            q.append((a, b[:-1], c + b[-1], cnt + 1))
+        if len(c) > 0:
+            q.append((a + c[-1], b, c[:-1], cnt + 1))
+            q.append((a, b + c[-1], c[:-1], cnt + 1))
+```
+-> 나의 코드는 집합을 활용한 visited가 아닌 리스트 형태의 history를 활용하여 중복체크를 해주었다. 그리고 나는 문자형태의 입력을 받을 때 새로운 리스트를 만들어서 한 글자씩 떼어서 처리하였는데, 위의 모범답안 코드와 같이 파이썬의 슬라이싱 기능을 활용하여 보다 빠른 처리가 가능하다는 것을 알 수 있었다.
