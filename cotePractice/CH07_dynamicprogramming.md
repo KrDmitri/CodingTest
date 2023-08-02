@@ -1,0 +1,69 @@
+# 다이나믹 프로그래밍
+### 이동하기
+```
+import sys
+
+n, m = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+for _ in range(n):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+dp = [[0] * m for _ in range(n)]
+dp[0][0] = graph[0][0]
+for i in range(1, m):
+    dp[0][i] = graph[0][i] + dp[0][i - 1]
+for i in range(1, n):
+    dp[i][0] = graph[i][0] + dp[i - 1][0]
+
+for i in range(1, n):
+    for j in range(1, m):
+        dp[i][j] = graph[i][j] + max(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1])
+
+print(dp[n - 1][m - 1])
+```
+
+### 점프점프
+```
+import sys
+INF = int(1e9)
+
+n = int(sys.stdin.readline().rstrip())
+a = list(map(int, sys.stdin.readline().rstrip().split()))
+
+dp = [INF] * n
+dp[0] = 0
+for i in range(n):
+    jump = a[i]
+    for j in range(1, jump + 1):
+        if i + j < n:
+            dp[i + j] = min(dp[i] + 1, dp[i + j])
+
+print(dp[n - 1] if dp[n - 1] != INF else -1)
+```
+
+### 팰린드롬?
+```
+import sys
+
+n = int(sys.stdin.readline().rstrip())
+numList = list(map(int, sys.stdin.readline().rstrip().split()))
+
+dp = [[0] * n for _ in range(n)]
+
+for numLen in range(n):
+    for start in range(n - numLen):
+        end = start + numLen
+        if numLen == 0:
+            dp[start][end] = 1
+        elif numList[start] == numList[end]:
+            if numLen == 1:
+                dp[start][end] = 1
+            else:
+                if dp[start + 1][end - 1] == 1:
+                    dp[start][end] = 1
+
+m = int(sys.stdin.readline().rstrip())
+for _ in range(m):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    print(dp[x - 1][y - 1])
+```
+-> 위 다이나믹 프로그래밍 문제는 왼쪽에서 오른쪽으로 쌓아가는 다른 다이나믹 프로그래밍 문제와 다르게 양 끝의 문자를 하나씩 빼 보아서 회문인지 확인하는 방법으로 풀 수 있다.
