@@ -67,3 +67,22 @@ for _ in range(m):
     print(dp[x - 1][y - 1])
 ```
 -> 위 다이나믹 프로그래밍 문제는 왼쪽에서 오른쪽으로 쌓아가는 다른 다이나믹 프로그래밍 문제와 다르게 양 끝의 문자를 하나씩 빼 보아서 회문인지 확인하는 방법으로 풀 수 있다.
+
+### 1,2,3 더하기 4
+```
+import sys
+
+n = int(sys.stdin.readline().rstrip())
+dp = [1] * 10001
+
+for i in range(2, 10001):
+    dp[i] += dp[i - 2]
+
+for i in range(3, 10001):
+    dp[i] += dp[i - 3]
+
+for _ in range(n):
+    x = int(sys.stdin.readline().rstrip())
+    print(dp[x])
+```
+-> 다이나믹 프로그래밍 문제는 항상 점화식, 아니면 패턴을 꼭 먼저 찾고난 후에 풀도록 하자
