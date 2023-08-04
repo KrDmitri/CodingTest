@@ -157,3 +157,78 @@ for _ in range(t):
     print(dp[1][k])
 ```
 -> min() 함수 안에 각 원소들을 위와 같이 for문으로 생성했다는 점이 흥미롭다.
+
+### 평범한 배낭(dfs - branch and bound 풀이)
+```
+import sys
+
+def calcBound(i, alreadyIn, remain):
+    bound = alreadyIn
+    while remain > 0:
+        if i >= n:
+            break
+        weight = knapsack[i][0]
+        if remain > weight:
+            remain -= weight
+            bound += knapsack[i][1]
+        else:
+            bound += knapsack[i][2] * remain
+            remain = 0
+        i += 1
+    return bound
+
+def solve(i, bound, alreadyIn, remain):
+    global answer
+    if i == n or answer >= bound:
+        return
+    if remain >= knapsack[i][0]:
+        # 넣는다
+        newRemain = remain - knapsack[i][0]
+        newIn = alreadyIn + knapsack[i][1]
+        answer = max(answer, newIn)
+        solve(i + 1, bound, newIn, newRemain)
+        # 넣지 않는다
+        bound = calcBound(i + 1, alreadyIn, remain)
+        solve(i + 1, bound, alreadyIn, remain)
+    else:
+        solve(i + 1, bound, alreadyIn, remain)
+
+n, k = map(int, sys.stdin.readline().rstrip().split())
+knapsack = []
+for _ in range(n):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    z = y / x
+    knapsack.append([x, y, z])
+knapsack.sort(key=lambda x:x[2], reverse=True)
+bound = calcBound(0, 0, k)
+answer = 0
+# for a in knapsack:
+#     print(a)
+solve(0, bound, 0, k)
+print(answer)
+```
+-> dp 풀이 방법이 잘 떠오르지 않아 branch and bound로 풀어보았다. 우선순위 큐를 이용한 best first search가 아니라서 그런건지 답은 잘 나오지만 시간초과가 나온다.
+
+### 평범한 배낭(dp 풀이방법)
+```
+import sys
+
+n, k = map(int, sys.stdin.readline().rstrip().split())
+knapsack = []
+for _ in range(n):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    knapsack.append([x, y])
+knapsack.sort(key=lambda x:x[0])
+dp = [[0] * (k + 1) for _ in range(n + 1)]
+
+# i는 각 물건의 인덱스, j는 무게의 한도
+for i in range(1, n + 1):
+    for j in range(1, k + 1):
+        weight, value = knapsack[i - 1][0], knapsack[i - 1][1]
+        if weight > j:
+            dp[i][j] = dp[i - 1][j]
+        else:
+            dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight] + value)
+
+print(dp[n][k])
+```
