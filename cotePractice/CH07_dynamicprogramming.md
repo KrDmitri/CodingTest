@@ -86,3 +86,43 @@ for _ in range(n):
     print(dp[x])
 ```
 -> 다이나믹 프로그래밍 문제는 항상 점화식, 아니면 패턴을 꼭 먼저 찾고난 후에 풀도록 하자
+
+### 파일 합치기
+```
+import sys
+
+t = int(sys.stdin.readline().rstrip())
+
+for _ in range(t):
+    k = int(sys.stdin.readline().rstrip())
+    numList = list(map(int, sys.stdin.readline().rstrip().split()))
+    subSum = [0]
+    for i in range(k):
+        subSum.append(sum(numList[:i + 1]))
+
+    dp = [[0] * (k + 1) for _ in range(k + 1)]
+    for numLen in range(2, k + 1):
+        for i in range(1, k + 1):
+            j = i + numLen - 1
+            if numLen == 2:
+                if i == k:
+                    continue
+                dp[i][j] = subSum[j] - subSum[i - 1]
+            else:
+                if i == k - numLen + 2:
+                    break
+                candidates = []
+                # x랑 y는 각 부분합 원소 길이
+                for x in range(1, numLen):
+                    y = numLen - x
+                    left, right = 0, 0
+                    if x >= 2:
+                        left = dp[i][i + x - 1]
+                    if y >= 2:
+                        right = dp[i + x][i + numLen - 1]
+                    candidates.append(left + right)
+                dp[i][j] = (subSum[j] - subSum[i - 1]) + min(candidates)
+
+    print(dp[1][k])
+```
+-> 코드는 내가 작성했는데 아이디어는 다른 사람의 블로그 내 설명에서 얻었다. dp.. 너 정말 어려웠구나..
