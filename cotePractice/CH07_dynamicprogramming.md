@@ -298,3 +298,4 @@ for i in range(60):
                     if [tempList[1], tempList[2]] not in dp[i + 1][tempList[0]]:
                         dp[i + 1][tempList[0]].append([tempList[1], tempList[2]])
 ```
+-> 더 나은 풀이가 있나 확인해보았는데 다른 사람들은 3중 리스트를 활용해서 문제 해결을 했다.
