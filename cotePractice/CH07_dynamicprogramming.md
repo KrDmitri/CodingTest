@@ -258,3 +258,43 @@ for i in range(m + 1):
 print(ans)
 ```
 
+### 뮤탈리스크
+```
+import sys
+from itertools import permutations
+
+n = int(sys.stdin.readline().rstrip())
+numList = list(map(int, input().split()))
+numList.sort(reverse=True)
+for i in range(3 - len(numList)):
+    numList.append(0)
+
+dp = [[0] * 61 for _ in range(61)]
+
+for i in range(61):
+    for j in range(61):
+        dp[i][j] = []
+dp[0][numList[0]].append([numList[1], numList[2]])
+
+damage = [9, 3, 1]
+damageCases = list(permutations(damage, 3))
+
+# i는 횟수, j는 숫자들 중 가장 큰 수
+for i in range(60):
+    for j in range(61):
+        now = dp[i][j]
+        if len(now) > 0:
+            for elem in now:
+                if j == 0 and elem[0] == 0 and elem[1] == 0:
+                    print(i)
+                    exit(0)
+                tempNum = [j, elem[0], elem[1]]
+                for case in damageCases:
+                    tempList = [j - case[0], elem[0] - case[1], elem[1] - case[2]]
+                    for k in range(3):
+                        if tempList[k] < 0:
+                            tempList[k] = 0
+                    tempList.sort(reverse=True)
+                    if [tempList[1], tempList[2]] not in dp[i + 1][tempList[0]]:
+                        dp[i + 1][tempList[0]].append([tempList[1], tempList[2]])
+```
