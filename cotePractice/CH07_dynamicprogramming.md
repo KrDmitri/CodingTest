@@ -299,3 +299,54 @@ for i in range(60):
                         dp[i + 1][tempList[0]].append([tempList[1], tempList[2]])
 ```
 -> 더 나은 풀이가 있나 확인해보았는데 다른 사람들은 3중 리스트를 활용해서 문제 해결을 했다.
+
+### 동전 1
+```
+import sys
+
+n, k = map(int, sys.stdin.readline().rstrip().split())
+numList = []
+for _ in range(n):
+    numList.append(int(sys.stdin.readline().rstrip()))
+dp = [0] * (k + 1)
+dp[0] = 1
+for coin in numList:
+    for num in range(coin, k + 1):
+        if num - coin >= 0:
+            dp[num] += dp[num - coin]
+
+print(dp[k])
+```
+
+### 동전 2
+```
+import sys
+
+n, k = map(int, sys.stdin.readline().rstrip().split())
+numList = []
+for _ in range(n):
+    numList.append(int(sys.stdin.readline().rstrip()))
+dp = [0] * (k + 1)
+for coin in numList:
+    if coin <= k:
+        dp[coin] = 1
+for i in range(1, k + 1):
+    flag = 0
+    tempList = []
+    for coin in numList:
+        if i - coin == 0:
+            dp[i] = 1
+            flag = 1
+            break
+        if i - coin >= 0 and dp[i - coin] != 0:
+            tempList.append(dp[i - coin] + 1)
+    if flag:
+        continue
+    if len(tempList) > 0:
+        dp[i] = min(tempList)
+
+if dp[k] == 0:
+    print(-1)
+else:
+    print(dp[k])
+```
