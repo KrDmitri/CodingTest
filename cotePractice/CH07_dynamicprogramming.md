@@ -350,3 +350,47 @@ if dp[k] == 0:
 else:
     print(dp[k])
 ```
+
+### 크리보드
+```
+import sys
+
+# n은 1부터 100까지
+n = int(sys.stdin.readline().rstrip())
+dp = [[] for _ in range(n + 1)]
+dp[0].append([0, 0, False])   # 순서별로 현재 출력 크기, 버퍼 크기, 이전 control A 눌렸는지 여부
+
+for i in range(n):
+    thisCases = dp[i]
+    for j in range(len(thisCases)):
+        now = thisCases[j]
+        if len(now) != 3:
+            print('', end='')
+        strSize, bufSize, aFlag = now[0], now[1], now[2]
+        dp[i + 1].append([strSize + 1, bufSize, False])
+        if strSize != 0:
+            dp[i + 1].append([strSize, bufSize, True])
+        if aFlag:
+            dp[i + 1].append([strSize, strSize, False])
+        if bufSize != 0:
+            dp[i + 1].append([strSize + bufSize, bufSize, False])
+ans = 0
+for i in range(len(dp[n])):
+    ans = max(ans, dp[n][i][0])
+
+print(ans)
+```
+
+### 크리보드(모범답안)
+```
+import sys
+
+n = int(sys.stdin.readline().rstrip())
+dp = [i for i in range(n + 1)]
+
+for i in range(6, n + 1):
+    dp[i] = max(dp[i - 3] * 2, dp[i - 4] * 3, dp[i - 5] * 4)
+
+print(dp[n])
+```
+-> 처음 내 풀이는 각 횟수에서 할 수 있는 행동의 모든 경우의 수들을 다음 횟수로 넘기는 방식으로 하였다. 해당 방식은 시간 초과는 물론 메모리 초과도 유도하였다. 문제 특성상 수학적 귀납법을 활용하면 현재 위치에서의 최댓값은 5칸 전에서 복사 붙여넣기를 3번까지 했을때가 가장 크기 때문에 이러한 특성을 이용하면 쉽게 문제를 풀 수 있다. 하지만 이런 문제 접근법을 떠올리기가 쉽지 않다...🥲
