@@ -394,3 +394,99 @@ for i in range(6, n + 1):
 print(dp[n])
 ```
 -> 처음 내 풀이는 각 횟수에서 할 수 있는 행동의 모든 경우의 수들을 다음 횟수로 넘기는 방식으로 하였다. 해당 방식은 시간 초과는 물론 메모리 초과도 유도하였다. 문제 특성상 수학적 귀납법을 활용하면 현재 위치에서의 최댓값은 5칸 전에서 복사 붙여넣기를 3번까지 했을때가 가장 크기 때문에 이러한 특성을 이용하면 쉽게 문제를 풀 수 있다. 하지만 이런 문제 접근법을 떠올리기가 쉽지 않다...🥲
+
+### LCS
+```
+import sys
+
+a = sys.stdin.readline().rstrip()
+b = sys.stdin.readline().rstrip()
+n = len(b)
+m = len(a)
+dp = [[0] * (m + 1) for _ in range(n + 1)]
+
+# i는 b의 인덱스, j는 a의 인덱스
+for i in range(n):
+    for j in range(m):
+        if a[j] == b[i]:
+            dp[i][j] = dp[i - 1][j - 1] + 1
+        else:
+            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+
+print(dp[n - 1][m - 1])
+```
+
+### LCS2
+```
+import sys
+
+a = sys.stdin.readline().rstrip()
+b = sys.stdin.readline().rstrip()
+n = len(b)
+m = len(a)
+dp = [[[0, ''] for _ in range(m + 1)] for _ in range(n + 1)]
+
+# i는 b의 인덱스, j는 a의 인덱스
+for i in range(n):
+    for j in range(m):
+        if a[j] == b[i]:
+            dp[i][j] = [dp[i - 1][j - 1][0] + 1, dp[i - 1][j - 1][1] + a[j]]
+        else:
+            dp[i][j] = [max(dp[i - 1][j][0], dp[i][j - 1][0]), dp[i - 1][j][1] if dp[i - 1][j][0] > dp[i][j - 1][0] else dp[i][j - 1][1]]
+
+print(dp[n - 1][m - 1][0])
+print(dp[n - 1][m - 1][1])
+```
+
+### 공통 부분 문자열
+```
+import sys
+
+def memo(x, y, num):
+    global dp, maxNum
+    while x < n and y < m and a[y] == b[x]:
+        dp[x][y] = num
+        x += 1
+        y += 1
+        num += 1
+    maxNum = max(maxNum, num - 1)
+
+a = sys.stdin.readline().rstrip()
+b = sys.stdin.readline().rstrip()
+
+m = len(a)
+n = len(b)
+dp = [[0] * m for _ in range(n)]
+maxNum = 0
+
+# i는 b의 인덱스, j는 a의 인덱스
+for i in range(n):
+    for j in range(m):
+        if a[j] == b[i] and dp[i][j] == 0:
+            memo(i, j, 1)
+
+print(maxNum)
+```
+
+### 1학년
+```
+import sys
+
+n = int(sys.stdin.readline().rstrip())
+numList = list(map(int, sys.stdin.readline().rstrip().split()))
+
+dp = [[0] * (n - 1) for _ in range(21)]
+dp[numList[0]][0] = 1
+
+for j in range(n - 2):
+    for i in range(21):
+        if dp[i][j] == 0:
+            continue
+        if i + numList[j + 1] <= 20:
+            dp[i + numList[j + 1]][j + 1] += dp[i][j]
+        if i - numList[j + 1] >= 0:
+            dp[i - numList[j + 1]][j + 1] += dp[i][j]
+
+print(dp[numList[n - 1]][n - 2])
+```
+-> 다이나믹 프로그래밍 아주 어려웠는데 계속 풀면서 조금은 감각을 익힌듯 하다
