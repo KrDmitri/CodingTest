@@ -66,3 +66,130 @@ while True:
                 visited = populationMove(visited, i, j)
     day += 1
 ```
+
+### 나무 재테크
+```
+import sys
+
+n, m, k = map(int, sys.stdin.readline().rstrip().split())
+graph = [[[5, []] for _ in range(n)] for _ in range(n)]
+treeNum = m
+plusNutrient = []
+dx = [-1, -1, -1, 0, 0, 1, 1, 1]
+dy = [-1, 0, 1, -1, 1, -1, 0, 1]
+for _ in range(n):
+    plusNutrient.append(list(map(int, sys.stdin.readline().rstrip().split())))
+for _ in range(m):
+    x, y, z = map(int, sys.stdin.readline().rstrip().split())
+    graph[x - 1][y - 1][1].append(z)
+    graph[x - 1][y - 1][1].sort()
+
+for year in range(k):
+    deadTree = []
+    # 봄
+    for x in range(n):
+        for y in range(n):
+            if len(graph[x][y][1]) > 0:
+                tempDead = []
+                for treeIndex in range(len(graph[x][y][1])):
+                    if graph[x][y][0] >= graph[x][y][1][treeIndex]:
+                        graph[x][y][0] -= graph[x][y][1][treeIndex]
+                        graph[x][y][1][treeIndex] += 1
+                    else:
+                        deadTree.append([x, y, graph[x][y][1][treeIndex]])
+                        tempDead.append(graph[x][y][1][treeIndex])
+                        treeNum -= 1
+                for tree in tempDead:
+                    graph[x][y][1].remove(tree)
+                graph[x][y][1].sort()
+    # 여름
+    for tree in deadTree:
+        x, y, treeAge = tree[0], tree[1], tree[2]
+        nutrient = treeAge // 2
+        graph[x][y][0] += nutrient
+    # 가을
+    for x in range(n):
+        for y in range(n):
+            if len(graph[x][y][1]) > 0:
+                for tree in graph[x][y][1]:
+                    if tree % 5 == 0:
+                        for direction in range(8):
+                            nx = x + dx[direction]
+                            ny = y + dy[direction]
+                            if nx < 0 or nx >= n or ny < 0 or ny >= n:
+                                continue
+                            graph[nx][ny][1].append(1)
+                            graph[nx][ny][1].sort()
+                            treeNum += 1
+    # 겨울
+    for x in range(n):
+        for y in range(n):
+            graph[x][y][0] += plusNutrient[x][y]
+
+print(treeNum)
+```
+
+### 나무 재테크(모범답안)
+```
+from collections import deque
+
+n, m, k = map(int, input().split(' '))
+
+a = [list(map(int, input().split(' '))) for _ in range(n)]
+graph = [[5] * n for _ in range(n)]
+trees = [[deque() for _ in range(n)] for _ in range(n)]
+dead_trees = [[list() for _ in range(n)] for _ in range(n)]
+for _ in range(m):
+    x, y, z = map(int, input().split(' '))
+    trees[x - 1][y - 1].append(z)
+
+dx = [-1, -1, 0, 1, 1, 1, 0, -1]
+dy = [0, 1, 1, 1, 0, -1, -1, -1]
+
+
+def spring_summer():
+    for i in range(n):
+        for j in range(n):
+            len_ = len(trees[i][j])
+            for k in range(len_):
+                if graph[i][j] < trees[i][j][k]:
+                    for _ in range(k, len_):
+                        dead_trees[i][j].append(trees[i][j].pop())
+                    break
+                else:
+                    graph[i][j] -= trees[i][j][k]
+                    trees[i][j][k] += 1
+
+    for i in range(n):
+        for j in range(n):
+            while dead_trees[i][j]:
+                graph[i][j] += dead_trees[i][j].pop() // 2
+
+
+def fall_winter():
+    for i in range(n):
+        for j in range(n):
+            for k in range(len(trees[i][j])):
+                if trees[i][j][k] % 5 == 0:
+                    for l in range(8):
+                        nx, ny, = i + dx[l], j + dy[l]
+
+                        if nx < 0 or nx >= n or ny < 0 or ny >= n:
+                            continue
+                        trees[nx][ny].appendleft(1)
+
+            graph[i][j] += a[i][j]
+
+
+for i in range(k):
+    spring_summer()
+    fall_winter()
+
+answer = 0
+for i in range(n):
+    for j in range(n):
+        answer += len(trees[i][j])
+
+print(answer)
+```
+-> 내가 작성한 코드는 시간초과가 난다. 정답 처리 코드와의 가장 큰 차이는 정답 코드는 큐를 사용했다는 것인데, 나는 이에 처음 입력값을 줄 때 각 칸에 나무의 나이를 순서대로 주지 않으면 오답이 나지 않을까 생각이 든다. 또, 나의 코드는 sorting하는 과정에서 시간을 많이 할애하는것 같다.
