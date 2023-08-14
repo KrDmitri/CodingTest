@@ -193,3 +193,97 @@ for i in range(n):
 print(answer)
 ```
 -> 내가 작성한 코드는 시간초과가 난다. 정답 처리 코드와의 가장 큰 차이는 정답 코드는 큐를 사용했다는 것인데, 나는 이에 처음 입력값을 줄 때 각 칸에 나무의 나이를 순서대로 주지 않으면 오답이 나지 않을까 생각이 든다. 또, 나의 코드는 sorting하는 과정에서 시간을 많이 할애하는것 같다.
+
+### 미세먼지 안녕!
+```
+import sys
+
+def dustMove():
+    global graph
+    dustSpots = []
+    for i in range(r):
+        for j in range(c):
+            if graph[i][j] > 0:
+                dustSpots.append([i, j, graph[i][j]])
+    while dustSpots:
+        x, y, dust = dustSpots.pop()
+        neighbors = 0
+        for i in range(4):
+            nx = x + ddx[i]
+            ny = y + ddy[i]
+            if nx < 0 or nx >= r or ny < 0 or ny >= c or graph[nx][ny] == -1:
+                continue
+            neighbors += 1
+            graph[nx][ny] += dust // 5
+        graph[x][y] -= (dust // 5) * neighbors
+
+def machineWork(graph):
+    x, y = uMachine[0], uMachine[1]
+    direction = 0
+    while True:
+        nx = x + udx[direction]
+        ny = y + udy[direction]
+        if nx == uMachine[0] and ny == uMachine[1]:
+            graph[x][y] = 0
+            break
+        if nx < 0 or nx > uMachine[0] or ny < 0 or ny >= c:
+            direction += 1
+            continue
+        if nx == uMachine[0] and ny == uMachine[1]:
+            graph[x][y] = 0
+            break
+        if graph[x][y] != -1:
+            graph[x][y] = graph[nx][ny]
+        x, y = nx, ny
+    x, y = dMachine[0], dMachine[1]
+    direction = 0
+    while True:
+        nx = x + ddx[direction]
+        ny = y + ddy[direction]
+        if nx == dMachine[0] and ny == dMachine[1]:
+            graph[x][y] = 0
+            break
+        if nx >= r or nx < dMachine[0] or ny < 0 or ny >= c:
+            direction += 1
+            continue
+        if nx == dMachine[0] and ny == dMachine[1]:
+            graph[x][y] = 0
+            break
+        if graph[x][y] != -1:
+            graph[x][y] = graph[nx][ny]
+        x, y = nx, ny
+
+
+
+r, c, t = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+flag = True
+uMachine = []
+dMachine = []
+udx = [-1, 0, 1, 0]
+udy = [0, 1, 0, -1]
+ddx = [1, 0, -1, 0]
+ddy = [0, 1, 0, -1]
+for i in range(r):
+    tempList = list(map(int, sys.stdin.readline().rstrip().split()))
+    for j in range(c):
+        if tempList[j] == -1 and flag:
+            uMachine = [i, j]
+            flag = False
+        elif tempList[j] == -1 and not flag:
+            dMachine = [i, j]
+    graph.append(tempList)
+
+for _ in range(t):
+    dustMove()
+    machineWork(graph)
+
+answer = 0
+for i in range(r):
+    for j in range(c):
+        if graph[i][j] == -1:
+            continue
+        answer += graph[i][j]
+
+print(answer)
+```
