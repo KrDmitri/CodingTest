@@ -287,3 +287,79 @@ for i in range(r):
 
 print(answer)
 ```
+
+### 낚시왕
+```
+import sys
+
+def catchShark(j):
+    global graph, answer
+    for i in range(1, R + 1):
+        if len(graph[i][j]) != 0:
+            answer += graph[i][j][0][2]
+            graph[i][j] = []
+            sharks.remove([i, j])
+            return
+
+def changeDirection(d):
+    if d == 0:
+        d = 1
+    elif d == 1:
+        d = 0
+    elif d == 2:
+        d = 3
+    else:
+        d = 2
+    return d
+
+R, C, M = map(int, sys.stdin.readline().rstrip().split())
+graph = [[[] for _ in range(C + 1)] for _ in range(R + 1)]
+sharks = []
+for _ in range(M):
+    r, c, s, d, z = map(int, sys.stdin.readline().rstrip().split())
+    graph[r][c].append([s, d - 1, z])
+    sharks.append([r, c])
+
+# 순서: 상, 하, 우, 좌
+dx = [-1, 1, 0, 0]
+dy = [0, 0, 1, -1]
+answer = 0
+
+# 속도, 방향, 크기 순서
+for i in range(1, C + 1):
+    catchShark(i)
+    newSharks = []
+    newVisited = [[0] * (C + 1) for _ in range(R + 1)]
+    newGraph = [[[] for _ in range(C + 1)] for _ in range(R + 1)]
+    needToCheck = []
+    for shark in sharks:
+        x, y = shark[0], shark[1]
+        s, d, z = graph[x][y][0]
+        graph[x][y] = []
+        for _ in range(s):
+            x += dx[d]
+            y += dy[d]
+            if x <= 0 or x > R or y <= 0 or y > C:
+                x -= dx[d]
+                y -= dy[d]
+                d = changeDirection(d)
+                x += dx[d]
+                y += dy[d]
+        newGraph[x][y].append([s, d, z])
+        if newVisited[x][y] == 0:
+            newSharks.append([x, y])
+            newVisited[x][y] += 1
+        elif newVisited[x][y] == 1:
+            needToCheck.append([x, y])
+            newVisited[x][y] += 1
+    # 중복 위치 상어 처리
+    for spot in needToCheck:
+        x, y = spot[0], spot[1]
+        newGraph[x][y].sort(reverse=True, key=lambda x:x[2])
+        newGraph[x][y] = [newGraph[x][y][0]]
+
+    sharks = newSharks
+    graph = newGraph
+
+print(answer)
+```
