@@ -449,3 +449,89 @@ for j in range(C):
 print(ans)
 ```
 -> 나는 본 문제를 풀 때 graph 전체를 순회하면 그만큼 시간이 많이 소모될 것이라 생각이 되어 sharks라는 리스트를 사용하여 상어들이 있는 공간만 탐색하도록 했다. 그래도 시간 소모가 컸는데, 위 모범 답안 코드를 보면 완전 탐색을 했지만 각 상어들이 이동할 때 반복문을 돌며 한 칸씩 이동하게 한 나의 코드와 달리 수학적인 계산을 통해 상어의 다음 이동 위치를 바로 구한 위의 코드가 시간 소모가 더 적은 것을 볼 수 있었다.
+
+### 이차원 배열과 연산
+```
+import sys
+
+def makeSmall(graph, row, col):
+    newGraph = [[0] * col for _ in range(row)]
+    for i in range(row):
+        for j in range(col):
+            newGraph[i][j] = graph[i][j]
+    return newGraph
+
+def operationR(graph, row, col):
+    newGraph = [[] * col for _ in range(row)]
+    maxCol = 0
+    for i in range(row):
+        visited = [0] * 101
+        temp = []
+        maxNum = 0
+        for j in range(col):
+            visited[graph[i][j]] += 1
+            maxNum = max(maxNum, graph[i][j])
+        for j in range(1, maxNum + 1):
+            if visited[j] > 0:
+                temp.append([j, visited[j]])
+        temp.sort(key=lambda x:(x[1], x[0]))
+        for elem in temp:
+            newGraph[i].append(elem[0])
+            newGraph[i].append(elem[1])
+        maxCol = max(maxCol, len(newGraph[i]))
+    for i in range(row):
+        for _ in range(maxCol - len(newGraph[i])):
+            newGraph[i].append(0)
+    if maxCol > 100:
+        maxCol = 100
+        newGraph = makeSmall(newGraph, row, maxCol)
+    return newGraph, row, maxCol
+
+def operationC(graph, row, col):
+    newGraph = [[] * row for _ in range(col)] # row 바꿔줘야함
+    maxRow = 0
+    for i in range(col):
+        visited = [0] * 101
+        temp = []
+        maxNum = 0
+        for j in range(row):
+            visited[graph[j][i]] += 1
+            maxNum = max(maxNum, graph[j][i])
+        for j in range(1, maxNum + 1):
+            if visited[j] > 0:
+                temp.append([j, visited[j]])
+        temp.sort(key=lambda x:(x[1], x[0]))
+        for elem in temp:
+            newGraph[i].append(elem[0])
+            newGraph[i].append(elem[1])
+        maxRow = max(maxRow, len(newGraph[i]))
+    finalGraph = [[0] * col for _ in range(maxRow)]
+    for i in range(col):
+        for j in range(maxRow):
+            if j < len(newGraph[i]):
+                finalGraph[j][i] = newGraph[i][j]
+    if maxRow > 100:
+        maxRow = 100
+        finalGraph = makeSmall(finalGraph, maxRow, col)
+    return finalGraph, maxRow, col
+
+
+r, c, k = map(int, sys.stdin.readline().rstrip().split())
+r -= 1
+c -= 1
+graph = []
+for _ in range(3):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+
+row, col = 3, 3
+for time in range(101):
+    if (r < row and c < col) and graph[r][c] == k:
+        print(time)
+        exit(0)
+    if row >= col:
+        graph, row, col = operationR(graph, row, col)
+    else:
+        graph, row, col = operationC(graph, row, col)
+
+print(-1)
+```
