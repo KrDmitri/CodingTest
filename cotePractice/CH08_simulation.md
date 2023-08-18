@@ -535,3 +535,197 @@ for time in range(101):
 
 print(-1)
 ```
+
+### 새로운 게임
+```
+import sys
+
+def checkFinished(graph):
+    for i in range(N):
+        for j in range(N):
+            if len(graph[i][j]) >= 4:
+                return True
+    return False
+
+def changeDirection(d):
+    if d == 0:
+        d = 1
+    elif d == 1:
+        d = 0
+    elif d == 2:
+        d = 3
+    else:
+        d = 2
+    return d
+
+def moveUnit(i, isRepeat):
+    global canMove
+    x, y = unitLocation[i]
+    movingUnit = graph[x][y]
+    d = graph[x][y][0][1]
+    nx = x + dx[d]
+    ny = y + dy[d]
+    if nx < 0 or nx >= N or ny < 0 or ny >= N:
+        if isRepeat:
+            return
+        graph[x][y][0][1] = changeDirection(graph[x][y][0][1])
+        if isRepeat == False:
+            moveUnit(i, True)
+    else:
+        # 흰색은 비어있으면 걍 옮기고, 누가 있으면 위에 올려주면 된다
+        if graphColor[nx][ny] == 0:
+            if len(graph[nx][ny]) > 0:
+                canMove[i] = False
+            for elem in movingUnit:
+                index = elem[0]
+                unitLocation[index] = [nx, ny]
+                graph[nx][ny].append(elem)
+            graph[x][y] = []
+        # 빨간색은 비어있으면 뒤집어서 옮기고, 누가 있으면 위에 뒤집어서 올린다
+        elif graphColor[nx][ny] == 1:
+            canMove[i] = False
+            if len(graph[nx][ny]) == 0:
+                canMove[movingUnit[-1][0]] = True
+            while movingUnit:
+                this = movingUnit.pop()
+                index = this[0]
+                unitLocation[index] = [nx, ny]
+                graph[nx][ny].append(this)
+            graph[x][y] = []
+        # 파란색은 이동하지 않고 방향만 바꿔준다
+        elif graphColor[nx][ny] == 2:
+            if isRepeat:
+                return
+            graph[x][y][0][1] = changeDirection(graph[x][y][0][1])
+            if isRepeat == False:
+                moveUnit(i, True)
+
+
+N, K = map(int, sys.stdin.readline().rstrip().split())
+graphColor = []
+for _ in range(N):
+    graphColor.append(list(map(int, sys.stdin.readline().rstrip().split())))
+graph = [[[] for _ in range(N)] for _ in range(N)]
+unitLocation = [0] * (K + 1)
+canMove = [False] * (K + 1)
+for i in range(1, K + 1):
+    x, y, d = map(int, sys.stdin.readline().rstrip().split())
+    x -= 1
+    y -= 1
+    d -= 1
+    unitLocation[i] = [x, y]
+    if len(graph[x][y]) == 0:
+        canMove[i] = True
+    graph[x][y].append([i, d])
+
+dx = [0, 0, -1, 1]
+dy = [1, -1, 0, 0]
+
+for time in range(1001):
+    if checkFinished(graph):
+        print(time)
+        exit(0)
+    for i in range(1, K + 1):
+        if canMove[i]:  # i번째 말이 움직일 수 있으면
+            moveUnit(i, False)
+
+print(-1)
+```
+
+### 새로운 게임2
+```
+import sys
+
+def checkFinished(graph):
+    for i in range(N):
+        for j in range(N):
+            if len(graph[i][j]) >= 4:
+                return True
+    return False
+
+def changeDirection(d):
+    if d == 0:
+        d = 1
+    elif d == 1:
+        d = 0
+    elif d == 2:
+        d = 3
+    else:
+        d = 2
+    return d
+
+def findIndex(tempList, i):
+    for j in range(len(tempList)):
+        if tempList[j][0] == i:
+            return j
+
+def moveUnit(i, isRepeat):
+    x, y = unitLocation[i]
+    if i == 3 and x == 4 and y == 1:
+        print('', end='')
+    iIndex = findIndex(graph[x][y], i)
+    d = graph[x][y][iIndex][1]
+    movingUnit = graph[x][y][iIndex:]
+    nx = x + dx[d]
+    ny = y + dy[d]
+    if nx < 0 or nx >= N or ny < 0 or ny >= N:
+        if isRepeat:
+            return
+        graph[x][y][iIndex][1] = changeDirection(graph[x][y][iIndex][1])
+        if isRepeat == False:
+            moveUnit(i, True)
+    else:
+        # 흰색은 비어있으면 걍 옮기고, 누가 있으면 위에 올려주면 된다
+        if graphColor[nx][ny] == 0:
+            for elem in movingUnit:
+                index = elem[0]
+                unitLocation[index] = [nx, ny]
+                graph[nx][ny].append(elem)
+            graph[x][y] = graph[x][y][:iIndex]  # 고쳐야 함
+        # 빨간색은 비어있으면 뒤집어서 옮기고, 누가 있으면 위에 뒤집어서 올린다
+        elif graphColor[nx][ny] == 1:
+            while movingUnit:
+                this = movingUnit.pop()
+                index = this[0]
+                unitLocation[index] = [nx, ny]
+                graph[nx][ny].append(this)
+            graph[x][y] = graph[x][y][:iIndex]
+        # 파란색은 이동하지 않고 방향만 바꿔준다
+        elif graphColor[nx][ny] == 2:
+            if isRepeat:
+                return
+            graph[x][y][iIndex][1] = changeDirection(graph[x][y][iIndex][1])
+            if isRepeat == False:
+                moveUnit(i, True)
+
+
+N, K = map(int, sys.stdin.readline().rstrip().split())
+graphColor = []
+for _ in range(N):
+    graphColor.append(list(map(int, sys.stdin.readline().rstrip().split())))
+graph = [[[] for _ in range(N)] for _ in range(N)]
+unitLocation = [0] * (K + 1)
+for i in range(1, K + 1):
+    x, y, d = map(int, sys.stdin.readline().rstrip().split())
+    x -= 1
+    y -= 1
+    d -= 1
+    unitLocation[i] = [x, y]
+    graph[x][y].append([i, d])
+
+dx = [0, 0, -1, 1]
+dy = [1, -1, 0, 0]
+
+for time in range(1001):
+    if checkFinished(graph):
+        print(time)
+        exit(0)
+    for i in range(1, K + 1):
+        if checkFinished(graph):
+            print(time + 1)
+            exit(0)
+        moveUnit(i, False)
+
+print(-1)
+```
+
