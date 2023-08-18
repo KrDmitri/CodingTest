@@ -729,3 +729,87 @@ for time in range(1001):
 print(-1)
 ```
 
+### 원판 돌리기
+```
+import sys
+
+def rotate(infoList):
+    global graph
+    x, d, k = infoList[0], infoList[1], infoList[2]
+    if d == 1:
+        k = k * (-1)
+    for num in range(N):
+        if (num + 1) % (x + 1) == 0:
+            listToRotate = graph[num]
+            newList = [0] * M
+            for i in range(M):
+                j = ((i + M) + k) % M
+                newList[j] = listToRotate[i]
+            graph[num] = newList
+
+
+def numChange():
+    global graph
+    sameNumList = []
+    for i in range(N):
+        for j in range(M):
+            if j < M - 1 and graph[i][j] == graph[i][j + 1] and graph[i][j] != 0:
+                if [i, j] not in sameNumList:
+                    sameNumList.append([i, j])
+                if [i, j + 1] not in sameNumList:
+                    sameNumList.append([i, j + 1])
+            if j == M - 1 and graph[i][j] == graph[i][0] and graph[i][j] != 0:
+                if [i, j] not in sameNumList:
+                    sameNumList.append([i, j])
+                if [i, 0] not in sameNumList:
+                    sameNumList.append([i, 0])
+            if i < N - 1 and graph[i][j] == graph[i + 1][j] and graph[i][j] != 0:
+                if [i, j] not in sameNumList:
+                    sameNumList.append([i, j])
+                if [i + 1, j] not in sameNumList:
+                    sameNumList.append([i + 1, j])
+    if len(sameNumList) > 0:
+        for x, y in sameNumList:
+            graph[x][y] = 0
+    else:
+        numSum = 0
+        numCount = 0
+        for i in range(N):
+            for j in range(M):
+                if graph[i][j] != 0:
+                    numSum += graph[i][j]
+                    numCount += 1
+        if numCount == 0:
+            return 
+        numAvg = numSum / numCount
+        for i in range(N):
+            for j in range(M):
+                if graph[i][j] != 0:
+                    if graph[i][j] > numAvg:
+                        graph[i][j] -= 1
+                    elif graph[i][j] < numAvg:
+                        graph[i][j] += 1
+
+
+
+N, M, T = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+for _ in range(N):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+rotationInfo = []
+for _ in range(T):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    temp[0] -= 1
+    rotationInfo.append(temp)
+
+for i in range(len(rotationInfo)):
+    rotate(rotationInfo[i])
+    numChange()
+
+ans = 0
+for i in range(N):
+    for j in range(M):
+        ans += graph[i][j]
+
+print(ans)
+```
