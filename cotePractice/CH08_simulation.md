@@ -814,6 +814,36 @@ for i in range(N):
 print(ans)
 ```
 
+### 레벨 햄버거
+```
+import sys
+
+def eat(level, layerNum):
+    if layerNum <= 1:
+        return 0
+    elif layerNum < layer[level - 1] + 1:
+        return eat(level - 1, layerNum - 1)
+    elif layerNum == layer[level - 1] + 1:
+        return patty[level - 1]
+    elif layerNum == layer[level - 1] + 2:
+        return patty[level - 1] + 1
+    elif layerNum < 2 * layer[level - 1] + 2:
+        return patty[level - 1] + 1 + eat(level - 1, layerNum - (layer[level - 1] + 2))
+    else:
+        return patty[level - 1] * 2 + 1
+
+N, X = map(int, sys.stdin.readline().rstrip().split())
+
+patty = [1] * 51
+layer = [1] * 51
+
+for i in range(1, 51):
+    patty[i] = 2 * patty[i - 1] + 1
+    layer[i] = 2 * layer[i - 1] + 3
+
+print(eat(N, X))
+```
+
 ### 모노미노도미노 2
 ```
 import sys
