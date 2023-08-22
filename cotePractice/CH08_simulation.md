@@ -813,3 +813,139 @@ for i in range(N):
 
 print(ans)
 ```
+
+### 모노미노도미노 2
+```
+import sys
+
+def moveBlock(blockList):
+    global graph
+    if len(blockList) == 1:
+        # 파랑 위치 구하기
+        x, y = blockList[0]
+        while y < 10 and not graph[x][y]:
+            y += 1
+        graph[x][y - 1] = True
+        # 초록 위치 구하기
+        x, y = blockList[0]
+        while x < 10 and not graph[x][y]:
+            x += 1
+        graph[x - 1][y] = True
+    else:
+        # 파랑 위치 구하기
+        x1, y1 = blockList[0]
+        x2, y2 = blockList[1]
+        while y1 < 10 and y2 < 10:
+            if not graph[x1][y1] and not graph[x2][y2]:
+                y1 += 1
+                y2 += 1
+            else:
+                break
+        graph[x1][y1 - 1] = True
+        graph[x2][y2 - 1] = True
+        # 초록 위치 구하기
+        x1, y1 = blockList[0]
+        x2, y2 = blockList[1]
+        while x1 < 10 and x2 < 10:
+            if not graph[x1][y1] and not graph[x2][y2]:
+                x1 += 1
+                x2 += 1
+            else:
+                break
+        graph[x1 - 1][y1] = True
+        graph[x2 - 1][y2] = True
+
+def checkScore():
+    global graph, score
+    # 파랑부분 점수 확인
+    for j in range(4, 10):
+        flag = True
+        for i in range(4):
+            if not graph[i][j]:
+                flag = False
+                break
+        if flag:
+            score += 1
+            for k in range(j, 4, -1):
+                for i in range(4):
+                    graph[i][k] = graph[i][k - 1]
+            for i in range(4):
+                graph[i][4] = False
+    # 초록부분 점수 확인
+    for i in range(4, 10):
+        flag = True
+        for j in range(4):
+            if not graph[i][j]:
+                flag = False
+                break
+        if flag:
+            score += 1
+            for k in range(i, 4, -1):
+                for j in range(4):
+                    graph[k][j] = graph[k - 1][j]
+            for j in range(4):
+                graph[4][j] = False
+
+def checkSpecialCase():
+    global graph
+    # 파랑 부분 확인
+    pushNum = 0
+    for j in range(4, 6):
+        for i in range(4):
+            if graph[i][j]:
+                pushNum += 1
+                break
+    if pushNum > 0:
+        for i in range(4):
+            for j in range(9, 5, -1):
+                graph[i][j] = graph[i][j - pushNum]
+    for j in range(4, 6):
+        for i in range(4):
+            graph[i][j] = False
+
+    # 초록 부분 확인
+    pushNum = 0
+    for i in range(4, 6):
+        for j in range(4):
+            if graph[i][j]:
+                pushNum += 1
+                break
+    if pushNum > 0:
+        for j in range(4):
+            for i in range(9, 5, -1):
+                graph[i][j] = graph[i - pushNum][j]
+    for i in range(4, 6):
+        for j in range(4):
+            graph[i][j] = False
+
+graph = [[False] * 10 for _ in range(10)]
+
+N = int(sys.stdin.readline().rstrip())
+score = 0
+for _ in range(N):
+    t, x, y = map(int, sys.stdin.readline().rstrip().split())
+    movingBlocks = []
+    if t == 1:
+        movingBlocks.append([x, y])
+    elif t == 2:
+        movingBlocks.append([x, y])
+        movingBlocks.append([x, y + 1])
+    else:
+        movingBlocks.append([x, y])
+        movingBlocks.append([x + 1, y])
+    
+    moveBlock(movingBlocks)
+    checkScore()
+    checkSpecialCase()
+
+remain = 0
+for i in range(4):
+    for j in range(6, 10):
+        if graph[i][j]:
+            remain += 1
+        if graph[j][i]:
+            remain += 1
+
+print(score)
+print(remain)
+```
