@@ -190,3 +190,88 @@ for i in range(N):
     nList.remove(numList[i])
     checkOrder(numList[i], nList, [numList[i]])
 ```
+
+### 두 스티커
+```
+import sys
+
+def isFit(a, b):
+    global ans
+    ax, ay, aSize = a[0], a[1], a[2]
+    bx, by, bSize = b[0], b[1], b[2]
+    if (ax + bx <= H and max(ay, by) <= W) or (ax + by <= H and max(ay, bx) <= W) or (ay + bx <= H and max(ax, by) <= W) or (ay + by <= H and max(ax, bx) <= W):
+        ans = max(ans, aSize + bSize)
+        return True
+    if (ax + bx <= W and max(ay, by) <= H) or (ax + by <= W and max(ay, bx) <= H) or (ay + bx <= W and max(ax, by) <= H) or (ay + by <= W and max(ax, bx) <= H):
+        ans = max(ans, aSize + bSize)
+        return True
+    return False
+
+H, W = map(int, sys.stdin.readline().rstrip().split())
+N = int(sys.stdin.readline().rstrip())
+stickers = []
+for _ in range(N):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    stickers.append([x, y, x * y])
+
+stickers.sort(key=lambda x:x[2], reverse=True)
+ans = 0
+
+for i in range(len(stickers) - 1):
+    for j in range(i + 1, len(stickers)):
+        isFit(stickers[i], stickers[j])
+print(ans)
+```
+
+### 캠프 준비
+```
+import sys
+from itertools import combinations
+
+N, L, R, X = map(int, sys.stdin.readline().rstrip().split())
+numList = list(map(int, sys.stdin.readline().rstrip().split()))
+numList.sort()
+
+ans = 0
+
+for i in range(len(numList) - 1):
+    for j in range(i + 1, len(numList)):
+        if numList[j] - numList[i] >= X:
+            if numList[j] + numList[i] >= L and numList[j] + numList[i] <= R:
+                ans += 1
+            additionalNums = numList[i + 1:j]
+            for k in range(1, len(additionalNums) + 1):
+                candidates = list(combinations(additionalNums, k))
+                for elem in candidates:
+                    numSum = sum(elem) + numList[i] + numList[j]
+                    if numSum >= L and numSum <= R:
+                        ans += 1
+print(ans)
+```
+
+### 캠프 준비(모범 답안)
+```
+def backtracking(idx, total, easy, hard):
+    global cnt
+    if idx == n:
+        if l <= total <= r and hard-easy >= x:
+            cnt += 1
+        return
+    
+    # 현재 문제를 추가하지 않을때
+    backtracking(idx+1, total, easy, hard)
+    
+    if not total:  # 현재 문제가 가장 쉬울때
+        backtracking(idx+1, A[idx], A[idx], A[idx])
+    else:
+        backtracking(idx+1, total+A[idx], easy, A[idx])
+    
+    
+
+n, l, r, x = map(int, input().split())
+A = sorted(map(int, input().split()))
+cnt = 0
+backtracking(0, 0, -1, -1)
+print(cnt)
+```
+-> idx는 현재 추가할지 말지 결정하는 인덱스인것 같다. 각 경우를 함수로 나타내는 풀이이다.
