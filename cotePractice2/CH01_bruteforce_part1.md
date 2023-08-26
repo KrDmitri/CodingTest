@@ -275,3 +275,35 @@ backtracking(0, 0, -1, -1)
 print(cnt)
 ```
 -> idx는 현재 추가할지 말지 결정하는 인덱스인것 같다. 각 경우를 함수로 나타내는 풀이이다.
+
+### 숫자 재배치
+```
+import sys
+import copy
+
+def backtracking(nums, tempStr):
+    global ans
+    if len(nums) == 0:
+        if int(tempStr) < B:
+            ans = max(ans, int(tempStr))
+    else:
+        for num in nums:
+            if tempStr == '' and num == 0:
+                continue
+            newStr = tempStr + str(num)
+            newNums = copy.deepcopy(nums)
+            newNums.remove(num)
+            backtracking(newNums, newStr)
+
+A, B = map(int, sys.stdin.readline().rstrip().split())
+aStr = str(A)
+aList = []
+for char in aStr:
+    aList.append(int(char))
+aList.sort(reverse=True)
+
+ans = -1
+backtracking(aList, '')
+print(ans)
+```
+-> 다른 성능이 좋은 코드에서는 비트마스킹 기법을 활용한 것 같은데, 비트마스킹에 대해서 공부해봐야겠다.
