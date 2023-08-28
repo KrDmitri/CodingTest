@@ -374,3 +374,77 @@ ans = (-1) * INF
 dfs(brackets, 0)
 print(ans)
 ```
+
+### 감시
+```
+import sys
+INF = int(1e9)
+
+def countBlindZones(directions):
+    visited = [[False] * M for _ in range(N)]
+    for i in range(len(cameras)):
+        x, y = cameras[i]
+        visited[x][y] = True
+        camType = graph[x][y]
+        direction = directions[i]
+        if camType == 2:
+            for _ in range(2):
+                nx, ny = x, y
+                while True:
+                    nx += dx[direction]
+                    ny += dy[direction]
+                    if nx < 0 or nx >= N or ny < 0 or ny >= M or graph[nx][ny] == 6:
+                        break
+                    visited[nx][ny] = True
+                direction += 2
+        else:
+            for j in range(camLookNum[camType]):
+                nx, ny = x, y
+                while True:
+                    nx += dx[direction]
+                    ny += dy[direction]
+                    if nx < 0 or nx >= N or ny < 0 or ny >= M or graph[nx][ny] == 6:
+                        break
+                    visited[nx][ny] = True
+                direction += 1
+                direction %= 4
+    blinds = 0
+    for i in range(N):
+        for j in range(M):
+            if graph[i][j] == 6:
+                continue
+            if not visited[i][j]:
+                blinds += 1
+    return blinds
+
+def cameraDir(directions, idx):
+    global ans
+    if idx == len(cameras):
+        ans = min(ans, countBlindZones(directions))
+    else:
+        nowx, nowy = cameras[idx]
+        camNum = graph[nowx][nowy]
+        for i in range(camDirNum[camNum]):
+            directions[idx] = i
+            cameraDir(directions, idx + 1)
+            
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+cameras = []
+for i in range(N):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    for j in range(M):
+        if 1 <= temp[j] <= 5:
+            cameras.append([i, j])
+    graph.append(temp)
+
+dx = [-1, 0, 1, 0]
+dy = [0, 1, 0, -1]
+camDirNum = [0, 4, 2, 4, 4, 1]
+camLookNum = [0, 1, 2, 2, 3, 4]
+ans = INF
+cameraDir([0] * len(cameras), 0)
+
+print(ans)
+```
