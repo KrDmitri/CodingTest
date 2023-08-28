@@ -307,3 +307,70 @@ backtracking(aList, '')
 print(ans)
 ```
 -> 다른 성능이 좋은 코드에서는 비트마스킹 기법을 활용한 것 같은데, 비트마스킹에 대해서 공부해봐야겠다.
+
+### 괄호 추가하기
+```
+import sys
+INF = int(1e10)
+
+def calc(a, b, sign):
+    if sign == '+':
+        return a + b
+    elif sign == '-':
+        return a - b
+    else:
+        return a * b
+
+def operate(isBracket):
+    # 괄호 연산
+    newNums = []
+    newOperators = []
+    i = 0
+    while i < len(isBracket):
+        if not isBracket[i]:
+            newNums.append(nums[i])
+            newOperators.append(operators[i])
+            i += 1
+        else:
+            newNums.append(calc(nums[i], nums[i + 1], operators[i]))
+            if i + 1 < len(operators):
+                newOperators.append(operators[i + 1])
+            i += 2
+    newNums.append(nums[-1])
+
+    # 남은 수 연산
+    val = newNums[0]
+    for i in range(len(newOperators)):
+        val = calc(val, newNums[i + 1], newOperators[i])
+    return val
+
+def dfs(isBracket, idx):
+    global ans
+    if idx == len(isBracket):
+        ans = max(ans, operate(isBracket))
+        return
+
+    if idx == 0 or not isBracket[idx - 1]:
+        dfs(isBracket, idx + 1)
+        isBracket[idx] = True
+        dfs(isBracket, idx + 1)
+        isBracket[idx] = False
+    else:
+        dfs(isBracket, idx + 1)
+
+N = int(sys.stdin.readline().rstrip())
+equation = sys.stdin.readline().rstrip()
+nums = []
+operators = []
+for i in range(len(equation)):
+    if i % 2 == 0:
+        nums.append(int(equation[i]))
+    else:
+        operators.append(equation[i])
+
+brackets = [False] * len(operators)
+
+ans = (-1) * INF
+dfs(brackets, 0)
+print(ans)
+```
