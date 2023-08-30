@@ -448,3 +448,55 @@ cameraDir([0] * len(cameras), 0)
 
 print(ans)
 ```
+
+### 등차수열 변환
+```
+import sys
+INF = int(1e9)
+sys.setrecursionlimit(100000)
+
+def backTracking(idx, prev, diff, changes):
+    global ans
+    if idx == B:
+        ans = min(ans, changes)
+        return
+
+    now = numList[idx]
+    for i in range(-1, 2):
+        newNum = now + i
+        if newNum - prev == diff:
+            if i == 0:
+                backTracking(idx + 1, newNum, diff, changes)
+            else:
+                backTracking(idx + 1, newNum, diff, changes + 1)
+
+
+B = int(sys.stdin.readline().rstrip())
+numList = list(map(int, sys.stdin.readline().rstrip().split()))
+
+if B <= 2:
+    print(0)
+    exit(0)
+else:
+    firstNum = numList[0]
+    secondNum = numList[1]
+    ans = INF
+    for i in range(-1, 2):
+        fNum = firstNum + i
+        fChanges = 1
+        if i == 0:
+            fChanges = 0
+        for j in range(-1, 2):
+            sNum = secondNum + j
+            if j == -1 or j == 1:
+                sChanges = fChanges + 1
+            else:
+                sChanges = fChanges
+            numDiff = sNum - fNum
+            backTracking(2, sNum, numDiff, sChanges)
+
+if ans == INF:
+    print(-1)
+else:
+    print(ans)
+```
