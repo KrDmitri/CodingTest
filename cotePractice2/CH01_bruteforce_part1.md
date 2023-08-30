@@ -500,3 +500,100 @@ if ans == INF:
 else:
     print(ans)
 ```
+
+### 치킨 배달
+```
+import sys
+from itertools import combinations
+INF = int(1e9)
+
+def chickenDistance(stores):
+    dist = 0
+    for house in houses:
+        temp = INF
+        for store in stores:
+            temp = min(temp, abs(store[0] - house[0]) + abs(store[1] - house[1]))
+        dist += temp
+    return dist
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+chickens = []
+houses = []
+for i in range(N):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    for j in range(N):
+        if temp[j] == 1:
+            houses.append([i, j])
+        elif temp[j] == 2:
+            chickens.append([i, j])
+
+candidates = list(combinations(chickens, M))
+ans = INF
+for candidate in candidates:
+    ans = min(ans, chickenDistance(candidate))
+
+print(ans)
+```
+
+### 숫자판 점프
+```
+import sys
+
+def makeNum(temp, x, y):
+    global visited, ans
+    if len(temp) == 6:
+        temp = int(temp)
+        if not visited[temp]:
+            visited[temp] = True
+            ans += 1
+        return
+
+    for i in range(4):
+        nx = x + dx[i]
+        ny = y + dy[i]
+        if nx < 0 or nx >= 5 or ny < 0 or ny >= 5:
+            continue
+        newTemp = temp + graph[nx][ny]
+        makeNum(newTemp, nx, ny)
+
+graph = []
+for _ in range(5):
+    graph.append(list(sys.stdin.readline().rstrip().split()))
+
+visited = [False] * 1000000
+dx = [-1, 0, 1, 0]
+dy = [0, 1, 0, -1]
+ans = 0
+for i in range(5):
+    for j in range(5):
+        temp = graph[i][j]
+        makeNum(temp, i, j)
+
+
+print(ans)
+```
+
+### 한윤정이 이탈리아에 가서 아이스크림을 사먹는데
+```
+import sys
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+visited = [[False] * 201 for _ in range(201)]
+for _ in range(M):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    visited[x][y] = True
+    visited[y][x] = True
+
+ans = 0
+
+for i in range(1, N - 1):
+    for j in range(i + 1, N):
+        if visited[i][j]:
+            continue
+        for k in range(j + 1, N + 1):
+            if visited[i][k] or visited[j][k]:
+                continue
+            ans += 1
+print(ans)
+```
