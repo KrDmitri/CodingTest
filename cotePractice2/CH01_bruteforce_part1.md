@@ -597,3 +597,215 @@ for i in range(1, N - 1):
             ans += 1
 print(ans)
 ```
+
+### 세 친구
+```
+import sys
+INF = int(1e9)
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = [[False] * (N + 1) for _ in range(N + 1)]
+friends = [0] * (N + 1)
+for _ in range(M):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    graph[x][y] = True
+    graph[y][x] = True
+    friends[x] += 1
+    friends[y] += 1
+
+ans = INF
+for i in range(1, N - 1):
+    for j in range(i + 1, N):
+        if graph[i][j]:
+            for k in range(j, N + 1):
+                if graph[i][k] and graph[j][k]:
+                    ans = min(ans, friends[i] + friends[j] + friends[k] - 6)
+
+print(ans if ans != INF else -1)
+```
+
+### 배열 돌리기 4
+```
+import sys
+import copy
+from itertools import permutations
+INF = int(1e9)
+
+def rotate(info, graph):
+    r, c, s = info
+    for i in range(1, s + 1):
+        x, y = r - i, c - i
+        temp = graph[x][y]
+        for direction in range(4):
+            for j in range(i * 2):
+                nx = x + dx[direction]
+                ny = y + dy[direction]
+                graph[x][y] = graph[nx][ny]
+                x, y = nx, ny
+        graph[r - i][c - i + 1] = temp
+    return graph
+
+def searchMin(graph):
+    ans = INF
+    for i in range(N):
+        ans = min(ans, sum(graph[i]))
+    return ans
+
+N, M, K = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+rotations = []
+for _ in range(N):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+for _ in range(K):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    temp[0] -= 1
+    temp[1] -= 1
+    rotations.append(temp)
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+ans = INF
+
+candidates = list(permutations(rotations, len(rotations)))
+for candidate in candidates:
+    newGraph = copy.deepcopy(graph)
+    for rotation in candidate:
+        newGraph = rotate(rotation, newGraph)
+    ans = min(ans, searchMin(newGraph))
+
+print(ans)
+```
+
+### 캐슬 디펜스
+```
+import sys
+import copy
+from collections import deque
+from itertools import combinations
+
+def killEnemy(archers, graph):
+    tempAns = 0
+    for move in range(N):
+        shootingSpots = []
+        for archer in archers:
+            q = deque()
+            q.append(archer)
+            visited = [[False] * M for _ in range(N + 1)]
+            visited[archer[0]][archer[1]] = True
+            tempSpots = []
+            while q:
+                x, y, d = q.popleft()
+                if d == D:
+                    break
+                for i in range(3):
+                    nx = x + dx[i]
+                    ny = y + dy[i]
+                    if nx < 0 or nx >= N or ny < 0 or ny >= M or visited[nx][ny]:
+                        continue
+                    visited[nx][ny] = True
+                    q.append([nx, ny, d + 1])
+                    if graph[nx][ny] == 1:
+                        tempSpots.append([nx, ny, d])
+            if len(tempSpots) > 0:
+                tempSpots.sort(key=lambda x:(x[2], x[1]))
+                shootingSpots.append(tempSpots[0])
+
+        for x, y, z in shootingSpots:
+            if graph[x][y] == 1:
+                tempAns += 1
+                graph[x][y] = 0
+        for i in range(N, 0, -1):
+            for j in range(M):
+                graph[i][j] = graph[i - 1][j]
+        for i in range(M):
+            graph[N][i] = 0
+            graph[0][i] = 0
+    return tempAns
+
+
+N, M, D = map(int, sys.stdin.readline().rstrip().split())
+
+graph = []
+for _ in range(N):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+graph.append([0] * M)
+
+archerSpots = []
+for i in range(M):
+    archerSpots.append([N, i, 0])
+dx = [0, -1, 0]
+dy = [-1, 0, 1]
+
+archerCandidates = list(combinations(archerSpots, 3))
+ans = 0
+for archers in archerCandidates:
+    newGraph = copy.deepcopy(graph)
+    ans = max(ans, killEnemy(archers, newGraph))
+
+print(ans)
+```
+
+### ⚾
+```
+import sys
+from itertools import permutations
+
+def simulate(order):
+    inning = 0
+    score = 0
+    playerIndex = 0
+    outCount = 0
+    while inning < N:
+        # 새로운 이닝 시작
+        base = []
+        while True:
+            try:
+                result = graph[order[playerIndex]][inning]
+            except IndexError:
+                print('', end='')
+            if result == 0:
+                outCount += 1
+                if outCount == 3:
+                    inning += 1
+                    playerIndex += 1
+                    playerIndex %= 9
+                    break
+            elif 1 <= result <= 3:
+                newBase = []
+                for i in range(len(base)):
+                    base[i] += result
+                    if base[i] > 3:
+                        score += 1
+                    else:
+                        newBase.append(base[i])
+                newBase.append(result)
+                base = newBase
+            elif result == 4:
+                score += len(base) + 1
+                base = []
+            playerIndex += 1
+            playerIndex %= 9
+
+        outCount = 0
+    return score
+
+N = int(sys.stdin.readline().rstrip())
+graph = [[] for _ in range(9)]
+for _ in range(N):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    for i in range(9):
+        graph[i].append(temp[i])
+players = []
+for i in range(9):
+    if i == 0:
+        continue
+    players.append(i)
+candidates = list(permutations(players, 8))
+ans = 0
+for playerList in candidates:
+    playerList = list(playerList)
+    playerList.insert(3, 0)
+    ans = max(ans, simulate(playerList))
+
+print(ans)
+```
+-> 문제를 똑바로 안 읽어서 푸는데 시간을 좀 낭비했다.. 문제를 똑바로 읽자..!!
