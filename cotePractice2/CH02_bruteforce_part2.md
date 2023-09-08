@@ -131,3 +131,45 @@ dfs(head, tail)
 print(ans)
 ```
 -> dfs로 풀었는데 시간초과가 나서 위 문제는 dp로 풀 수 있을거 같다
+
+### 파이프 옮기기1(dp 풀이)
+```
+import sys
+
+N = int(sys.stdin.readline().rstrip())
+graph = []
+for _ in range(N):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+
+dx = [0, -1, 0]
+dy = [0, 0, -1]
+
+types = [[[0, 0, 0] for _ in range(N)] for _ in range(N)]
+types[0][1][0] = 1
+
+for i in range(N):
+    for j in range(N):
+        if graph[i][j] == 1:
+            continue
+        flag = 0
+        # 옆에서
+        if 0 <= j - 1 < N:
+            types[i][j][0] += types[i][j - 1][0]
+            types[i][j][0] += types[i][j - 1][2]
+        # 위에서
+        if 0 <= i - 1 < N:
+            types[i][j][1] += types[i - 1][j][1]
+            types[i][j][1] += types[i - 1][j][2]
+        # 대각선에서
+        for k in range(3):
+            nx = i + dx[k]
+            ny = j + dy[k]
+            if nx < 0 or nx >= N or ny < 0 or ny >= N or graph[nx][ny] == 1:
+                flag = 1
+                break
+        if flag:
+            continue
+        types[i][j][2] += sum(types[i - 1][j - 1])
+
+print(sum(types[N - 1][N - 1]))
+```
