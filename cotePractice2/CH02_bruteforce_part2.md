@@ -62,3 +62,72 @@ for i in range(1, N):
 print(ans)
 ```
 -> 어렵지 않은 문제였는데 각 변수들의 scope를 잘못 설정하였다
+
+### 파이프 옮기기1(DFS 풀이)
+```
+import sys
+
+def checkType(head, tail):
+    a = tail[0] - head[0]
+    b = tail[1] - head[1]
+    if a == 1 and b == 1:
+        t = 2
+    elif a == 1 and b == 0:
+        t = 1
+    else:
+        t = 0
+    return t
+
+def dfs(head, tail):
+    global ans
+    t = checkType(head, tail)
+    hx, hy = head
+    tx, ty = tail
+    if tx == N - 1 and ty == N - 1:
+        ans += 1
+        return
+
+    # 이동
+    nhx = hx + dx[t]
+    nhy = hy + dy[t]
+    ntx = tx + dx[t]
+    nty = ty + dy[t]
+
+    # 회전
+    for i in range(len(rx[t])):
+        flag = 0
+        nntx = ntx + rx[t][i]
+        nnty = nty + ry[t][i]
+        if nntx < 0 or nntx >= N or nnty < 0 or nnty >= N or graph[nntx][nnty] == 1:
+            continue
+        nt = checkType([nhx, nhy], [nntx, nnty])
+        if nt == 2:
+            for j, k in ([[-1, 0], [0, -1]]):
+                if nntx + j < 0 or nntx + j >= N or nnty + k < 0 or nnty + k >= N or graph[nntx + j][nnty + k] == 1:
+                    flag = 1
+                    break
+        if flag:
+            continue
+        dfs([nhx, nhy], [nntx, nnty])
+
+
+
+N = int(sys.stdin.readline().rstrip())
+graph = []
+for _ in range(N):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+
+head = [0, 0]
+tail = [0, 1]
+
+dx = [0, 1, 1]
+dy = [1, 0, 1]
+rx = [[0, 1], [0, 0], [0, -1, 0]]
+ry = [[0, 0], [0, 1], [0, 0, -1]]
+
+ans = 0
+dfs(head, tail)
+
+print(ans)
+```
+-> dfs로 풀었는데 시간초과가 나서 위 문제는 dp로 풀 수 있을거 같다
