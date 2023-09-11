@@ -173,3 +173,110 @@ for i in range(N):
 
 print(sum(types[N - 1][N - 1]))
 ```
+
+### 괄호 추가하기2
+```
+import sys
+INF = int(1e10)
+
+def operate(a, b, sign):
+    if sign == '+':
+        return a + b
+    elif sign == '-':
+        return a - b
+    elif sign == '*':
+        return a * b
+
+# 괄호 연산 먼저한 후에 곱하기 연산, 그 후에 순차 연산
+def calculate(isBrackets):
+    if isBrackets == [False, False, False, False, True, False, True, False, True]:
+        print('', end='')
+
+    newNums = []
+    newSigns = []
+    # 괄호 먼저 연산
+    i = 0
+    while i < len(isBrackets):
+        if isBrackets[i]:
+            if len(newNums) > 0:
+                newNums[-1] = operate(newNums[-1], nums[i + 1], signs[i])
+            else:
+                newNums.append(operate(nums[i], nums[i + 1], signs[i]))
+            i += 1
+        else:
+            if len(newNums) == 0:
+                newNums.append(nums[0])
+            newNums.append(nums[i + 1])
+            newSigns.append(signs[i])
+            i += 1
+
+    # 곱셈 연산
+    fNums = []
+    fSigns = []
+    i = 0
+    while i < len(newSigns):
+        if newSigns[i] == '*':
+            if len(fNums) > 0:
+                fNums[-1] = fNums[-1] * newNums[i + 1]
+            else:
+                fNums.append(newNums[i] * newNums[i + 1])
+            i += 1
+        else:
+            if len(fNums) == 0:
+                fNums.append(newNums[0])
+            fNums.append(newNums[i + 1])
+            fSigns.append(newSigns[i])
+            i += 1
+
+    # 순차 연산
+    val = fNums[0]
+    for i in range(1, len(fNums)):
+        val = operate(val, fNums[i], fSigns[i - 1])
+
+    return val
+
+
+def dfs(isBrackets, idx):
+    global ans
+    if idx == len(isBrackets):
+        ans = max(ans, calculate(isBrackets))
+    else:
+        if idx == 0:
+            dfs(isBrackets, idx + 1)
+            isBrackets[idx] = True
+            dfs(isBrackets, idx + 1)
+            isBrackets[idx] = False
+        else:
+            if isBrackets[idx - 1] == True:
+                dfs(isBrackets, idx + 1)
+            else:
+                dfs(isBrackets, idx + 1)
+                isBrackets[idx] = True
+                dfs(isBrackets, idx + 1)
+                isBrackets[idx] = False
+
+
+N = int(sys.stdin.readline().rstrip())
+
+temp = list(sys.stdin.readline().rstrip())
+nums = []
+signs = []
+for i in range(len(temp)):
+    if i % 2 == 0:
+        nums.append(int(temp[i]))
+    else:
+        signs.append(temp[i])
+
+ans = (-1) * INF
+
+isBrackets = [False] * len(signs)
+
+if N == 1:
+    ans = nums[0]
+elif N == 3:
+    ans = operate(nums[0], nums[1], signs[0])
+else:
+    dfs(isBrackets, 0)
+
+print(ans)
+```
