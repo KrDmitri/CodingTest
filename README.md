@@ -3,6 +3,7 @@
 1. 이것이 코딩 테스트다 교재 문제 풀이
 2. 백준 강의 '코딩 테스트 준비 - 연습'(https://code.plus/course/52) 내 문제 풀이
 3. 백준 강의 '코딩 테스트 준비 - 문제'(https://code.plus/course/53) 내 문제 풀이
+4. solved.ac CLASS 5 문제 풀이(https://solved.ac/class/5)
 
 
 ## 진행 과정
