@@ -280,3 +280,77 @@ else:
 
 print(ans)
 ```
+
+### 십자가 2개 놓기
+```
+import sys
+from itertools import combinations
+
+def checkBiggest(apos, bpos):
+    global ans
+    ax, ay = apos
+    bx, by = bpos
+    asize = sizes[ax][ay]
+    bsize = sizes[bx][by]
+
+    aList = []
+    for i in range(asize + 1):
+        for k in range(4):
+            nax = ax + dx[k] * i
+            nay = ay + dy[k] * i
+            aList.append([nax, nay])
+        bList = []
+        for j in range(bsize + 1):
+            for k in range(4):
+                nbx = bx + dx[k] * j
+                nby = by + dy[k] * j
+                bList.append([nbx, nby])
+
+            flag = True
+            for aelem in aList:
+                for belem in bList:
+                    if aelem == belem:
+                        flag = False
+                        break
+                if not flag:
+                    break
+            if flag:
+                ans = max(ans, (i * 4 + 1) * (j * 4 + 1))
+
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+
+graph = []
+for _ in range(N):
+    graph.append(list(sys.stdin.readline().rstrip()))
+
+dx = [-1, 0, 1, 0]
+dy = [0, 1, 0, -1]
+
+candidatesPos = []
+sizes = [[-1] * M for _ in range(N)]
+
+for x in range(N):
+    for y in range(M):
+        for k in range(8):
+            breakFlag = False
+            for i in range(4):
+                nx = x + dx[i] * k
+                ny = y + dy[i] * k
+                if nx < 0 or nx >= N or ny < 0 or ny >= M or graph[nx][ny] == '.':
+                    breakFlag = True
+                    break
+            if breakFlag:
+                break
+            sizes[x][y] = max(sizes[x][y], k)
+            if [x, y] not in candidatesPos:
+                candidatesPos.append([x, y])
+
+candidates = list(combinations(candidatesPos, 2))
+
+ans = 1
+for candidate in candidates:
+    apos, bpos = candidate
+    checkBiggest(apos, bpos)
+print(ans)
+```
