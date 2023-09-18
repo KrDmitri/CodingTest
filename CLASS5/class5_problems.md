@@ -82,3 +82,55 @@ for _ in range(T):
     print(timeNeeds[W - 1])
 ```
 -> 위상정렬 코드에서 조금만 더 생각하면 풀 수 있었는데, 처음에 너무 어렵게 생각한 것 같다.
+
+### 최소 스패닝 트리
+```
+import sys
+import heapq
+
+def checkFinished():
+    for elem in parent:
+        if elem != 0:
+            return False
+    return True
+
+# 서로소 함수 사용하기
+def find(x):
+    if parent[x] == x:
+        return x
+    else:
+        return find(parent[x])
+
+def union(x, y):
+    xp = find(x)
+    yp = find(y)
+    if xp < yp:
+        parent[yp] = xp
+    else:
+        parent[xp] = yp
+
+V, E = map(int, sys.stdin.readline().rstrip().split())
+roads = []
+parent = []
+for i in range(V):
+    parent.append(i)
+
+for _ in range(E):
+    a, b, c = map(int, sys.stdin.readline().rstrip().split())
+    heapq.heappush(roads, [c, a - 1, b - 1])
+
+ans = 0
+
+while roads:
+    if checkFinished():
+        break
+    z, x, y = heapq.heappop(roads)
+    px = find(x)
+    py = find(y)
+    if px == py:
+        continue
+    ans += z
+    union(x, y)
+
+print(ans)
+```
