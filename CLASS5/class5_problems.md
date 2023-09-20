@@ -187,3 +187,30 @@ while maxHeap:
 print(ans)
 ```
 -> 처음엔 한계를 정하고 dfs로 접근을 하였는데 시간초과가 나서, 힙에 각 노드들의 정보를 넣어서 푸는 방법으로 코드를 짰는데 역시 시간초과가 난다.. 어디서 시간 소요가 많이 났는지 정확히 모르겠다.
+
+### 보석 도둑(모범 답안)
+```
+import sys
+import heapq
+
+N, K = map(int, sys.stdin.readline().split())
+jew = []
+for _ in range(N):
+    heapq.heappush(jew, list(map(int, sys.stdin.readline().split())))
+bags = []
+for _ in range(K):
+    bags.append(int(sys.stdin.readline()))
+bags.sort()
+
+answer = 0
+tmp_jew = []
+for bag in bags:
+    while jew and bag >= jew[0][0]:
+        heapq.heappush(tmp_jew, -heapq.heappop(jew)[1])
+    if tmp_jew:
+        answer -= heapq.heappop(tmp_jew)
+    elif not jew:
+        break
+print(answer)
+```
+-> 나는 가방을 큰 가방 부터 채워보는 방식으로 모든 가능한 문제의 영역을 힙에 넣어서 풀었다. 그런데 이 문제는 작은 가방부터 해당 가방에 들어갈 수 있는 최대의 가치를 넣으면 최종적으로 최대의 가치를 담을 수 있기 때문에 이 아이디어를 활용하면 문제의 공간을 훨씬 줄일 수 있었다.
