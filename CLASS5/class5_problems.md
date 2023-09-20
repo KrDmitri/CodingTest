@@ -193,24 +193,28 @@ print(ans)
 import sys
 import heapq
 
-N, K = map(int, sys.stdin.readline().split())
+N, K = map(int, sys.stdin.readline().rstrip().split())
 jew = []
 for _ in range(N):
-    heapq.heappush(jew, list(map(int, sys.stdin.readline().split())))
+    heapq.heappush(jew, list(map(int, sys.stdin.readline().rstrip().split())))
 bags = []
 for _ in range(K):
-    bags.append(int(sys.stdin.readline()))
+    bags.append(int(sys.stdin.readline().rstrip()))
 bags.sort()
 
 answer = 0
-tmp_jew = []
+tempjew = []
 for bag in bags:
+    # 모든 보석을 보면서 각 가방에 들어갈 수 있는 보석들을 tempjew에 담는다
     while jew and bag >= jew[0][0]:
-        heapq.heappush(tmp_jew, -heapq.heappop(jew)[1])
-    if tmp_jew:
-        answer -= heapq.heappop(tmp_jew)
+        heapq.heappush(tempjew, -heapq.heappop(jew)[1])
+    # 각 가방에 들어갈 수 있는 가장 비싼 보석의 가치를 더한다
+    if tempjew:
+        answer -= heapq.heappop(tempjew)
+    # 모든 보석에 대한 탐색이 끝나면 종료
     elif not jew:
         break
+
 print(answer)
 ```
 -> 나는 가방을 큰 가방 부터 채워보는 방식으로 모든 가능한 문제의 영역을 힙에 넣어서 풀었다. 그런데 이 문제는 작은 가방부터 해당 가방에 들어갈 수 있는 최대의 가치를 넣으면 최종적으로 최대의 가치를 담을 수 있기 때문에 이 아이디어를 활용하면 문제의 공간을 훨씬 줄일 수 있었다.
