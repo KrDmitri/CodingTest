@@ -134,3 +134,56 @@ while roads:
 
 print(ans)
 ```
+
+### 보석 도둑(내 풀이)
+```
+import sys
+import heapq
+
+def calcScore(gidx, bidx):
+    temp = 0
+    for i in range(K - bidx):
+        if gidx + i == N:
+            break
+        temp += gems[gidx + i][1]
+    return temp * (-1)
+
+N, K = map(int, sys.stdin.readline().rstrip().split())
+gems = []
+for _ in range(N):
+    M, V = map(int, sys.stdin.readline().rstrip().split())
+    gems.append([M, V])
+gems.sort(key=lambda x:x[1], reverse=True)
+bags = []
+for _ in range(K):
+    bags.append(int(sys.stdin.readline().rstrip()))
+bags.sort(reverse=True)
+
+ans = 0
+potenScore = calcScore(0, 0)
+
+maxHeap = []
+heapq.heappush(maxHeap, [potenScore, 0, 0, 0])
+
+while maxHeap:
+    score, gidx, bidx, tempSum = heapq.heappop(maxHeap)
+    if gidx == N or bidx == K:
+        ans = max(ans, tempSum)
+        continue
+    if score * (-1) < ans:
+        break
+    gem = gems[gidx]
+    bag = bags[bidx]
+    # 넣을 수 있는 경우
+    if gem[0] <= bag:
+        # 넣는 경우
+        heapq.heappush(maxHeap, [score, gidx + 1, bidx + 1, tempSum + gem[1]])
+        # 넣지 않는 경우
+        heapq.heappush(maxHeap, [(-1) * tempSum + calcScore(gidx + 1, bidx), gidx + 1, bidx, tempSum])
+    # 넣을 수 없는 경우
+    else:
+        heapq.heappush(maxHeap, [(-1) * tempSum + calcScore(gidx + 1, bidx), gidx + 1, bidx, tempSum])
+
+print(ans)
+```
+-> 처음엔 한계를 정하고 dfs로 접근을 하였는데 시간초과가 나서, 힙에 각 노드들의 정보를 넣어서 푸는 방법으로 코드를 짰는데 역시 시간초과가 난다.. 어디서 시간 소요가 많이 났는지 정확히 모르겠다.
