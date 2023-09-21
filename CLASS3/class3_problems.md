@@ -17,3 +17,45 @@ for _ in range(T):
 
     print(dp[N][0], dp[N][1])
 ```
+
+### 유기농 배추
+```
+import sys
+from collections import deque
+
+def searchCabbage(i, j):
+    q = deque([])
+    visited[i][j] = True
+    q.append([i, j])
+    while q:
+        x, y = q.popleft()
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nx < 0 or nx >= N or ny < 0 or ny >= M or visited[nx][ny] or graph[nx][ny] == 0:
+                continue
+            visited[nx][ny] = True
+            q.append([nx, ny])
+
+
+dx = [-1, 0, 1, 0]
+dy = [0, 1, 0, -1]
+T = int(sys.stdin.readline().rstrip())
+
+for _ in range(T):
+    M, N, K = map(int, sys.stdin.readline().rstrip().split())
+    graph = [[0] * M for _ in range(N)]
+    for _ in range(K):
+        x, y = map(int, sys.stdin.readline().rstrip().split())
+        graph[y][x] = 1
+
+    visited = [[False] * M for _ in range(N)]
+
+    ans = 0
+    for i in range(N):
+        for j in range(M):
+            if graph[i][j] == 1 and not visited[i][j]:
+                searchCabbage(i, j)
+                ans += 1
+    print(ans)
+```
