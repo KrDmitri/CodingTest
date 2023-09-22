@@ -59,3 +59,40 @@ for _ in range(T):
                 ans += 1
     print(ans)
 ```
+
+### Z
+```
+import sys
+
+def whichPos(x, y):
+    if x == 0 and y == 0:
+        return 0
+    elif x == 0 and y == 1:
+        return 1
+    elif x == 1 and y == 0:
+        return 2
+    else:
+        return 3
+
+def dfs(x, y, depth, temp):
+    # 1. 4개의 칸 중 몇번째인지 찾는다
+    px = x // (2 ** (depth - 1))
+    py = y // (2 ** (depth - 1))
+    pos = whichPos(px, py)
+    # 2. 칸의 순서를 보고 temp 업데이트 후 다음 depth 로 넘어간다
+    temp += pos * (2 ** (2 * (depth - 1)))
+    # 3. 다음 depth에서 쓸 x, y 구하기
+    if px == 1:
+        x -= 2 ** (depth - 1)
+    if py == 1:
+        y -= 2 ** (depth - 1)
+    # 3. depth가 1일때 답을 구할 수 있다.
+    if depth == 1:
+        return temp
+    return dfs(x, y, depth - 1, temp)
+
+
+N, r, c = map(int, sys.stdin.readline().rstrip().split())
+ans = dfs(r, c, N, 0)
+print(ans)
+```
