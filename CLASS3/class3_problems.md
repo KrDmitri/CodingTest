@@ -96,3 +96,62 @@ N, r, c = map(int, sys.stdin.readline().rstrip().split())
 ans = dfs(r, c, N, 0)
 print(ans)
 ```
+
+### 리모컨
+```
+import sys
+from itertools import product
+INF = int(1e9)
+
+N = int(sys.stdin.readline().rstrip())
+M = int(sys.stdin.readline().rstrip())
+now = 100
+buttons = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+if M > 0:
+    brokenButtons = list(map(int, sys.stdin.readline().rstrip().split()))
+    for elem in brokenButtons:
+        buttons.remove(elem)
+
+ans = INF
+
+# 같은 자리 수 생성
+candidates = list(product(buttons, repeat=len(str(N))))
+diff = INF
+tempNum = 0
+for numList in candidates:
+    if numList[0] == 0 and len(str(N)) != 1:
+        continue
+    tempNum = numList[0]
+    for i in range(1, len(numList)):
+        tempNum = tempNum * 10 + numList[i]
+    newDiff = abs(N - tempNum)
+    if newDiff < diff:
+        diff = newDiff
+    else:
+        break
+ans = min(ans, len(str(N)) + diff)
+
+if len(buttons) > 0:
+    # 하나 작은 자리 수 생성
+    tempNum = max(buttons)
+    for i in range(len(str(N)) - 2):
+        tempNum = tempNum * 10 + buttons[-1]
+    newDiff = abs(N - tempNum)
+    ans = min(ans, len(str(tempNum)) + newDiff)
+
+    # 하나 큰 자리 수 생성
+    if buttons[0] == 0 and len(buttons) > 1:
+        tempNum = buttons[1]
+    else:
+        tempNum = buttons[0]
+    for i in range(len(str(N))):
+        tempNum = tempNum * 10 + buttons[0]
+    newDiff = abs(N - tempNum)
+    ans = min(ans, len(str(tempNum)) + newDiff)
+
+# 현재에서의 차이
+newDiff = abs(N - now)
+ans = min(ans, newDiff)
+
+print(ans)
+```
