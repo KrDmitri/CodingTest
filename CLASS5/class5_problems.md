@@ -218,3 +218,27 @@ for bag in bags:
 print(answer)
 ```
 -> 나는 가방을 큰 가방 부터 채워보는 방식으로 모든 가능한 문제의 영역을 힙에 넣어서 풀었다. 그런데 이 문제는 작은 가방부터 해당 가방에 들어갈 수 있는 최대의 가치를 넣으면 최종적으로 최대의 가치를 담을 수 있기 때문에 이 아이디어를 활용하면 문제의 공간을 훨씬 줄일 수 있었다.
+
+### 수 나누기 게임
+```
+import sys
+INF = int(1e9)
+
+N = map(int, sys.stdin.readline().rstrip())
+nums = list(map(int, sys.stdin.readline().rstrip().split()))
+score = [INF] * 1000001
+for num in nums:
+    score[num] = 0
+
+for i in range(1, 500001):
+    if score[i] != INF:
+        for x in range(2, (1000000 // i) + 1):
+            j = i * x
+            if score[j] != INF:
+                score[j] -= 1
+                score[i] += 1
+
+for num in nums:
+    print(score[num], end=' ')
+```
+-> EZ
