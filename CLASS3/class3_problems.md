@@ -155,3 +155,43 @@ ans = min(ans, newDiff)
 
 print(ans)
 ```
+
+### DFS와 BFS
+```
+import sys
+from collections import deque
+
+def search_dfs(now):
+    visited_dfs[now] = True
+    print(now, end=' ')
+    for elem in sorted(edges[now]):
+        if not visited_dfs[elem]:
+            search_dfs(elem)
+
+
+N, M, V = map(int, sys.stdin.readline().rstrip().split())
+edges = [[] for _ in range(N + 1)]
+
+for _ in range(M):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    edges[x].append(y)
+    edges[y].append(x)
+
+# dfs 출력
+visited_dfs = [False] * (N + 1)
+search_dfs(V)
+print()
+
+# bfs 출력
+visited_bfs = [False] * (N + 1)
+q = deque()
+q.append(V)
+visited_bfs[V] = True
+while q:
+    now = q.popleft()
+    print(now, end=' ')
+    for elem in sorted(edges[now]):
+        if not visited_bfs[elem]:
+            q.append(elem)
+            visited_bfs[elem] = True
+```
