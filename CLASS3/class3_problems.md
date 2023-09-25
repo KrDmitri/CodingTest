@@ -195,3 +195,36 @@ while q:
             q.append(elem)
             visited_bfs[elem] = True
 ```
+
+### 케빈 베이컨의 6단계 법칙
+```
+import sys
+INF = int(1e9)
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = [[INF] * N for _ in range(N)]
+
+for _ in range(M):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    graph[x - 1][y - 1] = 1
+    graph[y - 1][x - 1] = 1
+
+for i in range(N):
+    for j in range(N):
+        if i == j:
+            graph[i][j] = 0
+
+for k in range(N):
+    for i in range(N):
+        for j in range(N):
+            graph[i][j] = min(graph[i][j], graph[i][k] + graph[k][j])
+
+bacon = INF
+answer = 0
+for i in range(N - 1, -1, -1):
+    s = sum(graph[i])
+    if bacon >= s:
+        bacon = s
+        answer = i
+print(answer + 1)
+```
