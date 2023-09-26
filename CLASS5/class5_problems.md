@@ -242,3 +242,94 @@ for num in nums:
     print(score[num], end=' ')
 ```
 -> EZ
+
+### 할로윈의 양아치
+```
+import sys
+from collections import deque
+
+N, M, K = map(int, sys.stdin.readline().rstrip().split())
+candies = list(map(int, sys.stdin.readline().rstrip().split()))
+candies.insert(0, 0)
+relationships = [[] for _ in range(N + 1)]
+for _ in range(M):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    relationships[x].append(y)
+    relationships[y].append(x)
+
+visited = [False] * (N + 1)
+groups = []
+
+# 그룹 나누기 코드
+for i in range(1, N + 1):
+    if not visited[i]:
+        visited[i] = True
+        temp = candies[i]
+        q = deque()
+        q.append(i)
+        cnt = 1
+        while q:
+            now = q.popleft()
+            for elem in relationships[now]:
+                if not visited[elem]:
+                    q.append(elem)
+                    temp += candies[elem]
+                    cnt += 1
+                    visited[elem] = True
+        groups.append([cnt, temp])
+
+groups.sort(key=lambda x:x[0])
+dp = [[0] * K for _ in range(len(groups) + 1)]
+
+for i in range(1, len(groups) + 1):
+    for j in range(1, K):
+        if j >= groups[i - 1][0]:
+            dp[i][j] = max(dp[i - 1][j - groups[i - 1][0]] + groups[i - 1][1], dp[i - 1][j])
+        else:
+            dp[i][j] = dp[i - 1][j]
+
+print(dp[len(groups)][K - 1])
+```
+
+### 할로윈의 양아치(모범답안)
+```
+import sys
+input = sys.stdin.readline
+
+def find_parent(x):
+    if parent[x] != x:
+        parent[x] = find_parent(parent[x])
+    return parent[x]
+
+def union_parent(a, b):
+    a, b = (a, b) if a>b else (b, a)
+    parent[a] = b
+    visited[b] += visited[a]
+    arr[b] += arr[a]
+
+N, M, K = map(int, input().split())
+arr = [0] + list(map(int, input().split()))
+relation = [tuple(map(int, input().split())) for _ in range(M)]
+parent = [i for i in range(N+1)]
+visited = [1] * (N+1)
+
+for a, b in relation:
+    a, b = find_parent(a), find_parent(b)
+    if a!=b:
+        union_parent(a, b)
+
+candys = []
+for i in range(1,N+1):
+    if parent[i] == i:
+        if visited[i] < K:
+            candys.append((visited[i], arr[i]))
+candys.sort(key=lambda x: (x[0], x[1]))
+
+DP = [0] * (K+1)
+for child, candy in candys:
+    for i in range(K, child-1, -1):
+        DP[i] = max(DP[i-child]+candy, DP[i])
+
+print(DP[K-1])
+```
+
