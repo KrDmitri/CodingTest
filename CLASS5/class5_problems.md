@@ -416,3 +416,32 @@ ans.sort()
 print(ans[0], ans[1], ans[2])
 ```
 -> 위 풀이 방식은 최적의 3가지 용액을 찾기 위해 2가지의 용액은 완전 탐색으로 하고 나머지 하나는 완전 탐색으로 구한 2가지 용액 사이의 값들을 이진 탐색으로 찾게 해주었다. 처음 2가지 용액을 구하는 데에서 완전 탐색으로 했다는 점에서 큰 성능 저하가 있을 것으로 보인다. 투 포인터로 완전 탐색의 문제점을 해결할 수 있을것 같은데, 어떤 기준으로 각 포인터 위치 값을 바꿀 수 있을지를 정확히 모르겠다.
+
+### 세 용액(모범 답안)
+```
+import sys
+
+n = int(input())
+array = list(map(int, input().split()))
+
+array.sort()
+minTake = sys.maxsize
+
+for i in range(n-2):
+    start = i + 1
+    end = n - 1
+    while start < end:
+        take = array[i] + array[start] + array[end]
+        if abs(take) < minTake:
+            minTake = abs(take)
+            result = [array[i], array[start], array[end]]
+        if take < 0:
+            start += 1
+        elif take > 0:
+            end -= 1
+        else:
+            break
+            
+print(result[0], result[1], result[2])
+```
+-> 위 풀이는 2개를 고정하고 하나를 찾는 나의 방식과 다르게 하나를 고정하고 나머지 2개를 투 포인터 알고리즘으로 찾는 코드이다. 해당 방법을 생각을 못했는데, 위 방법을 사용하면 나의 코드 대비 수행 시간이 10배 빠르다.
