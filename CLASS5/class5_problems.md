@@ -333,3 +333,39 @@ for child, candy in candys:
 print(DP[K-1])
 ```
 
+### 용액
+```
+import sys
+
+N = int(sys.stdin.readline().rstrip())
+numList = list(map(int, sys.stdin.readline().rstrip().split()))
+
+start = 0
+end = len(numList) - 1
+ans = [numList[start], numList[end]]
+temp = numList[start] + numList[end]
+minNum = abs(temp)
+
+while start != end:
+    if temp > 0:
+        end -= 1
+        if end == start:
+            break
+        temp = numList[start] + numList[end]
+        if abs(temp) <= minNum:
+            minNum = abs(temp)
+            ans = [numList[start], numList[end]]
+    elif temp < 0:
+        start += 1
+        if end == start:
+            break
+        temp = numList[start] + numList[end]
+        if abs(temp) <= minNum:
+            minNum = abs(temp)
+            ans = [numList[start], numList[end]]
+    else:     # 합이 0이면 바로 탈출하면될듯?
+        break
+
+print(ans[0], ans[1])
+```
+-> 투 포인터 알고리즘으로 쉽게 해결할 수 있다
