@@ -445,3 +445,116 @@ for i in range(n-2):
 print(result[0], result[1], result[2])
 ```
 -> 위 풀이는 2개를 고정하고 하나를 찾는 나의 방식과 다르게 하나를 고정하고 나머지 2개를 투 포인터 알고리즘으로 찾는 코드이다. 해당 방법을 생각을 못했는데, 위 방법을 사용하면 나의 코드 대비 수행 시간이 10배 빠르다.
+
+### 사이클 게임
+```
+import sys
+
+def find(x):
+    if x == parent[x]:
+        return x
+    else:
+        return find(parent[x])
+
+def union(x, y):
+    xp = find(x)
+    yp = find(y)
+    if xp < yp:
+        parent[yp] = xp
+    else:
+        parent[xp] = yp
+
+n, m = map(int, sys.stdin.readline().rstrip().split())
+lines = []
+for _ in range(m):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    lines.append([x, y])
+
+parent = []
+for i in range(n):
+    parent.append(i)
+
+for i in range(m):
+    x, y = lines[i]
+    xp = find(x)
+    yp = find(y)
+    if xp == yp:
+        print(i + 1)
+        exit(0)
+    union(x, y)
+print(0)
+```
+
+### 사이클 게임(모범 답안)
+```
+import sys
+
+def find(x):
+    if x == p[x]:
+        return x
+    else:
+        p[x] = find(p[x])
+        return p[x]
+
+n, m = map(int, sys.stdin.readline().rstrip().split())
+p = [i for i in range(n)]
+
+for i in range(m):
+    x, y = map(int, sys.stdin.readline().rstrip().split())
+    x = find(x)
+    y = find(y)
+    if x == y:
+        print(i + 1)
+        exit(0)
+    if x < y:
+        p[y] = p[x]
+    else:
+        p[x] = p[y]
+print(0)
+```
+-> 알고리즘은 같지만, 코드가 더 간결하고 성능이 좋다.
+
+### 행성 터널
+```
+import sys
+
+def find(x):
+    if x == parent[x]:
+        return x
+    else:
+        parent[x] = find(parent[x])
+        return parent[x]
+
+N = int(sys.stdin.readline().rstrip())
+planets = []
+for i in range(N):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    temp.append(i)
+    planets.append(temp)
+parent = [i for i in range(N)]
+roads = []
+
+for j in range(3):
+    planets.sort(key=lambda x:x[j])
+    for i in range(N - 1):
+        roads.append([planets[i][3], planets[i + 1][3], abs(planets[i][j] - planets[i + 1][j])])
+roads.sort(key=lambda x:x[2])
+
+cnt = 0
+ans = 0
+for i in range(len(roads)):
+    road = roads[i]
+    x, y, weight = road[0], road[1], road[2]
+    xp = find(x)
+    yp = find(y)
+    if xp == yp:
+        continue
+    cnt += 1
+    if xp < yp:
+        parent[yp] = xp
+    else:
+        parent[xp] = yp
+    ans += weight
+print(ans)
+```
+-> 처음엔 각 구간의 길이를 확인하는 과정에서 pop(0)으로 구현하였다. 이때 시간 초과가 나고 인덱스 접근으로 고치자 정답 판정을 받았는데, pop()으로 구현할 시 파이썬 내부 메모리 관리하는 과정에서 시간이 많이 소요되는것 같다. pop()을 함부로 사용하지말자...🥲
