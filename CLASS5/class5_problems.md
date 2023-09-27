@@ -369,3 +369,50 @@ while start != end:
 print(ans[0], ans[1])
 ```
 -> 투 포인터 알고리즘으로 쉽게 해결할 수 있다
+
+### 세 용액
+```
+import sys
+INF = int(1e10)
+
+def binarySearch(first, third):
+    global minNum, ans
+    start = first + 1
+    end = third - 1
+    mid = (start + end) // 2
+    sumOfTwo = numList[first] + numList[third]
+    while start <= end:
+        if abs(sumOfTwo + numList[mid]) < minNum:
+            minNum = abs(sumOfTwo + numList[mid])
+            ans = [numList[first], numList[mid], numList[third]]
+
+        if sumOfTwo + numList[mid] < 0:
+            start = mid + 1
+            mid = (start + end) // 2
+        elif sumOfTwo + numList[mid] > 0:
+            end = mid - 1
+            mid = (start + end) // 2
+        else:
+            minNum = 0
+            ans = [numList[first], numList[mid], numList[third]]
+            return True
+    return False
+
+N = int(sys.stdin.readline().rstrip())
+numList = list(map(int, sys.stdin.readline().rstrip().split()))
+numList.sort()
+minNum = INF
+ans = [numList[0], numList[1], numList[2]]
+
+# i는 start, j는 end
+for i in range(N - 2):
+    for j in range(i + 2, N):
+        flag = binarySearch(i, j)
+        if flag:
+            ans.sort()
+            print(ans[0], ans[1], ans[2])
+            exit(0)
+ans.sort()
+print(ans[0], ans[1], ans[2])
+```
+-> 위 풀이 방식은 최적의 3가지 용액을 찾기 위해 2가지의 용액은 완전 탐색으로 하고 나머지 하나는 완전 탐색으로 구한 2가지 용액 사이의 값들을 이진 탐색으로 찾게 해주었다. 처음 2가지 용액을 구하는 데에서 완전 탐색으로 했다는 점에서 큰 성능 저하가 있을 것으로 보인다. 투 포인터로 완전 탐색의 문제점을 해결할 수 있을것 같은데, 어떤 기준으로 각 포인터 위치 값을 바꿀 수 있을지를 정확히 모르겠다.
