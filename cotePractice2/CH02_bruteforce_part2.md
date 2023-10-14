@@ -354,3 +354,82 @@ for candidate in candidates:
     checkBiggest(apos, bpos)
 print(ans)
 ```
+
+### 주사위 윷놀이
+```
+import sys
+import copy
+
+def dfs(graph, positions, idx, score):
+    global maxScore
+    if idx == 10:
+        maxScore = max(maxScore, score)
+        return
+    move = moves[idx]
+    for i in range(4):
+        position = positions[i]
+        if position == 42:
+            continue
+        # 이동 위치 확인
+        for j in range(move):
+            for elem in routes:
+                if elem[0] == position:
+                    if j == 0 and position in [10, 20, 30]:
+                        position = elem[2]
+                    else:
+                        position = elem[1]
+                    break
+            if position == 42:
+                break
+        if position > 100:
+            exactPosition = position // 10
+        else:
+            exactPosition = position
+        # 이동 못하는 경우 처리
+        if position != 42 and len(graph[exactPosition]) != 0:
+            continue
+        newGraph = copy.deepcopy(graph)
+        newPositions = copy.deepcopy(positions)
+        # 도착 시 처리
+        if position == 42:
+            if positions[i] > 100:
+                positions[i] = positions[i] // 10
+            newGraph[positions[i]].remove(i)
+            newPositions[i] = position
+            dfs(newGraph, newPositions, idx + 1, score)
+        # 이동 경우 처리
+        if exactPosition != 42 and len(graph[exactPosition]) == 0:
+            if positions[i] > 100:
+                positions[i] = positions[i] // 10
+            newGraph[positions[i]].remove(i)
+            newPositions[i] = position
+            newGraph[exactPosition].append(i)
+            dfs(newGraph, newPositions, idx + 1, score + exactPosition)
+
+
+routes = []
+for i in range(21):
+    routes.append([i * 2, (i + 1) * 2])
+additionals = [[10, 13], [13, 161], [161, 19], [19, 25], [20, 221], [221, 241], [241, 25], [30, 281], [281, 27], [27, 261],
+               [261, 25], [25, 301], [301, 35], [35, 40]]
+graph = [[] for _ in range(41)]
+graph[0] = [0, 1, 2, 3]  # 4개의 말 시작점은 0
+positions = [0, 0, 0, 0]
+
+for x, y in additionals:
+    flag = True
+    for i in range(len(routes)):
+        if routes[i][0] == x:
+            routes[i].append(y)
+            flag = False
+            break
+    if flag:
+        routes.append([x, y])
+moves = list(map(int, sys.stdin.readline().rstrip().split()))
+
+maxScore = 0
+dfs(graph, positions, 0, 0)
+
+print(maxScore)
+```
+-> 테스트 케이스들은 다 통과하는데 결국 틀렸습니다가 떴다.. 그리고 테스트 케이스 수행때도 수행 시간이 10초가 넘게 걸린다..ㅋㅋ 코드를 다시 단순화할 필요가 있겠다.
