@@ -491,3 +491,49 @@ def backtracking(depth, result, horses):
 backtracking(0, 0, [0, 0, 0, 0])
 print(answer)
 ```
+
+### 계란으로 계란치기
+```
+import sys
+
+def backtracking(eggs, idx, temp):
+    global ans
+    if temp + (N - idx) * 2 <= ans:
+        return
+    if idx == N:
+        ans = max(ans, temp)
+        return
+    if eggs[idx][0] <= 0:
+        backtracking(eggs, idx + 1, temp)
+    else:
+        flag = True
+        for i in range(N):
+            if eggs[i][0] <= 0 or i == idx:
+                continue
+            flag = False
+            newTemp = temp
+            eggs[idx][0] -= eggs[i][1]
+            if eggs[idx][0] <= 0:
+                newTemp += 1
+            eggs[i][0] -= eggs[idx][1]
+            if eggs[i][0] <= 0:
+                newTemp += 1
+            backtracking(eggs, idx + 1, newTemp)
+            eggs[idx][0] += eggs[i][1]
+            eggs[i][0] += eggs[idx][1]
+        if flag:
+            backtracking(eggs, idx + 1, temp)
+
+
+N = int(sys.stdin.readline().rstrip())
+
+eggs = []
+for _ in range(N):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    eggs.append(temp)
+
+ans = 0
+backtracking(eggs, 0, 0)
+print(ans)
+```
+-> backtracking 코드를 짤 때에는 pruning 코드를 활용하는 것을 잊지 말자
