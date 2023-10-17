@@ -537,3 +537,138 @@ backtracking(eggs, 0, 0)
 print(ans)
 ```
 -> backtracking 코드를 짤 때에는 pruning 코드를 활용하는 것을 잊지 말자
+
+### Baaaaaaaaaduk2(Easy)
+```
+import sys
+from collections import deque
+from itertools import combinations
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+
+graph = []
+blanks = []
+dx = [0, 1, 0, -1]
+dy = [1, 0, -1, 0]
+for i in range(N):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    for j in range(M):
+        if temp[j] == 0:
+            blanks.append([i, j])
+    graph.append(temp)
+
+candidates = list(combinations(blanks, 2))
+ans = 0
+for candidate in candidates:
+    if candidate == ([0, 0], [4, 2]):
+        print('', end='')
+    graph[candidate[0][0]][candidate[0][1]] = 1
+    graph[candidate[1][0]][candidate[1][1]] = 1
+    visited = [[False] * M for _ in range(N)]
+    score = 0
+    for i in range(N):
+        for j in range(M):
+            if graph[i][j] == 2 and not visited[i][j]:
+                q = deque()
+                q.append([i, j])
+                tempCnt = 1
+                visited[i][j] = True
+                flag = False
+                while q:
+                    x, y = q.popleft()
+                    for k in range(4):
+                        nx = x + dx[k]
+                        ny = y + dy[k]
+                        if nx < 0 or nx >= N or ny < 0 or ny >= M or visited[nx][ny] or graph[nx][ny] == 1:
+                            continue
+                        if graph[nx][ny] == 0:
+                            flag = True
+                        if graph[nx][ny] == 2:
+                            tempCnt += 1
+                            visited[nx][ny] = True
+                            q.append([nx, ny])
+                if flag:
+                    continue
+                else:
+                    score += tempCnt
+    ans = max(ans, score)
+    graph[candidate[0][0]][candidate[0][1]] = 0
+    graph[candidate[1][0]][candidate[1][1]] = 0
+
+print(ans)
+```
+
+### 사다리 조작
+```
+import sys
+
+input = sys.stdin.readline
+
+n, m, h = map(int, input().split())
+
+data = [[False] * (n + 1) for _ in range(h + 1)]
+
+# 데이터 입력받기
+for _ in range(m):
+    x, y = map(int, input().split())
+    data[x][y] = True
+
+
+# 현재 그래프 상태에서 조건을 만족하는지 판단.
+def check(data):
+    for i in range(1, n):
+        my_num = i
+        for j in range(1, h + 1):
+            # 내려가던중 오른쪽으로 선있으면 숫자 +1
+            if data[j][my_num]:
+                my_num += 1
+            # 내려가던중 왼쪽에 선있으면 숫자 -1
+            elif data[j][my_num - 1]:
+                my_num -= 1
+
+        if my_num != i:
+            return False
+
+    return True
+
+
+result = 4
+
+
+# 전체 탐색을 위한 재귀 함수
+def dfs(depth, data, x, y):
+    global result
+    if depth >= result:
+        return
+
+    # 주어진 사다리가 조건을 충족하면 결과 갱신
+    if check(data):
+        result = min(result, depth)
+        return
+
+    if depth == 3:
+        return
+
+    # 현재 깊이에서 안되면 다음 깊이 탐색
+    for i in range(x, h + 1):
+        ########################
+        if x == i:
+            k = y
+        else:
+            k = 0
+        ########################
+        for j in range(k, n):
+            if data[i][j] == False and data[i][j + 1] == False and data[i][j - 1] == False:
+                data[i][j] = True
+                # 방금 추가해준 사다리 위치를 기억하고 그다음 사다리부터 추가되도록 작성
+                # 추가된 좌표를 하나의 값으로 바꿔서 다다음 함수로 보냄
+                dfs(depth + 1, data, i, j + 2)
+                data[i][j] = False
+
+
+dfs(0, data, 1, 1)
+if result == 4:
+    result = -1
+
+print(result)
+```
