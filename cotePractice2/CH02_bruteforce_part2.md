@@ -672,3 +672,55 @@ if result == 4:
 
 print(result)
 ```
+
+### 매직 스퀘어로 변경하기
+```
+import sys
+INF = int(1e9)
+
+def isMagicSquare(graph):
+    temp = sum(graph[0])
+    for i in range(3):
+        if temp != sum(graph[i]):
+            return False
+        if temp != graph[0][i] + graph[1][i] + graph[2][i]:
+            return False
+    if temp != graph[0][0] + graph[1][1] + graph[2][2]:
+        return False
+    if temp != graph[0][2] + graph[1][1] + graph[2][0]:
+        return False
+    return True
+
+def backTracking(graph, now, idx, history, temp):
+    global ans
+    if idx == 9:
+        if isMagicSquare(graph):
+            ans = min(ans, temp)
+        return
+    if temp >= ans:
+        return
+    x, y = now
+    originalValue = graph[x][y]
+    candidates = [i for i in range(1, 10)]
+    for elem in history:
+        candidates.remove(elem)
+    for elem in candidates:
+        graph[x][y] = elem
+        nx = x
+        ny = y + 1
+        if ny == 3:
+            nx += 1
+            ny = 0
+        history.append(elem)
+        backTracking(graph, [nx, ny], idx + 1, history, temp + abs(originalValue - elem))
+        history.remove(elem)
+        graph[x][y] = originalValue
+
+graph = []
+for _ in range(3):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+
+ans = INF
+backTracking(graph, [0, 0], 0, [], 0)
+print(ans)
+```
