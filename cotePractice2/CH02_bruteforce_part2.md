@@ -724,3 +724,102 @@ ans = INF
 backTracking(graph, [0, 0], 0, [], 0)
 print(ans)
 ```
+
+### A -> B
+```
+import sys
+INF = int(1e9)
+
+def dfs(a, b, cnt):
+    global ans
+    if a > b:
+        return
+    if a == b:
+        ans = min(ans, cnt)
+    na = a * 2
+    dfs(na, b, cnt + 1)
+    na = a * 10 + 1
+    dfs(na, b, cnt + 1)
+
+a, b = map(int, sys.stdin.readline().rstrip().split())
+
+ans = INF
+
+dfs(a, b, 1)
+print(ans if ans != INF else -1)
+```
+
+### 색종이 붙이기
+```
+import sys
+INF = int(1e9)
+
+def canCover(i, j, k):
+    for ni in range(i, i + k):
+        for nj in range(j, j + k):
+            if ni > 9 or nj > 9:
+                return False
+            if visited[ni][nj]:
+                return False
+    return True
+
+def dfs(now, numPapers, temp, visited):
+    global ans
+
+    if now == [10, 0]:
+        for i in range(10):
+            for j in range(10):
+                if not visited[i][j]:
+                    return
+        ans = min(ans, temp)
+        return
+    if temp >= ans:
+        return
+    x, y = now
+    nx = x
+    ny = y + 1
+    if ny == 10:
+        nx += 1
+        ny = 0
+    if visited[x][y]:
+        dfs([nx, ny], numPapers, temp, visited)
+    else:
+        if now == [3, 4]:
+            print('', end='')
+
+        maskSize = 1
+        for k in range(1, 6):
+                if canCover(x, y, k):
+                    maskSize = k
+                else:
+                    break
+        for ms in range(maskSize, 0, -1):
+            if numPapers[ms - 1] > 0:
+                # 큰 거 부터 채움
+                for ni in range(x, x + ms):
+                    for nj in range(y, y + ms):
+                        visited[ni][nj] = True
+                numPapers[ms - 1] -= 1
+                dfs([nx, ny], numPapers, temp + 1, visited)
+                for ni in range(x, x + ms):
+                    for nj in range(y, y + ms):
+                        visited[ni][nj] = False
+                numPapers[ms - 1] += 1
+
+graph = []
+visited = [[True] * 10 for _ in range(10)]
+for i in range(10):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    for j in range(10):
+        if temp[j] == 1:
+            visited[i][j] = False
+    graph.append(temp)
+
+numPapers = [5, 5, 5, 5, 5]
+ans = INF
+
+dfs([0, 0], numPapers, 0, visited)
+
+
+print(ans if ans != INF else -1)
+```
