@@ -823,3 +823,79 @@ dfs([0, 0], numPapers, 0, visited)
 
 print(ans if ans != INF else -1)
 ```
+
+### 게리맨더링
+```
+import sys
+import copy
+from itertools import combinations
+from collections import deque
+INF = int(1e9)
+
+def isPossible(teamA, teamB):
+    teams = [0] * N
+    for elem in teamA:
+        teams[elem] = 1
+    for elem in teamB:
+        teams[elem] = 2
+    visited = [False] * N
+    q = deque()
+    q.append(teamA[0])
+    aCheck = [teamA[0]]
+    visited[teamA[0]] = True
+    while q:
+        now = q.popleft()
+        for i in range(N):
+            if graph[now][i] == 1 and teams[i] == 1 and not visited[i]:
+                visited[i] = True
+                q.append(i)
+                aCheck.append(i)
+    teamA = list(teamA)
+    teamA.sort()
+    aCheck.sort()
+    if teamA != aCheck:
+        return False
+    q = deque()
+    q.append(teamB[0])
+    visited[teamB[0]] = True
+    while q:
+        now = q.popleft()
+        for i in range(N):
+            if graph[now][i] == 1 and teams[i] == 2 and not visited[i]:
+                visited[i] = True
+                q.append(i)
+    if False in visited:
+        return False
+    return True
+
+N = int(sys.stdin.readline().rstrip())
+
+populations = list(map(int, sys.stdin.readline().rstrip().split()))
+graph = [[0] * N for _ in range(N)]
+
+for i in range(N):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    for j in range(1, len(temp)):
+        graph[i][temp[j] - 1] = 1
+
+wholeGroup = [i for i in range(N)]
+
+ans = INF
+for i in range(1, N):
+    aCandidates = list(combinations(wholeGroup, i))
+    for aTeam in aCandidates:
+        bTeam = copy.deepcopy(wholeGroup)
+        for elem in aTeam:
+            bTeam.remove(elem)
+        # 팀 나눴으니 아래에서 연산 수행하면 됨
+        if isPossible(aTeam, bTeam):
+            aPopulation = 0
+            bPopulation = 0
+            for elem in aTeam:
+                aPopulation += populations[elem]
+            for elem in bTeam:
+                bPopulation += populations[elem]
+            ans = min(ans, abs(aPopulation - bPopulation))
+
+print(ans if ans != INF else -1)
+```
