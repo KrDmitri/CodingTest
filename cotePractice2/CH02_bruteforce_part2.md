@@ -899,3 +899,81 @@ for i in range(1, N):
 
 print(ans if ans != INF else -1)
 ```
+
+### Maaaaaaaaaze
+```
+import sys
+from itertools import permutations
+from collections import deque
+INF = int(1e9)
+
+def rotate90(graph):
+    rotated = [[0] * 5 for _ in range(5)]
+    for i in range(5):
+        for j in range(5):
+            rotated[j][4 - i] = graph[i][j]
+    return rotated
+
+def findShortestPath(graph):
+    global ans
+    if graph[0][0][0] == 0:
+        return
+    q = deque()
+    visited = [[[False] * 5 for _ in range(5)] for _ in range(5)]
+    q.append([0, 0, 0, 0])
+    visited[0][0][0] = True
+    while q:
+        z, x, y, cost = q.popleft()
+        if cost >= ans:
+            return
+        if z == 4 and x == 4 and y == 4:
+            ans = min(ans, cost)
+            if ans == 12:
+                print(12)
+                exit(0)
+            return
+        for i in range(6):
+            nz = z + dz[i]
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if nz < 0 or nz > 4 or nx < 0 or nx > 4 or ny < 0 or ny > 4 or visited[nz][nx][ny] or graph[nz][nx][ny] == 0:
+                continue
+            visited[nz][nx][ny] = True
+            q.append([nz, nx, ny, cost + 1])
+
+
+def findAllCases(graph, depth):
+    if depth == 5:
+        tempGraph = [[[0] * 5 for _ in range(5)] for _ in range(5)]
+        for elem in candidates:
+            for i in range(5):
+                tempGraph[i] = graph[elem[i]]
+            findShortestPath(tempGraph)
+        return
+
+    for i in range(4):
+        graph[depth] = rotate90(graph[depth])
+        findAllCases(graph, depth + 1)
+
+graph = [[[0] * 5 for _ in range(5)] for _ in range(5)]
+
+zIndex = 0
+xIndex = 0
+for _ in range(25):
+    temp = list(map(int, sys.stdin.readline().rstrip().split()))
+    graph[zIndex][xIndex] = temp
+    xIndex += 1
+    if xIndex == 5:
+        zIndex += 1
+        xIndex = 0
+
+dz = [0, 0, 0, 0, -1, 1]
+dx = [0, 1, 0, -1, 0, 0]
+dy = [1, 0, -1, 0, 0, 0]
+layerNums = [i for i in range(5)]
+candidates = list(permutations(layerNums, 5))
+ans = INF
+findAllCases(graph, 0)
+
+print(ans if ans != INF else -1)
+```
