@@ -977,3 +977,66 @@ findAllCases(graph, 0)
 
 print(ans if ans != INF else -1)
 ```
+
+### 미로 탈출하기
+```
+import sys
+from collections import deque
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+for i in range(N):
+    temp = sys.stdin.readline().rstrip()
+    tempNum = []
+    for j in range(M):
+        if temp[j] == 'U':
+            tempNum.append(0)
+        elif temp[j] == 'R':
+            tempNum.append(1)
+        elif temp[j] == 'D':
+            tempNum.append(2)
+        else:
+            tempNum.append(3)
+    graph.append(tempNum)
+
+dx = [-1, 0, 1, 0]
+dy = [0, 1, 0, -1]
+
+visited = [[False] * M for _ in range(N)]
+
+ans = 0
+
+for i in range(N):
+    for j in range(M):
+        if not visited[i][j]:
+            q = deque()
+            q.append([i, j])
+            visited[i][j] = True
+            cnt = 1
+            flag = False
+            while q:
+                x, y = q.popleft()
+                dir = graph[x][y]
+                nx = x + dx[dir]
+                ny = y + dy[dir]
+                if nx < 0 or nx >= N or ny < 0 or ny >= M:
+                    flag = True
+                else:
+                    if not visited[nx][ny]:
+                        q.append([nx, ny])
+                        visited[nx][ny] = True
+                        cnt += 1
+                for k in range(4):
+                    nx = x + dx[k]
+                    ny = y + dy[k]
+                    if nx < 0 or nx >= N or ny < 0 or ny >= M or visited[nx][ny]:
+                        continue
+                    if (k == 0 and graph[nx][ny] == 2) or (k == 1 and graph[nx][ny] == 3) or (k == 2 and graph[nx][ny] == 0) or (k == 3 and graph[nx][ny] == 1):
+                        q.append([nx, ny])
+                        visited[nx][ny] = True
+                        cnt += 1
+            if flag:
+                ans += cnt
+
+print(ans)
+```
