@@ -1040,3 +1040,28 @@ for i in range(N):
 
 print(ans)
 ```
+
+### 두 배 더하기
+```
+import sys
+
+N = int(sys.stdin.readline().rstrip())
+B = list(map(int, sys.stdin.readline().rstrip().split()))
+A = [0] * N
+
+ans = 0
+while B != A:
+    flag = True
+    for i in range(len(B)):
+        if B[i] % 2 == 1:
+            B[i] -= 1
+            ans += 1
+            flag = False
+    if flag:
+        for i in range(len(B)):
+            B[i] //= 2
+        ans += 1
+
+print(ans)
+```
+-> 거꾸로 생각하면 풀기 쉽다
