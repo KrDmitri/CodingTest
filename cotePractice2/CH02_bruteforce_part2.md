@@ -1065,3 +1065,44 @@ while B != A:
 print(ans)
 ```
 -> 거꾸로 생각하면 풀기 쉽다
+
+### 텔레포트
+```
+import sys
+INF = int(1e9)
+
+N, T = map(int, sys.stdin.readline().rstrip().split())
+graph = [[INF] * (N + 1) for _ in range(N + 1)]
+isSpecial = [False] * (N + 1)
+positions = [[] for _ in range(N + 1)]
+
+for i in range(N):
+    s, x, y = map(int, sys.stdin.readline().rstrip().split())
+    if s == 1:
+        isSpecial[i + 1] = True
+    positions[i + 1] = [x, y]
+
+M = int(sys.stdin.readline().rstrip())
+questions = []
+for _ in range(M):
+    questions.append(list(map(int, sys.stdin.readline().rstrip().split())))
+
+for i in range(1, N):
+    for j in range(i + 1, N + 1):
+        if i == j:
+            continue
+        distance = abs(positions[i][0] - positions[j][0]) + abs(positions[i][1] - positions[j][1])
+        if isSpecial[i] and isSpecial[j] and T < distance:
+            distance = T
+        graph[i][j] = distance
+        graph[j][i] = distance
+
+for i in range(1, N + 1):
+    for j in range(1, N + 1):
+        for k in range(1, N + 1):
+            if graph[i][k] + graph[k][j] < graph[i][j]:
+                graph[i][j] = graph[i][k] + graph[k][j]
+
+for elem in questions:
+    print(graph[elem[0]][elem[1]])
+```
