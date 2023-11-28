@@ -1106,3 +1106,45 @@ for i in range(1, N + 1):
 for elem in questions:
     print(graph[elem[0]][elem[1]])
 ```
+
+### 텔레포트3
+```
+import sys
+INF = int(1e10)
+
+def dfs(now, isPortUsed, dist):
+    global ans
+    # 현재 위치에서 end로 간다.
+    ans = min(ans, dist + abs(now[0] - end[0]) + abs(now[1] - end[1]))
+    # 현재 위치에서 1 - 1 teleport로 간다
+    # 현재 위치에서 1 - 2 teleport로 간다
+    for i in range(3):
+        if not isPortUsed[i]:
+            isPortUsed[i] = True
+            # 앞의 장소를 통해 이동
+            next = teleport[i][1]
+            newDist = dist + 10 + abs(now[0] - teleport[i][0][0]) + abs(now[1] - teleport[i][0][1])
+            dfs(next, isPortUsed, newDist)
+            # 뒤의 장소를 통해 이동
+            next = teleport[i][0]
+            newDist = dist + 10 + abs(now[0] - teleport[i][1][0]) + abs(now[1] - teleport[i][1][1])
+            dfs(next, isPortUsed, newDist)
+            isPortUsed[i] = False
+
+
+start = list(map(int, sys.stdin.readline().rstrip().split()))
+end = list(map(int, sys.stdin.readline().rstrip().split()))
+
+teleport = []
+# 텔레포트 가능 장소 3곳
+for _ in range(3):
+    a, b, c, d = map(int, sys.stdin.readline().rstrip().split())
+    teleport.append([[a, b], [c, d]])
+
+ans = INF
+visited = [False] * 3
+
+dfs(start, visited, 0)
+
+print(ans)
+```
