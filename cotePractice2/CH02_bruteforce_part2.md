@@ -1148,3 +1148,58 @@ dfs(start, visited, 0)
 
 print(ans)
 ```
+
+### 체스판 위의 공
+```
+import sys
+from heapq import heappop, heappush
+
+r, c = map(int, sys.stdin.readline().rstrip().split())
+numGraph = []
+for _ in range(r):
+    numGraph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+
+ballGraph = [[1] * c for _ in range(r)]
+destGraph = [[[-1, -1] for _ in range(c)] for _ in range(r)]
+
+dx = [-1, -1, 0, 1, 1, 1, 0, -1]
+dy = [0, -1, -1, -1, 0, 1, 1, 1]
+
+# 현재 위치에서 시작하면 최종 목적지가 어딘지 확인하기
+for x in range(r):
+    for y in range(c):
+        continueFlag = True
+        mx, my = x, y
+        while continueFlag:
+            if destGraph[mx][my] != [-1, -1]:
+                break
+            continueFlag = False
+            movePos = []
+            for i in range(8):
+                nx = mx + dx[i]
+                ny = my + dy[i]
+                if nx < 0 or nx >= r or ny < 0 or ny >= c:
+                    continue
+                if numGraph[nx][ny] < numGraph[mx][my]:
+                    heappush(movePos, [numGraph[nx][ny], nx, ny])
+            if len(movePos) > 0:
+                continueFlag = True
+                _, mx, my = heappop(movePos)
+        if continueFlag:
+            destGraph[x][y] = destGraph[mx][my]
+        else:
+            destGraph[x][y] = [mx, my]
+
+for i in range(r):
+    for j in range(c):
+        dest = destGraph[i][j]
+        if i == dest[0] and j == dest[1]:
+            continue
+        ballGraph[dest[0]][dest[1]] += ballGraph[i][j]
+        ballGraph[i][j] = 0
+
+for row in ballGraph:
+    for elem in row:
+        print(elem, end=' ')
+    print()
+```
