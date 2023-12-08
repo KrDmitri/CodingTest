@@ -1203,3 +1203,106 @@ for row in ballGraph:
         print(elem, end=' ')
     print()
 ```
+
+### 배열 B의 값
+```
+import sys
+import copy
+INF = int(1e15)
+
+def sumOfGraph(tempGraph):
+    temp = 0
+    for i in range(N - 1):
+        for j in range(M - 1):
+            temp += tempGraph[i][j]
+    return temp
+
+def createNewGraph(tempGraph):
+    newGraph = [[0] * (M - 1) for _ in range(N - 1)]
+    for i in range(N - 1):
+        for j in range(M - 1):
+            newGraph[i][j] = tempGraph[i][j] + tempGraph[i + 1][j] + tempGraph[i + 1][j + 1] + tempGraph[i][j + 1]
+    return newGraph
+
+def changeRow(graph, x, y):
+    tempGraph = copy.deepcopy(graph)
+    temp = tempGraph[x]
+    tempGraph[x] = tempGraph[y]
+    tempGraph[y] = temp
+    return tempGraph
+
+def changeCol(graph, x, y):
+    tempGraph = copy.deepcopy(graph)
+    temp = []
+    for i in range(N):
+        temp.append(tempGraph[i][x])
+        tempGraph[i][x] = tempGraph[i][y]
+        tempGraph[i][y] = temp[i]
+    return tempGraph
+
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+for _ in range(N):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+
+answer = INF * (-1)
+
+newGraph = createNewGraph(graph)
+sumOfOrigin = sumOfGraph(newGraph)
+answer = max(answer, sumOfOrigin)
+
+minRow = 1
+minCol = 1
+minRowVal = INF
+minColVal = INF
+
+# 가장 작은 row 찾기
+for i in range(1, N - 1):
+    temp = 0
+    for j in range(M):
+        if j == 0 or j == M - 1:
+            temp += graph[i][j]
+        else:
+            temp += 2 * graph[i][j]
+    if temp < minRowVal:
+        minRowVal = temp
+        minRow = i
+
+# 가장 작은 col 찾기
+for j in range(1, M - 1):
+    temp = 0
+    for i in range(N):
+        if i == 0 or i == N - 1:
+            temp += graph[i][j]
+        else:
+            temp += 2 * graph[i][j]
+    if temp < minColVal:
+        minColVal = temp
+        minCol = j
+
+# row 바꾸는 경우
+tempGraph = changeRow(graph, minRow, 0)
+newGraph = createNewGraph(tempGraph)
+temp = sumOfGraph(newGraph)
+answer = max(answer, temp)
+
+tempGraph = changeRow(graph, minRow, N - 1)
+newGraph = createNewGraph(tempGraph)
+temp = sumOfGraph(newGraph)
+answer = max(answer, temp)
+
+
+# col 바꾸는 경우
+tempGraph = changeCol(graph, minCol, 0)
+newGraph = createNewGraph(tempGraph)
+temp = sumOfGraph(newGraph)
+answer = max(answer, temp)
+
+tempGraph = changeCol(graph, minCol, M - 1)
+newGraph = createNewGraph(tempGraph)
+temp = sumOfGraph(newGraph)
+answer = max(answer, temp)
+
+print(answer)
+```
