@@ -1306,3 +1306,102 @@ answer = max(answer, temp)
 
 print(answer)
 ```
+
+### 다리 만들기 2
+```
+import sys
+from collections import deque
+import heapq
+
+def find(x):
+    if parent[x] == x:
+        return x
+    else:
+        return find(parent[x])
+
+def union(x, y):
+    xp = find(x)
+    yp = find(y)
+    if xp < yp:
+        parent[yp] = xp
+    else:
+        parent[xp] = yp
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+for _ in range(N):
+    graph.append(list(map(int, sys.stdin.readline().rstrip().split())))
+
+dx = [1, 0, -1, 0]
+dy = [0, 1, 0, -1]
+
+# 섬들 찾기
+visited = [[False] * M for _ in range(N)]
+islandNum = 1
+poses = [[]]
+for i in range(N):
+    for j in range(M):
+        if graph[i][j] == 1 and not visited[i][j]:
+            q = deque()
+            q.append([i, j])
+            visited[i][j] = True
+            graph[i][j] = islandNum
+            poses.append([[i, j]])
+            while q:
+                x, y = q.popleft()
+                for k in range(4):
+                    nx = x + dx[k]
+                    ny = y + dy[k]
+                    if nx < 0 or nx >= N or ny < 0 or ny >= M or graph[nx][ny] == 0 or visited[nx][ny]:
+                        continue
+                    q.append([nx, ny])
+                    visited[nx][ny] = True
+                    graph[nx][ny] = islandNum
+                    poses[islandNum].append([nx, ny])
+            islandNum += 1
+
+# 섬들의 총 갯수
+numIsland = islandNum - 1
+
+# 그릴 수 있는 다리들을 다 구한 다음에 minimum spanning tree
+bridges = []
+
+for i in range(1, numIsland + 1):
+    for x, y in poses[i]:
+        flag = False
+        for k in range(4):
+            nx = x + dx[k]
+            ny = y + dy[k]
+            if nx < 0 or nx >= N or ny < 0 or ny >= M or graph[nx][ny] != 0:
+                continue
+            dist = 1
+            while True:
+                nx += dx[k]
+                ny += dy[k]
+                if nx < 0 or nx >= N or ny < 0 or ny >= M or graph[nx][ny] == i:
+                    break
+                if graph[nx][ny] != 0:
+                    if dist == 1:
+                        break
+                    heapq.heappush(bridges, [dist, i, graph[nx][ny]])
+                    break
+                dist += 1
+
+constructed = []
+ans = 0
+parent = [i for i in range(numIsland + 1)]
+
+while bridges:
+    dist, x, y = heapq.heappop(bridges)
+    if [x, y] not in constructed and [y, x] not in constructed and (find(x) != 1 or find(y) != 1):
+        constructed.append([x, y])
+        union(x, y)
+        ans += dist
+    if len(constructed) == numIsland - 1:
+        break
+
+if len(constructed) == numIsland - 1:
+    print(ans)
+else:
+    print(-1)
+```
