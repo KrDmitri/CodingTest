@@ -68,3 +68,90 @@ while finished != N:
 print(now)
 ```
 
+### 카드 놓기(오답)
+```
+import sys
+import copy
+
+def isTop(color):
+    top = []
+    bot = []
+    topX = -1
+    botX = -1
+    for i in range(N):
+        for j in range(M):
+            if graph[i][j] == color:
+                # 맨 위 인덱스 있는 경우
+                if topX == -1:
+                    topX = i
+                    top.append([i, j])
+                else:
+                    if i == topX:
+                        top.append([i, j])
+                    else:
+                        if i != botX:
+                            botX = i
+                            bot = []
+                        if i == botX:
+                            bot.append([i, j])
+    if len(bot) == 0:
+        for i, j in top:
+            tempGraph[i][j] = -1
+        return True
+    leftY = min(top[0][1], bot[0][1])
+    rightY = max(top[-1][1], bot[-1][1])
+
+    for i in range(topX, botX + 1):
+        for j in range(leftY, rightY + 1):
+            if graph[i][j] not in [color, -1]:
+                return False
+    for i in range(topX, botX + 1):
+        for j in range(leftY, rightY + 1):
+            tempGraph[i][j] = -1
+    return True
+
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+colorSet = set()
+for _ in range(N):
+    str = sys.stdin.readline().rstrip()
+    temp = []
+    for elem in str:
+        if elem == '.':
+            temp.append(-1)
+        else:
+            colorSet.add(elem)
+            temp.append(elem)
+    graph.append(temp)
+
+colorCheck = set()
+checked = []
+
+while colorCheck != colorSet:
+    temp = []
+    tempGraph = copy.deepcopy(graph)
+    flag = True
+    visited = set()
+    for i in range(N):
+        for j in range(M):
+            if graph[i][j] != -1 and graph[i][j] not in colorCheck and graph[i][j] not in visited:
+                color = graph[i][j]
+                visited.add(color)
+                if isTop(color):
+                    flag = False
+                    colorCheck.add(color)
+                    temp.append(color)
+    temp.sort(reverse=True)
+    for elem in temp:
+        checked.append(elem)
+    graph = tempGraph
+    if flag:
+        print(-1)
+        exit(0)
+
+for i in range(len(checked) - 1, -1, -1):
+    print(checked[i], end='')
+print()
+```
+-> 나는 이 문제가 조금 복잡한 단순 구현 문제라고 생각했다. 그래서 맨 위에 올라간 카드부터 없애는 방식으로 문제 풀이를 시도했는데 오답 판정을 받았다. 힌트를 보니 위상 정렬을 사용하라고 나와 있는데, 카드를 놓는 순서가 다른 카드에 종속된다는 점을 간과한것 같다.
