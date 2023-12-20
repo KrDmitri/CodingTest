@@ -155,3 +155,100 @@ for i in range(len(checked) - 1, -1, -1):
 print()
 ```
 -> 나는 이 문제가 조금 복잡한 단순 구현 문제라고 생각했다. 그래서 맨 위에 올라간 카드부터 없애는 방식으로 문제 풀이를 시도했는데 오답 판정을 받았다. 힌트를 보니 위상 정렬을 사용하라고 나와 있는데, 카드를 놓는 순서가 다른 카드에 종속된다는 점을 간과한것 같다.
+
+### 카드 놓기
+```
+import sys
+from heapq import heappop, heappush
+
+def checkParent(color):
+    min_x, min_y = 51, 51
+    max_x, max_y = -1, -1
+
+    for i in range(N):
+        for j in range(M):
+            if graph[i][j] == color:
+                min_x = min(min_x, i)
+                min_y = min(min_y, j)
+                max_x = max(max_x, i)
+                max_y = max(max_y, j)
+
+    leftY = min_y
+    rightY = max_y
+    topX = min_x
+    botX = max_x
+
+    # 구역 내에 부모 색깔이 있는지 찾는 루프
+    for i in range(topX, botX + 1):
+        for j in range(leftY, rightY + 1):
+            if graph[i][j] == -1:
+                print(-1)
+                exit(0)
+            if graph[i][j] != color and color not in parent[graph[i][j]]:
+                children[color].append(graph[i][j])
+                parent[graph[i][j]].append(color)
+
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = []
+colorSet = set()
+for _ in range(N):
+    str = sys.stdin.readline().rstrip()
+    temp = []
+    for elem in str:
+        if elem == '.':
+            temp.append(-1)
+        else:
+            colorSet.add(elem)
+            temp.append(elem)
+    graph.append(temp)
+
+colorCheck = set()
+checked = []
+parent = {}
+children = {}
+for elem in colorSet:
+    parent[elem] = []
+    children[elem] = []
+
+
+# 종속 관계 확인하기
+for i in range(N):
+    for j in range(M):
+        if graph[i][j] != -1 and graph[i][j] not in checked:
+            color = graph[i][j]
+            checkParent(color)
+            checked.append(color)
+
+buffer = []
+parentNum = {}
+for elem in parent:
+    parentNum[elem] = len(parent[elem])
+
+for elem in parent:
+    if parentNum[elem] == 0:
+        heappush(buffer, elem)
+
+answer = []
+while colorSet != colorCheck:
+    if len(buffer) == 0:
+        print(-1)
+        exit(0)
+    temp = []
+    elem = heappop(buffer)
+    if parentNum[elem] != 0:
+        print(-1)
+        exit(0)
+    temp.append(elem)
+    for child in children[elem]:
+        parentNum[child] -= 1
+        if parentNum[child] == 0:
+            heappush(buffer, child)
+    for i in range(len(temp) - 1, -1, -1):
+        answer.append(temp[i])
+        colorCheck.add(temp[i])
+
+for elem in answer:
+    print(elem, end='')
+print()
+```
