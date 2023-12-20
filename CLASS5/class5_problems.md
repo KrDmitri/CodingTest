@@ -558,3 +558,48 @@ for i in range(len(roads)):
 print(ans)
 ```
 -> 처음엔 각 구간의 길이를 확인하는 과정에서 pop(0)으로 구현하였다. 이때 시간 초과가 나고 인덱스 접근으로 고치자 정답 판정을 받았는데, pop()으로 구현할 시 파이썬 내부 메모리 관리하는 과정에서 시간이 많이 소요되는것 같다. pop()을 함부로 사용하지말자...🥲
+
+### 도시 분할 계획
+```
+import sys
+from heapq import heappop, heappush
+
+def find(x):
+    if parent[x] == x:
+        return x
+    else:
+        return find(parent[x])
+
+def union(x, y):
+    xp = find(x)
+    yp = find(y)
+    if xp < yp:
+        parent[yp] = xp
+    else:
+        parent[xp] = yp
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+routes = []
+
+for _ in range(M):
+    a, b, c = map(int, sys.stdin.readline().rstrip().split())
+    heappush(routes, [c, a, b])
+
+parent = [i for i in range(N + 1)]
+parent[0] = 1
+
+ans = 0
+selected = []
+while routes:
+    if len(selected) == N - 1:
+        break
+    val, a, b = heappop(routes)
+    if find(a) == find(b):
+        continue
+    union(a, b)
+    ans += val
+    heappush(selected, (-1) * val)
+
+temp = heappop(selected) * (-1)
+print(ans - temp)
+```
