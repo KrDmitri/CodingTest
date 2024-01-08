@@ -67,3 +67,59 @@ while K <= 500000:
 
 print(-1)
 ```
+
+### 직사각형 탈출
+```
+import sys
+from collections import deque
+
+N, M = map(int, sys.stdin.readline().rstrip().split())
+graph = [list(map(int, sys.stdin.readline().rstrip().split())) for _ in range(N)]
+H, W, sx, sy, fx, fy = map(int, sys.stdin.readline().rstrip().split())
+sx, sy, fx, fy = sx - 1, sy - 1, fx - 1, fy - 1
+dx = [0, 1, 0, -1]
+dy = [1, 0, -1, 0]
+
+visited = [[False] * M for _ in range(N)]
+visited[sx][sy] = True
+q = deque([[sx, sy, 0]])
+
+while q:
+    x, y, time = q.popleft()
+    if x == fx and y == fy:
+        print(time)
+        exit(0)
+    for k in range(4):
+        nx = x + dx[k]
+        ny = y + dy[k]
+        if nx < 0 or nx >= N or ny < 0 or ny >= M or graph[nx][ny] == 1 or visited[nx][ny]:
+            continue
+        visited[nx][ny] = True
+
+        # 수정 요구 구역
+        flag = False
+        if k % 2 == 0:
+            if k == 0:
+                nny = y + W
+            else:
+                nny = y - 1
+
+            for i in range(x, x + H):
+                if i < 0 or i >= N or nny < 0 or nny >= M or graph[i][nny] == 1:
+                    flag = True
+                    break
+        else:
+            if k == 1:
+                nnx = x + H
+            else:
+                nnx = x - 1
+            for j in range(y, y + W):
+                if nnx < 0 or nnx >= N or j < 0 or j >= M or graph[nnx][j] == 1:
+                    flag = True
+                    break
+
+        if not flag:
+            q.append([nx, ny, time + 1])
+
+print(-1)
+```
