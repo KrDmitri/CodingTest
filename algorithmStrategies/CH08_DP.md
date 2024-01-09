@@ -51,3 +51,49 @@ for _ in range(T):
 
     print('YES' if dp[n - 1][n - 1] else 'NO')
 ```
+
+### 와일드카드(WILDCARD)
+```
+import sys
+
+def match(pattern, file, p, f):
+    global dp
+    if dp[p][f] != -1:
+        return dp[p][f]
+
+    while p < len(pattern) and f < len(file) and (pattern[p] == file[f] or pattern[p] == '?'):
+        p += 1
+        f += 1
+
+    if p == len(pattern):
+        if len(file) == f:
+            return 1
+        else:
+            return 0
+        
+    if pattern[p] == '*':
+        skip = 0
+        while f + skip <= len(file):
+            if match(pattern, file, p + 1, f + skip):
+                return 1
+            skip += 1
+            
+    return 0
+
+dp = [[-1] * 101 for _ in range(101)]
+
+T = int(sys.stdin.readline().rstrip())
+
+for _ in range(T):
+    pattern = sys.stdin.readline().rstrip()
+    numFiles = int(sys.stdin.readline().rstrip())
+    files = [sys.stdin.readline().rstrip() for _ in range(numFiles)]
+    files.sort()
+    for i in range(101):
+        for j in range(101):
+            dp[i][j] = -1
+
+    for file in files:
+        if match(pattern, file, 0, 0) == 1:
+            print(file)
+```
