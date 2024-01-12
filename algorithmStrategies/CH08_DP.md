@@ -97,3 +97,27 @@ for _ in range(T):
         if match(pattern, file, 0, 0) == 1:
             print(file)
 ```
+
+### 삼각형 위의 최대 경로(TRIANGLEPATH)
+```
+import sys
+import copy
+
+T = int(sys.stdin.readline().rstrip())
+
+for _ in range(T):
+    n = int(sys.stdin.readline().rstrip())
+    graph = [[0] * n for _ in range(n)]
+    for i in range(n):
+        temp = list(map(int, sys.stdin.readline().rstrip().split()))
+        for j in range(len(temp)):
+            graph[i][j] = temp[j]
+
+    dp = copy.deepcopy(graph)
+    for i in range(n - 1):
+        for j in range(n - 1):
+            dp[i + 1][j] = max(dp[i][j] + graph[i + 1][j], dp[i + 1][j])
+            dp[i + 1][j + 1] = max(dp[i][j] + graph[i + 1][j + 1], dp[i + 1][j + 1])
+
+    print(max(dp[n - 1]))
+```
