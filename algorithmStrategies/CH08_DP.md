@@ -151,3 +151,40 @@ for _ in range(T):
         ans = max(ans, lis(i))
     print(ans)
 ```
+### 합친 LIS(JLIS)
+```
+import sys
+NEGINF = (-1) * int(1e9)
+
+def jlis(a, b):
+    global dp
+    if dp[a + 1][b + 1] != -1:
+        return dp[a + 1][b + 1]
+    dp[a + 1][b + 1] = 2
+    nowA = NEGINF if a == -1 else aList[a]
+    nowB = NEGINF if b == -1 else bList[b]
+    maxElem = max(nowA, nowB)
+
+    for i in range(a + 1, n):
+        if aList[i] > maxElem:
+            dp[a + 1][b + 1] = max(dp[a + 1][b + 1], jlis(i, b) + 1)
+    for i in range(b + 1, m):
+        if bList[i] > maxElem:
+            dp[a + 1][b + 1] = max(dp[a + 1][b + 1], jlis(a, i) + 1)
+    return dp[a + 1][b + 1]
+
+
+T = int(sys.stdin.readline().rstrip())
+dp = [[-1] * 101 for _ in range(101)]
+
+for _ in range(T):
+    n, m = map(int, sys.stdin.readline().rstrip().split())
+    aList = list(map(int, sys.stdin.readline().rstrip().split()))
+    bList = list(map(int, sys.stdin.readline().rstrip().split()))
+    for i in range(101):
+        for j in range(101):
+            dp[i][j] = -1
+
+    ans = jlis(-1, -1)
+    print(ans - 2)
+```
