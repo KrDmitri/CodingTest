@@ -146,7 +146,7 @@ for _ in range(T):
     nums = list(map(int, sys.stdin.readline().rstrip().split()))
     for i in range(500):
         cache[i] = -1
-    ans = 1
+    ans = 0
     for i in range(len(nums)):
         ans = max(ans, lis(i))
     print(ans)
