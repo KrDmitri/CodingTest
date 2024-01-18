@@ -121,3 +121,33 @@ for _ in range(T):
 
     print(max(dp[n - 1]))
 ```
+
+### 최대 증가 부분 수열(LIS)
+```
+import sys
+
+def lis(idx):
+    global cache
+    if cache[idx] != -1:
+        return cache[idx]
+    ret = 1
+    for i in range(idx + 1, len(nums)):
+        if nums[i] > nums[idx]:
+            cache[i] = lis(i)
+            ret = max(ret, 1 + cache[i])
+    return ret
+
+
+T = int(sys.stdin.readline().rstrip())
+cache = [-1] * 500
+
+for _ in range(T):
+    N = int(sys.stdin.readline().rstrip())
+    nums = list(map(int, sys.stdin.readline().rstrip().split()))
+    for i in range(500):
+        cache[i] = -1
+    ans = 1
+    for i in range(len(nums)):
+        ans = max(ans, lis(i))
+    print(ans)
+```
