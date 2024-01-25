@@ -188,3 +188,91 @@ for _ in range(T):
     ans = jlis(-1, -1)
     print(ans - 2)
 ```
+
+### 원주율 외우기(PI)
+```
+import sys
+INF = int(1e9)
+
+def check_cost(temp_num_string):
+    num_list = list(map(int, temp_num_string))
+    if len(num_list) < 3:
+        return INF
+    first = num_list[0]
+    second = num_list[1]
+
+    flag = True
+    for elem in num_list:
+        if elem != first:
+            flag = False
+            break
+    if flag:
+        return 1
+
+    flag = True
+    for i in range(1, len(num_list)):
+        if num_list[i] != first + i:
+            flag = False
+            break
+    if flag:
+        return 2
+
+    flag = True
+    for i in range(1, len(num_list)):
+        if num_list[i] != first - i:
+            flag = False
+            break
+    if flag:
+        return 2
+
+    flag = True
+    for i in range(len(num_list)):
+        if i % 2 == 0:
+            if num_list[i] != first:
+                flag = False
+                break
+        else:
+            if num_list[i] != second:
+                flag = False
+                break
+    if flag:
+        return 4
+
+    flag = True
+    diff = second - first
+    for i in range(len(num_list) - 1):
+        if (num_list[i + 1] - num_list[i]) != diff:
+            flag = False
+            break
+    if flag:
+        return 5
+
+    return 10
+
+
+def count_least_cost(idx):
+    if dp[idx] != -1:
+        return dp[idx]
+    for i in range(3, 6):
+        if idx + i == len(num_string):
+            dp[idx] = check_cost(num_string[idx:idx + i])
+            return dp[idx]
+
+    ret = INF
+    for i in range(3, 6):
+        if idx + i < len(num_string):
+            ret = min(ret, check_cost(num_string[idx:idx + i]) + count_least_cost(idx + i))
+    dp[idx] = ret
+    return ret
+
+
+T = int(sys.stdin.readline().rstrip())
+
+dp = [-1] * 9998
+for _ in range(T):
+    num_string = sys.stdin.readline().rstrip()
+    for i in range(9998):
+        dp[i] = -1
+    ans = count_least_cost(0)
+    print(ans)
+```
