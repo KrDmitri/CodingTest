@@ -276,3 +276,42 @@ for _ in range(T):
     ans = count_least_cost(0)
     print(ans)
 ```
+
+### Quantization(QUANTIZE)
+```
+import sys
+INF = int(1e9)
+
+def quantize(idx, num_q):
+    global dp
+    if idx == N:
+        return 0
+    if num_q == 0:
+        return INF
+
+    if dp[idx][num_q] != -1:
+        return dp[idx][num_q]
+
+    ret = INF
+    for i in range(idx + 1, N + 1):
+        temp = quantize(i, num_q - 1)
+        avg = round(sum(nums[idx:i]) / (i - idx))
+        front = 0
+        for elem in nums[idx:i]:
+            front += (elem - avg) ** 2
+        ret = min(ret, front + temp)
+    dp[idx][num_q] = ret
+    return ret
+
+T = int(sys.stdin.readline().rstrip())
+
+for _ in range(T):
+    N, S = map(int, sys.stdin.readline().rstrip().split())
+    nums = list(map(int, sys.stdin.readline().rstrip().split()))
+
+    nums.sort()
+    dp = [[-1] * 10 for _ in range(100)]
+    ans = quantize(0, S)
+
+    print(ans)
+```
