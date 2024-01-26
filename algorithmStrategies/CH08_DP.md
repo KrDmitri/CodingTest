@@ -315,3 +315,65 @@ for _ in range(T):
 
     print(ans)
 ```
+
+### 타일링 방법의 수 세기(TILING2)
+```
+import sys
+
+T = int(sys.stdin.readline().rstrip())
+
+dp = [0] * 100
+dp[0] = 1
+dp[1] = 2
+for i in range(2, 100):
+    dp[i] = (dp[i - 1] + dp[i - 2]) % 1000000007
+
+for _ in range(T):
+    n = int(sys.stdin.readline().rstrip())
+    print(dp[n - 1])
+```
+
+### 삼각형 위의 최대 경로 개수 세기(TRIPATHCNT)
+```
+import sys
+
+def count_max(i, j):
+    global dp
+    if i == n - 1:
+        dp[i][j] = graph[i][j]
+        return graph[i][j]
+    if dp[i][j] != -1:
+        return dp[i][j]
+    ret = graph[i][j] + max(count_max(i + 1, j), count_max(i + 1, j + 1))
+    dp[i][j] = ret
+    return ret
+
+def count_path(i, j):
+    global num_path
+    if i == n - 1:
+        return 1
+    if num_path[i][j] != -1:
+        return num_path[i][j]
+    if dp[i + 1][j] > dp[i + 1][j + 1]:
+        num_path[i][j] = count_path(i + 1, j)
+    elif dp[i + 1][j] < dp[i + 1][j + 1]:
+        num_path[i][j] = count_path(i + 1, j + 1)
+    else:
+        num_path[i][j] = count_path(i + 1, j) + count_path(i + 1, j + 1)
+    return num_path[i][j]
+
+
+T = int(sys.stdin.readline().rstrip())
+
+for _ in range(T):
+    n = int(sys.stdin.readline().rstrip())
+    graph = [list(map(int, sys.stdin.readline().rstrip().split())) for _ in range(n)]
+
+    dp = [[-1] * n for _ in range(n)]
+    num_path = [[-1] * n for _ in range(n)]
+
+    count_max(0, 0)
+    count_path(0, 0)
+
+    print(num_path[0][0])
+```
