@@ -377,3 +377,34 @@ for _ in range(T):
 
     print(num_path[0][0])
 ```
+
+### 장마가 찾아왔다
+```
+import sys
+
+T = int(sys.stdin.readline().rstrip())
+
+def climb(day, height):
+    global dp
+    if dp[day][height] != -1:
+        return dp[day][height]
+    if day == m:
+        if height >= n:
+            return 1
+        else:
+            return 0
+    if height >= n:
+        return 1
+
+    dp[day][height] = climb(day + 1, height + 1) * 0.25 + climb(day + 1, height + 2) * 0.75
+    return dp[day][height]
+
+for _ in range(T):
+    n, m = map(int, sys.stdin.readline().rstrip().split())
+    dp = [[-1] * (2 * (m + 1) + 1) for _ in range(m + 1)]
+
+    ans = climb(0, 0)
+
+    print("%.10f"%ans)
+```
+
