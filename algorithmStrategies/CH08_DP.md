@@ -378,7 +378,7 @@ for _ in range(T):
     print(num_path[0][0])
 ```
 
-### 장마가 찾아왔다
+### 장마가 찾아왔다(SNAIL)
 ```
 import sys
 
@@ -408,3 +408,35 @@ for _ in range(T):
     print("%.10f"%ans)
 ```
 
+### 비대칭 타일링(ASYMTILING)
+```
+import sys
+
+def tiling(x):
+    global dp
+    if dp[x] != -1:
+        return dp[x]
+    ret = tiling(x - 1) + tiling(x - 2)
+    dp[x] = ret % 1000000007
+    return ret
+
+
+T = int(sys.stdin.readline().rstrip())
+
+dp = [-1] * 101
+dp[0] = 1
+dp[1] = 1
+dp[2] = 2
+tiling(100)
+
+for _ in range(T):
+    n = int(sys.stdin.readline().rstrip())
+
+    if n % 2 == 1:
+        ans = dp[n] - dp[(n - 1) // 2]
+    else:
+        ans = dp[n] - dp[n // 2] - dp[(n - 2) // 2]
+    while ans < 0:
+        ans += 1000000007
+    print(ans)
+```
