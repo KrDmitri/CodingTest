@@ -440,3 +440,36 @@ for _ in range(T):
         ans += 1000000007
     print(ans)
 ```
+
+### 폴리오미노(POLY)
+```
+import sys
+P = 10000000
+
+def poly(n, f):
+    global dp
+    if dp[n][f] != - 1:
+        return dp[n][f]
+
+    ret = 0
+    remain = n - f
+    for i in range(1, remain + 1):
+        ret += poly(remain, i) * (f + i - 1) % P
+    dp[n][f] = ret
+    return ret
+
+
+T = int(sys.stdin.readline().rstrip())
+
+dp = [[-1] * 101 for _ in range(101)]
+for i in range(101):
+    dp[i][i] = 1
+
+for _ in range(T):
+    n = int(sys.stdin.readline().rstrip())
+
+    ans = 0
+    for i in range(1, n + 1):
+        ans += poly(n, i)
+    print(ans % P)
+```
