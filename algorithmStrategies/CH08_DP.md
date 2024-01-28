@@ -473,3 +473,47 @@ for _ in range(T):
         ans += poly(n, i)
     print(ans % P)
 ```
+
+### 두니발 박사의 탈옥
+```
+import sys
+
+def escape(day, village):
+    if dp[day][village] != -1:
+        return dp[day][village]
+    if day == 0:
+        return 0
+
+    ret = 0
+    parents = graph[village]
+    for parent_village in parents:
+        percent_parent = escape(day - 1, parent_village)
+        percent_parent_to_village = 1 / len(graph[parent_village])
+        ret += percent_parent * percent_parent_to_village
+
+    dp[day][village] = ret
+    return ret
+
+
+C = int(sys.stdin.readline().rstrip())
+
+for _ in range(C):
+    N, D, P = map(int, sys.stdin.readline().rstrip().split())
+    graph = [[] for _ in range(N)]
+    for i in range(N):
+        temp = list(map(int, sys.stdin.readline().rstrip().split()))
+        for j in range(N):
+            if temp[j] == 1:
+                graph[i].append(j)
+    T = int(sys.stdin.readline().rstrip())
+    villages = list(map(int, sys.stdin.readline().rstrip().split()))
+
+    dp = [[-1] * N for _ in range(D + 1)]
+    dp[0][P] = 1
+
+    for v in villages:
+        percent = escape(D, v)
+        print("{:.8f}".format(percent), end=' ')
+    print()
+```
+-> 책의 풀이 설명을 하나도 보지 않고 풀었다! DP 문제들이 너무 어려웠는데, 계속 풀다보니 이제는 어느정도 감을 잡은것 같다~😊
