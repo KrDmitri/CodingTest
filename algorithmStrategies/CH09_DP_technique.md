@@ -137,3 +137,32 @@ for _ in range(T):
     skip = k - 1
     generate(n, m, '')
 ```
+
+### 모스 부호 사전(MORSE) - 두번째 풀이
+```
+import sys
+INF = int(1e10)
+
+def kth(n, m, skip):
+    if n == 0:
+        return 'o' * m
+
+    if skip < bino[n + m - 1][n - 1]:
+        return '-' + kth(n - 1, m, skip)
+    else:
+        return 'o' + kth(n, m - 1, skip - bino[n + m - 1][n - 1])
+        
+
+bino = [[0] * 201 for _ in range(201)]
+
+for i in range(201):
+    bino[i][0] = bino[i][i] = 1
+    for j in range(1, i):
+        bino[i][j] = min(INF, bino[i - 1][j - 1] + bino[i - 1][j])
+
+T = int(sys.stdin.readline().rstrip())
+
+for _ in range(T):
+    n, m, k = map(int, sys.stdin.readline().rstrip().split())
+    print(kth(n, m, k - 1))
+```
