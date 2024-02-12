@@ -97,3 +97,43 @@ for _ in range(T):
     for elem in item_list:
         print(elem)
 ```
+
+### 모스 부호 사전(MORSE)
+```
+import sys
+INF = int(1e10)
+
+def generate(n, m, s):
+    global skip
+    if skip < 0:
+        return
+
+    if n == 0 and m == 0:
+        if skip == 0:
+            print(s)
+        skip -= 1
+        return
+
+    if skip > bino[n + m][n]:
+        skip -= bino[n + m][n]
+        return
+
+    if n > 0:
+        generate(n - 1, m, s + '-')
+    if m > 0:
+        generate(n, m - 1, s + 'o')
+
+bino = [[0] * 201 for _ in range(201)]
+
+for i in range(201):
+    bino[i][0] = bino[i][i] = 1
+    for j in range(1, i):
+        bino[i][j] = min(INF, bino[i - 1][j - 1] + bino[i - 1][j])
+
+T = int(sys.stdin.readline().rstrip())
+
+for _ in range(T):
+    n, m, k = map(int, sys.stdin.readline().rstrip().split())
+    skip = k - 1
+    generate(n, m, '')
+```
