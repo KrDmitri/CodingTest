@@ -166,3 +166,89 @@ for _ in range(T):
     n, m, k = map(int, sys.stdin.readline().rstrip().split())
     print(kth(n, m, k - 1))
 ```
+
+### K번째 최대 증가 부분 수열(KLIS)
+```
+import sys
+
+def get_dp(x):
+    if dp[x] != -1:
+        return dp[x]
+
+    ret = 0
+    for i in range(x + 1, N):
+        if nums[i] > nums[x]:
+            ret = max(ret, get_dp(i))
+    dp[x] = ret + 1
+    return ret + 1
+
+def get_num_biggers(x):
+    if num_biggers[x] != -1:
+        return num_biggers[x]
+
+    ret = 0
+    for i in range(x + 1, N):
+        if nums[i] > nums[x] and dp[x] - 1 == dp[i]:
+            ret += get_num_biggers(i)
+    num_biggers[x] = ret
+    return ret
+
+def klis(x, ans_nums, length_max):
+    global K
+    if K < 0:
+        return
+
+    if get_num_biggers(x) <= K:
+        K -= get_num_biggers(x)
+        return
+
+    ans_nums.append(nums[x])
+
+    if K == 0 and len(ans_nums) == length_max:
+        print(length_max)
+        for num in ans_nums:
+            print(num, end=' ')
+        print()
+
+    if dp[x] == 1:
+        K -= 1
+        return
+
+    nexts = []
+    for i in range(x + 1, N):
+        if nums[i] > nums[x] and dp[x] - 1 == dp[i]:
+            nexts.append([i, nums[i]])
+    nexts.sort(key=lambda x:x[1])
+
+    for next, _ in nexts:
+        klis(next, ans_nums, length_max)
+    ans_nums.pop()
+
+T = int(sys.stdin.readline().rstrip())
+
+for _ in range(T):
+    N, K = map(int, sys.stdin.readline().rstrip().split())
+    nums = list(map(int, sys.stdin.readline().rstrip().split()))
+    dp = [-1] * N
+
+    for i in range(N):
+        get_dp(i)
+
+    num_biggers = [-1] * N
+    for i in range(N):
+        if get_dp(i) == 1:
+            num_biggers[i] = 1
+
+    for i in range(N):
+        get_num_biggers(i)
+
+    length_max = max(dp)
+    K -= 1
+    starts = []
+    for i in range(N):
+        if length_max == dp[i]:
+            starts.append([i, nums[i]])
+    starts.sort(key=lambda x:x[1])
+    for start, _ in starts:
+        klis(start, [], length_max)
+```
