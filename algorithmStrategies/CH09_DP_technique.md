@@ -252,3 +252,44 @@ for _ in range(T):
     for start, _ in starts:
         klis(start, [], length_max)
 ```
+
+### 드래곤 커브(DRAGON)
+```
+import sys
+
+T = int(sys.stdin.readline().rstrip())
+MAX = int(1e9)
+length = [0] * 51
+EXPAND_X = "X+YF"
+EXPAND_Y = "FX-Y"
+
+def precalc():
+    length[0] = 1
+    for i in range(1, 51):
+        length[i] = min(MAX, length[i - 1] * 2 + 2)
+
+def expand(dragonCurve, generations, skip):
+    if generations == 0:
+        return dragonCurve[skip]
+
+    for i in range(len(dragonCurve)):
+        if dragonCurve[i] == 'X' or dragonCurve[i] == 'Y':
+            if skip >= length[generations]:
+                skip -= length[generations]
+            elif dragonCurve[i] == 'X':
+                return expand(EXPAND_X, generations - 1, skip)
+            else:
+                return expand(EXPAND_Y, generations - 1, skip)
+        elif skip > 0:
+            skip -= 1
+        else:
+            return dragonCurve[i]
+
+precalc()
+for _ in range(T):
+    gen, start, jump = map(int, sys.stdin.readline().rstrip().split())
+
+    for i in range(start - 1, start + jump - 1):
+        print(expand('FX', gen, i), end='')
+    print()
+```
